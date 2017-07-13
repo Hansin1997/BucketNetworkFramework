@@ -61,7 +61,7 @@ public class GetOnlineListCommand extends BucketCommand {
 
 				USER u = Tool.object2E(r.getResults().get(0), USER.class);
 				u.setPassword("");
-				array.add(Tool.object2E(u, JsonObject.class));
+				array.add((JsonObject) Tool.object2E(u, JsonObject.class));
 
 			}
 		}

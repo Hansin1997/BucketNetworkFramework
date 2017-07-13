@@ -16,11 +16,13 @@ import network.listener.BucketListener;
 
 public class TestServer {
 
+	SocketPool pool;
+	DatabaseManager db;
+	
 	public TestServer(String MySQL_Username, String MySQL_Password, String DataBase,int port) throws IOException, ClassNotFoundException, SQLException 
 
 	{
-		SocketPool pool;
-		DatabaseManager db;
+
 
 		db = new DatabaseManager(MySQL_Username,  MySQL_Password, DataBase);
 		pool = new SocketPool();

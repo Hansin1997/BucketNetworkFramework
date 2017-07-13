@@ -90,7 +90,7 @@ public class TestClient extends BucketListener {
 		} else {
 			mm = q.toServerCommand();
 		}
-		System.out.println(Tool.toJson(mm));
+		
 		conn.send(mm);
 	}
 
@@ -111,15 +111,21 @@ public class TestClient extends BucketListener {
 	}
 
 	public void Update(Object o) throws IOException {
+		ArrayList<Object> a = new ArrayList<Object>();
+		a.add(o);
+		Update(a);
+	}
+	
+	public  void Update(ArrayList<Object> array) throws IOException {
+		if(array.size() < 1)
+			return;
 
 		MainCommand mc = new MainCommand();
 
 		DataSaver ds = new DataSaver();
 
-		ds.setTable(Tool.object2Table(o));
-		ArrayList<Object> a = new ArrayList<Object>();
-		a.add(o);
-		ds.setValues(Tool.List2JsonArray(a));
+		ds.setTable(Tool.object2Table(array.get(0)));
+		ds.setValues(Tool.List2JsonArray(array));
 		mc.setCommand(ds.getClass().getName());
 		mc.setValues(ds);
 
@@ -159,4 +165,9 @@ public class TestClient extends BucketListener {
 			listener.onDisconnection(conn);
 	}
 
+	public UserConnection getConn() {
+		return conn;
+	}
+	
+	
 }

@@ -19,7 +19,7 @@ public class USER {
 
 	public USER(String username, String password) {
 
-		this(username, password, null, 0);
+		this(username, password,null,0);
 
 	}
 
