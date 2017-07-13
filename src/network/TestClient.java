@@ -90,6 +90,7 @@ public class TestClient extends BucketListener {
 		} else {
 			mm = q.toServerCommand();
 		}
+		System.out.println(Tool.toJson(mm));
 		conn.send(mm);
 	}
 

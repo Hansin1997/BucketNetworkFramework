@@ -114,6 +114,7 @@ public class Tool {
 
 		return head + "(" + key + ") VALUES " + mid + ";";
 	}
+	
 
 	static final String[][] TypeFormat = { { "String", "text" }, { "boolean", "tinyint(1)" }, { "Date", "timestamp" } };
 

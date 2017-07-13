@@ -17,6 +17,8 @@ public class Query {
 	public Query() {
 		this("", -1);
 	}
+	
+	
 
 	public Query(String table_name, int count) {
 		setTable_name(table_name);
