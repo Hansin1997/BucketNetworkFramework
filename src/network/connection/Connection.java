@@ -62,6 +62,14 @@ public class Connection {
 	public void stopListen() {
 		this.quit = true;
 	}
+	
+	public void finish() throws IOException
+	{
+		stopListen();
+		in.close();
+		out.close();
+		socket.close();
+	}
 
 	public void startListen() throws IOException {
 		String lenStr;

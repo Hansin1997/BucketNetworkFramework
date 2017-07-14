@@ -116,7 +116,7 @@ public class Tool {
 	}
 	
 
-	static final String[][] TypeFormat = { { "String", "text" }, { "boolean", "tinyint(1)" }, { "Date", "timestamp" } };
+	static final String[][] TypeFormat = { { "String", "text" }, { "boolean", "tinyint(1)" }, { "Date", "timestamp" } ,{ "IncrementalChange" ,""}};
 
 	static String typeFormat(String in) {
 

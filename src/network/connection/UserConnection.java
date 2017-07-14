@@ -83,21 +83,31 @@ public class UserConnection extends Connection {
 		query.addQuery("password", "=\'" + usr.password + "\'");
 		QueryResult result = Gobal.db.Query(query);
 		ClientCommand cc = new ClientCommand();
+
 		if (result.count != 0) {
+			USER get = Tool.object2E(result.getResults().get(0), USER.class);
 
+			if (get != null) {
+				UserConnection conn;
+				while ((conn = Gobal.getPool().getUserConnection(get.getUsername())) != null) {
+					conn.finish();
+				}
+
+			}
+			
 			username = usr.username;
-
 			cc.setCommand("LOGIN");
 			cc.setValues("SUCCESS");
 			send(cc);
 			return true;
-		} else {
-			cc.setCommand("LOGIN");
-			cc.setValues("FAIL");
 
-			send(cc);
-			return false;
 		}
+
+		cc.setCommand("LOGIN");
+		cc.setValues("FAIL");
+
+		send(cc);
+		return false;
 
 	}
 

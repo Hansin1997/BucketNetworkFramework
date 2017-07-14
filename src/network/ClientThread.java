@@ -3,6 +3,7 @@ package network;
 import java.io.IOException;
 import java.net.Socket;
 
+import Common.Gobal;
 import network.connection.UserConnection;
 import network.listener.BucketListener;
 
@@ -24,7 +25,10 @@ public class ClientThread extends Thread {
 		try {
 			connection.startListen();
 		} catch (IOException e) {
-
+			try {
+				Gobal.getPool().remove(connection);
+			} catch (IOException e1) {
+			}
 		}
 
 	}

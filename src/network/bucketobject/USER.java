@@ -19,12 +19,12 @@ public class USER {
 
 	public USER(String username, String password) {
 
-		this(username, password,null,0);
+		this(username, password,"",0);
 
 	}
 
 	public USER() {
-		this("", "", null, 0);
+		this("", "", "", 0);
 	}
 
 	public void setType(int type) {

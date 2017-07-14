@@ -54,12 +54,13 @@ public class SocketPool {
 		}
 	}
 
-	public void remove(ClientThread t) {
+	public void remove(ClientThread t) throws IOException {
 
+		t.getConnection().finish();
 		client.remove(t);
 	}
 
-	public void remove(Connection conn) {
+	public void remove(Connection conn) throws IOException {
 		ClientThread find = getClientFromConnection(conn);
 		if (find != null)
 			remove(find);
@@ -73,11 +74,15 @@ public class SocketPool {
 		return null;
 	}
 
-	public UserConnection getUserConnection(String Client) {
-		if (Client == null)
+	public UserConnection getUserConnection(String Username) {
+		if (Username == null)
 			return null;
 		for (int i = 0; i < client.size(); i++) {
-			if (client.get(i).getConnection().getUsername().equals(Client))
+			if(client.get(i).getConnection().getUsername() == null)
+			{
+				continue;
+			}
+			if (client.get(i).getConnection().getUsername().equals(Username))
 				return client.get(i).getConnection();
 		}
 		return null;

@@ -188,7 +188,7 @@ public class DatabaseManager {
 
 			stmt = conn.createStatement();
 			if (!TableExisted(USERS_TABLE)) {
-				System.out.println("Create");
+				
 				sql = getSQL("CREATE_USERS");
 				stmt.execute(sql);
 			}

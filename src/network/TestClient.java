@@ -93,16 +93,21 @@ public class TestClient extends BucketListener {
 		
 		conn.send(mm);
 	}
+	
 
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void Query(Query q) throws IOException {
-		Query(q, null);
+		QueryListener l = null;
+		Query(q, l);
 	}
 
-	private void addBuss(int sign, ClientListener listener) {
+
+	public void addBuss(int sign, ClientListener listener) {
 		business.put(sign, listener);
 	}
 
-	private void removeBuss(int sign) {
+	public void removeBuss(int sign) {
 		business.remove(sign);
 	}
 
@@ -117,6 +122,7 @@ public class TestClient extends BucketListener {
 	}
 	
 	public  void Update(ArrayList<Object> array) throws IOException {
+
 		if(array.size() < 1)
 			return;
 
@@ -128,7 +134,7 @@ public class TestClient extends BucketListener {
 		ds.setValues(Tool.List2JsonArray(array));
 		mc.setCommand(ds.getClass().getName());
 		mc.setValues(ds);
-
+		
 		conn.send(mc);
 	}
 

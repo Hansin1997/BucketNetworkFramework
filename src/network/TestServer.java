@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 import Common.Gobal;
 import Database.DatabaseManager;
@@ -41,6 +42,7 @@ public class TestServer {
 
 				@Override
 				public void onDataCome(network.connection.Connection c, String message) {
+					
 					UserConnection connection = (UserConnection) c;
 					Gson gson = new GsonBuilder().create();
 
@@ -48,15 +50,19 @@ public class TestServer {
 						MainCommand bo = gson.fromJson(message, MainCommand.class);
 						bo.client = connection;
 						bo.execute();
-					} catch (IllegalStateException | com.google.gson.JsonSyntaxException e) {
-
+					} catch (IllegalStateException | JsonParseException e) {
+						e.printStackTrace();
 					}
 
 				}
 
 				@Override
 				public void onDisconnection(network.connection.Connection conn) {
-					pool.remove(conn);
+					try {
+						pool.remove(conn);
+					} catch (IOException e) {
+						
+					}
 
 				}
 			};
