@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonSyntaxException;
 
 import network.bucketobject.Data;
 import network.bucketobject.Table;
@@ -155,8 +156,14 @@ public class Tool {
 	static public <E> E JSON2E(String json, Class<?> clazz) {
 
 		Gson gson = new GsonBuilder().create();
-
-		return (E) gson.fromJson(json, clazz);
+		E re = null;
+		try{
+			re = (E) gson.fromJson(json, clazz);
+		}catch(JsonSyntaxException e)
+		{
+			
+		}
+		return re;
 	}
 
 	@SuppressWarnings("unchecked")
