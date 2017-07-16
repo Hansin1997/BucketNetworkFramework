@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
@@ -29,6 +31,8 @@ public class Connection {
 		this.listener = messageListener;
 		this.out = (new BufferedOutputStream(socket.getOutputStream()));
 		this.in = (new BufferedInputStream(socket.getInputStream()));
+//		this.out = socket.getOutputStream();
+//		this.in = socket.getInputStream();
 		this.quit = false;
 	}
 
@@ -42,8 +46,8 @@ public class Connection {
 
 	public void send(String message) throws IOException {
 		int length = message.getBytes(getEncoding()).length;
-
-		out.write((length + "\n" + message).getBytes(getEncoding()));
+		byte[] b = (length + "\n" + message).getBytes(getEncoding());
+		out.write(b);
 		out.flush();
 	}
 
@@ -78,12 +82,24 @@ public class Connection {
 			int len;
 			try {
 				len = Integer.valueOf(lenStr);
-				byte[] data = new byte[len];
+				ByteArrayOutputStream o = new ByteArrayOutputStream(len);
 
-				len = in.read(data, 0, len);
+				byte[] data = new byte[len];
+				in.read(data,0,len);
+				int b = 0;
+				
+				for(int i = 0;i < len; i++)
+				{
+					b = in.read();
+					if(b == -1)
+						break;
+					o.write(b);
+				}
+				
+				o.flush();
 
 				if (listener != null)
-					listener.onDataCome(this, new String(data, getEncoding()));
+					listener.onDataCome(this, new String(o.toByteArray(), getEncoding()));
 
 			} catch (NumberFormatException e) {
 
@@ -109,7 +125,7 @@ public class Connection {
 
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
-
+			finish();
 		}
 
 		return "EOF";

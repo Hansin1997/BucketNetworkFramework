@@ -1,5 +1,7 @@
 package network.command.server;
 
+import java.io.IOException;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
@@ -44,6 +46,12 @@ public class MainCommand extends BucketCommand {
 			bo.client = client;
 			bo.setSign(sign);
 			bo.execute();
+		}else{
+			try {
+				client.finish();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

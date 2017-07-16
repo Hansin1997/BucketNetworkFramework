@@ -45,7 +45,7 @@ public class TestServer {
 					
 					UserConnection connection = (UserConnection) c;
 					Gson gson = new GsonBuilder().create();
-
+					
 					try {
 						MainCommand bo = gson.fromJson(message, MainCommand.class);
 						bo.client = connection;
