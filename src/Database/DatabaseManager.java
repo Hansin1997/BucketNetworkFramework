@@ -147,26 +147,24 @@ public class DatabaseManager {
 	public QueryResult Query(Query query) {
 		QueryResult result = new QueryResult();
 		ArrayList<JsonObject> array = new ArrayList<JsonObject>();
-
 		try {
 			Gson gson = new GsonBuilder().create();
-
 			Statement stmt = conn.createStatement();
-
 			ResultSet rs = stmt.executeQuery(query.toSQL());
-
+			
 			ResultSetMetaData meta = rs.getMetaData();
-
 			while (rs.next()) {
 				JsonObject obj = new JsonObject();
 
-				for (int i = 0; i < meta.getColumnCount(); i++) {
-					String key = meta.getColumnName(i + 1);
-					obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
+				if(!query.isJustCount())
+				{
+					for (int i = 0; i < meta.getColumnCount(); i++) {
+						String key = meta.getColumnName(i + 1);
+						obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
+					}
 				}
-
 				array.add(obj);
-
+				
 				if (query.getCount() > -1 && array.size() >= query.getCount())
 					break;
 			}
@@ -175,49 +173,53 @@ public class DatabaseManager {
 		} catch (SQLException e) {
 
 		}
-		result.setResults(array);
 		result.setCount(array.size());
+		
+		if(query.isJustCount())
+			array.clear();
+		
+		result.setResults(array);
 		return result;
 	}
+//
+//	public boolean Sign(String username, String password) {
+//
+//		Statement stmt;
+//		String sql;
+//		try {
+//
+//			stmt = conn.createStatement();
+//			if (!TableExisted(USERS_TABLE)) {
+//				
+//				sql = getSQL("CREATE_USERS");
+//				stmt.execute(sql);
+//			}
+//
+//			stmt.close();
+//
+//			if (Check(username, password) != 0) {
+//				return false;
+//			}
+//
+//			sql = "INSERT " + USERS_TABLE + " (username,password) VALUES (?,?);";
+//
+//			PreparedStatement stmt2 = conn.prepareStatement(sql);
+//			stmt2.setString(1, username);
+//			stmt2.setString(2, password);
+//
+//			stmt2.executeUpdate();
+//
+//			stmt2.close();
+//		} catch (SQLException e) {
+//			System.err.println(e);
+//
+//			return false;
+//		}
+//
+//		return true;
+//	}
 
-	public boolean Sign(String username, String password) {
-
-		Statement stmt;
-		String sql;
-		try {
-
-			stmt = conn.createStatement();
-			if (!TableExisted(USERS_TABLE)) {
-				
-				sql = getSQL("CREATE_USERS");
-				stmt.execute(sql);
-			}
-
-			stmt.close();
-
-			if (Check(username, password) != 0) {
-				return false;
-			}
-
-			sql = "INSERT " + USERS_TABLE + " (username,password) VALUES (?,?);";
-
-			PreparedStatement stmt2 = conn.prepareStatement(sql);
-			stmt2.setString(1, username);
-			stmt2.setString(2, password);
-
-			stmt2.executeUpdate();
-
-			stmt2.close();
-		} catch (SQLException e) {
-			System.err.println(e);
-
-			return false;
-		}
-
-		return true;
-	}
-
-	private boolean TableExisted(String TableName) {
+	public boolean isTableExisted(String TableName) {
 		DatabaseMetaData meta;
 		try {
 			meta = conn.getMetaData();
@@ -229,17 +231,17 @@ public class DatabaseManager {
 		}
 
 	}
-
-	private String getSQL(String key) {
-		String re = "";
-		switch (key) {
-		case "CREATE_USERS":
-			re = "CREATE TABLE " + USERS_TABLE + " (username tinytext,password tinytext,type int,nickname tinytext)";
-			break;
-
-		}
-		return re;
-	}
+//
+//	private String getSQL(String key) {
+//		String re = "";
+//		switch (key) {
+//		case "CREATE_USERS":
+//			re = "CREATE TABLE " + USERS_TABLE + " (username tinytext,password tinytext,type int,nickname tinytext)";
+//			break;
+//
+//		}
+//		return re;
+//	}
 
 	public void SQLexecute(String sql) throws SQLException {
 		Statement stmt = null;

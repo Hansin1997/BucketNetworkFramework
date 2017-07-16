@@ -13,6 +13,7 @@ public class Query {
 	public String table_name;
 	public List<Data> values;
 	public int count;
+	public boolean justCount; // 是否只查询数目
 
 	public Query() {
 		this("", -1);
@@ -26,6 +27,14 @@ public class Query {
 		values = new ArrayList<Data>();
 	}
 
+	public void setJustCount(boolean justCount) {
+		this.justCount = justCount;
+	}
+	
+	public boolean isJustCount() {
+		return justCount;
+	}
+	
 	public void setCount(int count) {
 		this.count = count;
 	}

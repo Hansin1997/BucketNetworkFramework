@@ -4,10 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
-import Common.Gobal;
 import Common.Tool;
-import network.bucketobject.Query;
-import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
 import network.command.client.ClientCommand;
 import network.listener.BucketListener;
@@ -66,48 +63,41 @@ public class UserConnection extends Connection {
 	}
 
 	public void login(USER user, LoginListener listener) throws IOException {
-
-		writeLine((Tool.toJson(user)));
+		writeLine(Checker.createLogin(user).toJSON());
 		loginListener = listener;
-
+	}
+	
+	public void Signin(USER user, LoginListener listener) throws IOException {
+		writeLine(Checker.createSignin(user).toJSON());
+		loginListener = listener;
 	}
 
 	private boolean check(String str) throws UnsupportedEncodingException, IOException {
 
-		USER usr = Tool.JSON2E(str, USER.class);
-		if (usr == null)
+		Checker checker = Tool.JSON2E(str, Checker.class);
+		if (checker == null)
 			return false;
-
-		Query query = new Query(USER.class.getSimpleName(), -1);
-		query.addQuery("username", "=\'" + usr.username + "\'");
-		query.addQuery("password", "=\'" + usr.password + "\'");
-		QueryResult result = Gobal.db.Query(query);
+		
 		ClientCommand cc = new ClientCommand();
 
-		if (result.count != 0) {
-			USER get = Tool.object2E(result.getResults().get(0), USER.class);
-
-			if (get != null) {
-				UserConnection conn;
-				while ((conn = Gobal.getPool().getUserConnection(get.getUsername())) != null) {
-					conn.finish();
-				}
-
-			}
-			
-			username = usr.username;
-			cc.setCommand("LOGIN");
+		USER ckeckerUser = checker.doCheck();
+		if(ckeckerUser == null)
+		{
+			cc.setCommand("CONNECT");
+			cc.setValues("FAIL");
+			send(cc);
+			return false;
+		}else{
+			cc.setCommand("CONNECT");
 			cc.setValues("SUCCESS");
+			username = ckeckerUser.username;
 			send(cc);
 			return true;
-
 		}
 
-		cc.setCommand("LOGIN");
-		cc.setValues("FAIL");
 
-		send(cc);
-		return false;
+
+
 
 	}
 

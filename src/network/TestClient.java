@@ -114,6 +114,10 @@ public class TestClient extends BucketListener {
 	public void Login(USER user, LoginListener listener) throws IOException {
 		conn.login(user, listener);
 	}
+	
+	public void Signin(USER user, LoginListener listener) throws IOException {
+		conn.Signin(user, listener);
+	}
 
 	public void Update(Object o) throws IOException {
 		ArrayList<Object> a = new ArrayList<Object>();
