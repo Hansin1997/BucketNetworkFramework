@@ -143,6 +143,12 @@ public class TestClient extends BucketListener {
 
 		UserConnection uconn = (UserConnection) conn;
 		ClientCommand cm = Tool.JSON2E(message, ClientCommand.class);
+		if(cm == null)
+		{
+			System.out.println("ERROR!!  : " + message);
+			return;
+		}
+
 
 		if (messageListener != null && cm.getCommand().equals(Message.class.getSimpleName())) {
 			messageListener.onDataCome(conn, cm);

@@ -84,10 +84,7 @@ public class Connection {
 				len = Integer.valueOf(lenStr);
 				ByteArrayOutputStream o = new ByteArrayOutputStream(len);
 
-				byte[] data = new byte[len];
-				in.read(data,0,len);
 				int b = 0;
-				
 				for(int i = 0;i < len; i++)
 				{
 					b = in.read();
@@ -95,11 +92,13 @@ public class Connection {
 						break;
 					o.write(b);
 				}
-				
 				o.flush();
 
 				if (listener != null)
+				{
 					listener.onDataCome(this, new String(o.toByteArray(), getEncoding()));
+				}
+
 
 			} catch (NumberFormatException e) {
 
