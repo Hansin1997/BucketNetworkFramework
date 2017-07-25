@@ -124,6 +124,7 @@ public class Connection {
 
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
+			e.printStackTrace();
 			finish();
 		}
 

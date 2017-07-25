@@ -17,6 +17,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import network.bucketobject.ChangeQuery;
 import network.bucketobject.DeleteQuery;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
@@ -130,6 +131,21 @@ public class DatabaseManager {
 	}
 	
 	public void Delete(DeleteQuery query)
+	{
+
+		try {
+
+			Statement stmt = conn.createStatement();
+			stmt.execute(query.toSQL());
+
+			stmt.close();
+		} catch (SQLException e) {
+
+		}
+		
+	}
+	
+	public void Change(ChangeQuery query)
 	{
 
 		try {

@@ -61,7 +61,7 @@ public class TestServer {
 					try {
 						pool.remove(conn);
 					} catch (IOException e) {
-						
+						e.printStackTrace();
 					}
 
 				}
