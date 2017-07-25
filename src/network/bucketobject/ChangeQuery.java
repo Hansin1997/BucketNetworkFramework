@@ -12,6 +12,10 @@ public class ChangeQuery extends Query{
 	
 	public List<Data> newdata;
 	
+	public void addData(String key,String value){
+		newdata.add(new Data(key,value));
+	}
+	
 	public ChangeQuery() {
 		super("",-1);
 		newdata = new ArrayList<Data>();

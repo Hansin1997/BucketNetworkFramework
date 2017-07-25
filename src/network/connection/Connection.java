@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
+import Common.Gobal;
 import Common.Tool;
 import network.command.BucketCommand;
 import network.listener.BucketListener;
@@ -69,6 +70,7 @@ public class Connection {
 	
 	public void finish() throws IOException
 	{
+		
 		stopListen();
 		in.close();
 		out.close();
@@ -125,7 +127,7 @@ public class Connection {
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
 			e.printStackTrace();
-			finish();
+			Gobal.getPool().remove(this);
 		}
 
 		return "EOF";
