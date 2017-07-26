@@ -2,7 +2,6 @@ package network.connection;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.GenericArrayType;
 import java.net.Socket;
 
 import Common.Gobal;
