@@ -68,10 +68,14 @@ public class DatabaseManager {
 	}
 
 	public void ConnectMySQL() throws ClassNotFoundException, SQLException {
+		if(conn != null && !conn.isClosed())
+			conn.close();
+		
 		Class.forName("com.mysql.jdbc.Driver");
 		String url = "jdbc:mysql://" + mysql_host + ":" + mysql_port + "/" + mysql_database
 				+ "?useUnicode=true&characterEncoding=utf-8";
 		conn = DriverManager.getConnection(url, mysql_username, mysql_password);
+
 	}
 
 	public void CloseMySQL() {
@@ -280,6 +284,18 @@ public class DatabaseManager {
 			return new BigInteger(1, md.digest()).toString(16);
 		} catch (Exception e) {
 			return "";
+		}
+	}
+	
+	public boolean isClose(){
+		if(conn == null)
+			return true;
+		
+		try {
+			return conn.isClosed();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return true;
 		}
 	}
 }

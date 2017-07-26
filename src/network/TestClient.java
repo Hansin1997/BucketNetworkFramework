@@ -157,6 +157,7 @@ public class TestClient extends BucketListener {
 		if (messageListener != null && cm.getCommand().equals(Message.class.getSimpleName())) {
 			messageListener.onDataCome(conn, cm);
 		} else if (uconn != null && uconn.getLoginListener() != null && cm.getCommand().equals("CONNECT")) {
+			//System.out.println(message);
 			uconn.getLoginListener().onDataCome(uconn, cm);
 		} else {
 			if (cm.sign == 0) {

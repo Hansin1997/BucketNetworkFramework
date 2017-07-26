@@ -31,13 +31,16 @@ public class TestServer {
 		Gobal.setDb(db);
 		Gobal.setPool(pool);
 
-		db.ConnectMySQL();
+		//db.ConnectMySQL();
 
 		@SuppressWarnings("resource")
 		ServerSocket s = new ServerSocket(port);
 		while (true) {
 			Socket c = s.accept();
 
+			if(db.isClose())
+				db.ConnectMySQL();
+			
 			final BucketListener listener = new BucketListener() {
 
 				@Override
