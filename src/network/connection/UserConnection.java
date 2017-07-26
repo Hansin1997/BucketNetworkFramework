@@ -2,8 +2,10 @@ package network.connection;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.GenericArrayType;
 import java.net.Socket;
 
+import Common.Gobal;
 import Common.Tool;
 import network.bucketobject.USER;
 import network.command.client.ClientCommand;
@@ -80,17 +82,21 @@ public class UserConnection extends Connection {
 		
 		ClientCommand cc = new ClientCommand();
 
-		USER ckeckerUser = checker.doCheck();
-		if(ckeckerUser == null)
+		USER checkerUser = checker.doCheck();
+		if( checkerUser == null)
 		{
 			cc.setCommand("CONNECT");
 			cc.setValues("FAIL");
 			send(cc);
 			return false;
 		}else{
+			UserConnection lastConn;
+			while((lastConn = Gobal.getPool().getUserConnection(checkerUser.username)) != null)
+				Gobal.getPool().remove(lastConn);
+			
 			cc.setCommand("CONNECT");
 			cc.setValues("SUCCESS");
-			username = ckeckerUser.username;
+			username = checkerUser.username;
 			send(cc);
 			return true;
 		}
