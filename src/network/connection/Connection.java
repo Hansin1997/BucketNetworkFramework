@@ -32,8 +32,6 @@ public class Connection {
 		this.listener = messageListener;
 		this.out = (new BufferedOutputStream(socket.getOutputStream()));
 		this.in = (new BufferedInputStream(socket.getInputStream()));
-//		this.out = socket.getOutputStream();
-//		this.in = socket.getInputStream();
 		this.quit = false;
 	}
 
@@ -126,7 +124,6 @@ public class Connection {
 
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
-			e.printStackTrace();
 			Gobal.getPool().remove(this);
 		}
 

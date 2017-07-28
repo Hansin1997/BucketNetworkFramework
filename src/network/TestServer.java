@@ -31,8 +31,6 @@ public class TestServer {
 		Gobal.setDb(db);
 		Gobal.setPool(pool);
 
-		//db.ConnectMySQL();
-
 		@SuppressWarnings("resource")
 		ServerSocket s = new ServerSocket(port);
 		while (true) {
@@ -45,6 +43,15 @@ public class TestServer {
 
 				@Override
 				public void onDataCome(network.connection.Connection c, String message) {
+					
+						try {
+							if(db.isClose())
+								db.ConnectMySQL();
+						} catch (ClassNotFoundException e1) {
+							e1.printStackTrace();
+						} catch (SQLException e1) {
+							e1.printStackTrace();
+						}
 					
 					UserConnection connection = (UserConnection) c;
 					Gson gson = new GsonBuilder().create();
@@ -64,7 +71,7 @@ public class TestServer {
 					try {
 						pool.remove(conn);
 					} catch (IOException e) {
-						e.printStackTrace();
+						//e.printStackTrace();
 					}
 
 				}
