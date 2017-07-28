@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 
 import Common.Gobal;
 import Common.Tool;
+import network.bucketobject.DeleteQuery;
 import network.bucketobject.Message;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
@@ -102,12 +103,16 @@ public class UserConnection extends Connection {
 			
 			cc.setCommand("CONNECT");
 			cc.setValues("SUCCESS");
+			
 			username = checkerUser.username;
 			send(cc);
+			
+			//发送离线消息
 			List<Message> msgList = getUnreadMessage();
 			for(Message msg : msgList){
 				send(msg.toClientCommand());
 			}
+
 			return true;
 		}
 
@@ -117,20 +122,23 @@ public class UserConnection extends Connection {
 
 	}
 	
+	//获取储存在数据库中的离线消息，并删除
 	private List<Message> getUnreadMessage(){
 		ArrayList<Message> array = new ArrayList<Message>();
 		Query query = new Query();
 		query.setTable_name(Message.class.getSimpleName());
-		query.addQuery("username", "=\'" + username + "\'");
+		query.addQuery("receiver", "=\'" + username + "\'");
 		
 		QueryResult result = Gobal.getDb().Query(query);
 		for(JsonObject obj : result.getResults()){
-			Message msg = Tool.object2E(obj, Message.class);
+			Message msg = Tool.object2E(obj,Message.class);
 			array.add(msg);
 		}
 		
-		
+		DeleteQuery dquery = new DeleteQuery();
+		dquery.setTable_name(Message.class.getSimpleName());
+		dquery.addQuery("receiver", "=\'" + username + "\'");
+		Gobal.getDb().Delete(dquery);
 		return array;
 	}
-
 }

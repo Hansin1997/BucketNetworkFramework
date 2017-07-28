@@ -1,7 +1,5 @@
 package Common;
 
-
-
 import java.lang.reflect.Field;
 
 import java.util.ArrayList;
@@ -11,8 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import java.util.Map.Entry;
-
-
 
 import com.google.gson.Gson;
 
@@ -28,13 +24,9 @@ import com.google.gson.JsonParseException;
 
 import com.google.gson.JsonSyntaxException;
 
-
-
 import network.bucketobject.Data;
 
 import network.bucketobject.Table;
-
-
 
 public class Tool {
 
@@ -44,23 +36,15 @@ public class Tool {
 
 		List<Data> values = new ArrayList<Data>();
 
-
-
 		Class<?> clazz = o.getClass();
 
 		Field[] F = clazz.getFields();
 
-
-
 		table.setTable_name(clazz.getSimpleName());
-
-
 
 		for (int i = 0; i < F.length; i++) {
 
 			Field f = F[i];
-
-
 
 			Data d = new Data();
 
@@ -72,15 +56,11 @@ public class Tool {
 
 		}
 
-
-
 		table.setValues(values);
 
 		return table;
 
 	}
-
-
 
 	static public String table2JSON(Table table) {
 
@@ -94,15 +74,11 @@ public class Tool {
 
 		} catch (JsonParseException e) {
 
-
-
 		}
 
 		return result;
 
 	}
-
-
 
 	static public Table JSON2Table(String json) {
 
@@ -116,27 +92,15 @@ public class Tool {
 
 		} catch (JsonParseException e) {
 
-
-
 		}
-
-
 
 		return table;
 
-
-
 	}
-
-
 
 	static public String table2SQL(Table table) {
 
-
-
 		String mid = "";
-
-
 
 		for (int i = 0; i < table.getValues().size(); i++) {
 
@@ -150,19 +114,11 @@ public class Tool {
 
 		}
 
-
-
 		return "CREATE TABLE " + table.getTable_name() + " (" + mid + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-
-
 
 	}
 
-
-
 	public static String arrayInsert2SQL(String table_name, JsonArray array) {
-
-
 
 		String head = "INSERT INTO " + table_name + " ";
 
@@ -171,8 +127,6 @@ public class Tool {
 		String mid = "";
 
 		String tmp = "";
-
-
 
 		for (int i = 0; i < array.size(); i++) {
 
@@ -184,11 +138,7 @@ public class Tool {
 
 			while (it.hasNext()) {
 
-
-
 				Entry<String, JsonElement> d = it.next();
-
-
 
 				tmp += d.getValue();
 
@@ -210,13 +160,9 @@ public class Tool {
 
 				}
 
-
-
 			}
 
 			mid += "(" + tmp + ")";
-
-
 
 			if (i < array.size() - 1) {
 
@@ -226,23 +172,13 @@ public class Tool {
 
 		}
 
-
-
 		return head + "(" + key + ") VALUES " + mid + ";";
 
 	}
 
-	
-
-
-
-	static final String[][] TypeFormat = { { "String", "text" }, { "boolean", "tinyint(1)" }, { "Date", "timestamp" } ,{ "IncrementalChange" ,""}};
-
-
+	static final String[][] TypeFormat = { { "String", "text" }, { "boolean", "tinyint(1)" }, { "Date", "text" } };
 
 	static String typeFormat(String in) {
-
-
 
 		for (String[] t : TypeFormat) {
 
@@ -256,19 +192,13 @@ public class Tool {
 
 			} catch (IndexOutOfBoundsException e) {
 
-
-
 			}
 
 		}
 
-
-
 		return in;
 
 	}
-
-
 
 	static public String toJson(Object o) {
 
@@ -278,53 +208,39 @@ public class Tool {
 
 	}
 
-
-
 	@SuppressWarnings("unchecked")
 
 	static public <E> E object2E(Object object, Class<?> clazz) {
 
 		Gson gson = new GsonBuilder().create();
 
-
-
 		return (E) gson.fromJson(gson.toJson(object), clazz);
 
 	}
-
-
 
 	static public Object JSON2Object(String json) {
 
 		Gson gson = new GsonBuilder().create();
 
-
-
 		return gson.fromJson(json, Object.class);
 
 	}
-
-
 
 	@SuppressWarnings("unchecked")
 
 	static public <E> E JSON2E(String json, Class<?> clazz) {
 
-
-
 		Gson gson = new GsonBuilder().create();
 
 		E re = null;
 
-		try{
+		try {
 
 			re = (E) gson.fromJson(json, clazz);
 
-		}catch(JsonSyntaxException e)
+		} catch (JsonSyntaxException e)
 
 		{
-
-			
 
 		}
 
@@ -332,13 +248,9 @@ public class Tool {
 
 	}
 
-
-
 	@SuppressWarnings("unchecked")
 
 	static public <T> List<T> ObjectList(List<?> object, Class<T> clazz) {
-
-
 
 		List<T> result = new ArrayList<T>();
 
@@ -348,13 +260,9 @@ public class Tool {
 
 		}
 
-
-
 		return result;
 
 	}
-
-
 
 	static public JsonArray List2JsonArray(List<?> list) {
 
@@ -363,7 +271,5 @@ public class Tool {
 		return gson.fromJson(gson.toJson(list), JsonArray.class);
 
 	}
-
-
 
 }

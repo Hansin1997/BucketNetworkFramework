@@ -124,7 +124,8 @@ public class Connection {
 
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
-			Gobal.getPool().remove(this);
+			if(Gobal.getPool() != null)
+				Gobal.getPool().remove(this);
 		}
 
 		return "EOF";
