@@ -3,9 +3,16 @@ package network.connection;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.google.gson.JsonObject;
 
 import Common.Gobal;
 import Common.Tool;
+import network.bucketobject.Message;
+import network.bucketobject.Query;
+import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
 import network.command.client.ClientCommand;
 import network.listener.BucketListener;
@@ -97,6 +104,10 @@ public class UserConnection extends Connection {
 			cc.setValues("SUCCESS");
 			username = checkerUser.username;
 			send(cc);
+			List<Message> msgList = getUnreadMessage();
+			for(Message msg : msgList){
+				send(msg.toClientCommand());
+			}
 			return true;
 		}
 
@@ -104,6 +115,22 @@ public class UserConnection extends Connection {
 
 
 
+	}
+	
+	private List<Message> getUnreadMessage(){
+		ArrayList<Message> array = new ArrayList<Message>();
+		Query query = new Query();
+		query.setTable_name(Message.class.getSimpleName());
+		query.addQuery("username", "=\'" + username + "\'");
+		
+		QueryResult result = Gobal.getDb().Query(query);
+		for(JsonObject obj : result.getResults()){
+			Message msg = Tool.object2E(obj, Message.class);
+			array.add(msg);
+		}
+		
+		
+		return array;
 	}
 
 }
