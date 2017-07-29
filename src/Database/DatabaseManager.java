@@ -21,6 +21,7 @@ import network.bucketobject.ChangeQuery;
 import network.bucketobject.DeleteQuery;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
+import network.bucketobject.USER;
 
 public class DatabaseManager {
 
@@ -167,6 +168,7 @@ public class DatabaseManager {
 	public QueryResult Query(Query query) {
 		QueryResult result = new QueryResult();
 		ArrayList<JsonObject> array = new ArrayList<JsonObject>();
+		boolean isUserTable = query.getTable_name().equals(USER.class.getSimpleName());
 		try {
 			Gson gson = new GsonBuilder().create();
 			Statement stmt = conn.createStatement();
@@ -180,7 +182,11 @@ public class DatabaseManager {
 				{
 					for (int i = 0; i < meta.getColumnCount(); i++) {
 						String key = meta.getColumnName(i + 1);
-						obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
+						
+						if(!(isUserTable && key.equals("password")))//±ÜÃâÃÜÂëÐ¹Â¶
+							obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
+						else
+							obj.add(key,gson.fromJson("", JsonElement.class));
 					}
 				}
 				array.add(obj);
