@@ -17,7 +17,7 @@ import network.listener.BucketListener;
 
 public class FileConnection extends Connection{
 	
-	public static String rootPath = "/var/www/html/";	//文件储存根目录
+	public static String rootPath = "bucket-upload";	//文件储存根目录
 	
 	private boolean isServer;
 
@@ -62,7 +62,7 @@ public class FileConnection extends Connection{
 
 				long len;
 				len = fileInfo.getSize();
-				File f = Tool.createFile(rootPath + "/" + fileInfo.getPath());
+				File f = Tool.createFile(rootPath + "/" + username + "/" + fileInfo.getPath());
 				BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(f));
 				int b = 0;
 				for(int i = 0;i < len; i++)

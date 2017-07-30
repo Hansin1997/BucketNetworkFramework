@@ -101,6 +101,15 @@ public class TestServer {
 					s = new ServerSocket(port + 1);
 					while (true) {
 						Socket c = s.accept();
+						
+						
+							try {
+								if(db.isClose())
+									db.ConnectMySQL();
+							} catch (ClassNotFoundException | SQLException e) {
+								e.printStackTrace();
+							}
+							
 						BucketListener listener = new BucketListener() {
 							
 							@Override
