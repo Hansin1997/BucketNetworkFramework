@@ -1,7 +1,5 @@
 package Database;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -283,16 +281,7 @@ public class DatabaseManager {
 
 	}
 
-	public static String MD5(String str) {
-		try {
-			MessageDigest md = MessageDigest.getInstance("MD5");
-			md.update(str.getBytes());
-			return new BigInteger(1, md.digest()).toString(16);
-		} catch (Exception e) {
-			return "";
-		}
-	}
-	
+
 	public boolean isClose(){
 		if(conn == null)
 			return true;

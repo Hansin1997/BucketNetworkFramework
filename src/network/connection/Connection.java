@@ -19,9 +19,9 @@ public class Connection {
 	public Socket socket;
 
 	private String encoding;
-	private BucketListener listener;
+	protected BucketListener listener;
 
-	private boolean quit;
+	protected boolean quit;
 
 	protected BufferedOutputStream out;
 	protected BufferedInputStream in;
@@ -66,13 +66,16 @@ public class Connection {
 		this.quit = true;
 	}
 	
-	public void finish() throws IOException
+	public void finish()
 	{
-		
-		stopListen();
-		in.close();
-		out.close();
-		socket.close();
+		try {
+			stopListen();
+			in.close();
+			out.close();
+			socket.close();
+		} catch (IOException e) {
+		}
+
 	}
 
 	public void startListen() throws IOException {
@@ -93,7 +96,7 @@ public class Connection {
 					o.write(b);
 				}
 				o.flush();
-
+				o.close();
 				if (listener != null)
 				{
 					listener.onDataCome(this, new String(o.toByteArray(), getEncoding()));

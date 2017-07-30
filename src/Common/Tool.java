@@ -1,7 +1,10 @@
 package Common;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
-
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 
 import java.util.Iterator;
@@ -272,4 +275,27 @@ public class Tool {
 
 	}
 
+	
+	public static String MD5(String str) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			md.update(str.getBytes());
+			return new BigInteger(1, md.digest()).toString(16);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
+	}
+	
+	public static File createFile(String path) throws IOException{
+		File f = new File(path);
+		if(!f.getParentFile().exists())
+			f.getParentFile().mkdirs();
+		
+		f.deleteOnExit();
+		f.createNewFile();
+		return f;
+		
+	}
+	
 }

@@ -1,0 +1,152 @@
+package network.connection;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.Socket;
+
+import com.google.gson.JsonParseException;
+
+import Common.Tool;
+import network.bucketobject.USER;
+import network.listener.BucketListener;
+
+public class FileConnection extends Connection{
+	
+	public static String rootPath = "/var/www/html/";	//文件储存根目录
+	
+	private boolean isServer;
+
+	private String username;
+
+	public FileConnection(Socket socket, BucketListener messageListener) throws IOException {
+		
+		super(socket, messageListener);
+	}
+	
+	public void setServer(boolean isServer) {
+		this.isServer = isServer;
+	}
+	
+	@Override
+	public void startListen() throws IOException {
+		if (isServer) {
+			socket.setSoTimeout(2000);
+
+			if (check(readLine())) {
+				socket.setSoTimeout(0);
+				start();
+			} else {
+				socket.close();
+			}
+		} else {
+			super.startListen();
+		}
+
+	}
+	
+	private void start() throws IOException {
+		String infoStr;
+		boolean success = false;
+
+		if ((infoStr = readLine()) != "EOF") {
+			try {
+				FileInformation fileInfo = FileInformation.fromJSON(infoStr);
+
+				if(fileInfo == null)
+					throw new JsonParseException("FileInformation parse error!");
+
+				long len;
+				len = fileInfo.getSize();
+				File f = Tool.createFile(rootPath + "/" + fileInfo.getPath());
+				BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(f));
+				int b = 0;
+				for(int i = 0;i < len; i++)
+				{
+					b = in.read();
+					if(b == -1)
+						break;
+					o.write(b);
+				}
+				o.flush();
+				o.close();
+				
+				success = true;
+			} catch (NumberFormatException | JsonParseException | IOException | NullPointerException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (super.listener != null){
+			super.listener.onDisconnection(this);
+			listener.onDataCome(this,success?"SUCCESS":"FAIL");
+		}
+
+	}
+	
+	private boolean check(String str) throws UnsupportedEncodingException, IOException {
+		Checker checker = Tool.JSON2E(str, Checker.class);
+		if (checker == null)
+			return false;
+
+		checker.setCommand("LOGIN");
+		USER checkerUser = checker.doCheck();
+		if( checkerUser == null)
+		{
+			return false;
+		}else{
+			username = checkerUser.username;
+			return true;
+		}
+
+	}
+	
+	public void sendFile(String localPath,String serverPath) throws IOException{
+		sendFile(new File(localPath), serverPath);
+	}
+	
+	public void sendFile(File file,String serverPath) throws  IOException{
+		FileInformation fileInfo = new FileInformation(serverPath,file.length());
+		writeLine(fileInfo.toJSON());
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+		int b;
+		while((b = in.read()) != -1){
+			out.write(b);
+		}
+		out.flush();
+		in.close();
+		
+	}
+	
+	public void sendFile(byte[] data,String serverPath) throws IOException{
+		FileInformation fileInfo = new FileInformation(serverPath,data.length);
+		writeLine(fileInfo.toJSON());
+		out.write(data);
+		out.flush();
+	}
+
+	public void login(USER user) throws IOException {
+		writeLine(Checker.createLogin(user).toJSON());
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
+	
+	public static void setRootPath(String rootPath) {
+		FileConnection.rootPath = rootPath;
+	}
+	
+	public static String getRootPath() {
+		return rootPath;
+	}
+
+	
+	
+
+}

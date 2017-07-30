@@ -25,11 +25,7 @@ public class ClientThread extends Thread {
 		try {
 			connection.startListen();
 		} catch (IOException e) {
-			try {
-				Gobal.getPool().remove(connection);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+			Gobal.getPool().remove(connection);
 			e.printStackTrace();
 		}
 

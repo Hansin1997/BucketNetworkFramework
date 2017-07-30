@@ -116,10 +116,6 @@ public class UserConnection extends Connection {
 			return true;
 		}
 
-
-
-
-
 	}
 	
 	//获取储存在数据库中的离线消息，并删除

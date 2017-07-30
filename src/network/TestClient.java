@@ -1,5 +1,6 @@
 package network;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.net.Socket;
@@ -17,6 +18,7 @@ import network.command.server.DataSaver;
 import network.command.server.GetOnlineListCommand;
 import network.command.server.MainCommand;
 import network.connection.Connection;
+import network.connection.FileConnection;
 import network.connection.UserConnection;
 import network.listener.BucketListener;
 import network.listener.ClientListener;
@@ -31,8 +33,13 @@ public class TestClient extends BucketListener {
 	private HashMap<Integer, ClientListener> business;
 	private BucketListener listener;
 	private MessageListener messageListener;
+	private String host;
+	private int port;
+	private USER user;
 
 	public TestClient(String host, int port) throws UnknownHostException, IOException {
+		this.host = host;
+		this.port = port;
 		business = new HashMap<Integer, ClientListener>();
 
 		Socket s = new Socket(host, port);
@@ -112,10 +119,12 @@ public class TestClient extends BucketListener {
 	}
 
 	public void Login(USER user, LoginListener listener) throws IOException {
+		this.user = user;
 		conn.login(user, listener);
 	}
 	
 	public void Signin(USER user, LoginListener listener) throws IOException {
+		this.user = user;
 		conn.Signin(user, listener);
 	}
 
@@ -140,6 +149,90 @@ public class TestClient extends BucketListener {
 		mc.setValues(ds);
 		
 		conn.send(mc);
+	}
+	
+	public void sendFile(File file,String serverPath){
+		if(conn == null)
+			return;
+		Socket s;
+		try {
+			s = new Socket(host,port + 1);
+			BucketListener listener = new BucketListener() {
+				
+				@Override
+				public void onDisconnection(Connection conn) {
+					conn.finish();
+				}
+				
+				@Override
+				public void onDataCome(Connection conn, String message) {
+					conn.finish();
+					
+				}
+			};
+			FileConnection fconn = new FileConnection(s, listener);
+			fconn.login(user);
+			fconn.sendFile(file, serverPath);
+			fconn.finish();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendFile(String localPath,String serverPath){
+		if(conn == null || user == null)
+			return;
+		Socket s;
+		try {
+			s = new Socket(host,port + 1);
+			BucketListener listener = new BucketListener() {
+				
+				@Override
+				public void onDisconnection(Connection conn) {
+					conn.finish();
+				}
+				
+				@Override
+				public void onDataCome(Connection conn, String message) {
+					conn.finish();
+					
+				}
+			};
+			FileConnection fconn = new FileConnection(s, listener);
+			fconn.login(user);
+			fconn.sendFile(localPath, serverPath);
+			fconn.finish();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendFile(byte[] data,String serverPath){
+		if(conn == null)
+			return;
+		Socket s;
+		try {
+			s = new Socket(host,port + 1);
+			BucketListener listener = new BucketListener() {
+				
+				@Override
+				public void onDisconnection(Connection conn) {
+					conn.finish();
+				}
+				
+				@Override
+				public void onDataCome(Connection conn, String message) {
+					conn.finish();
+					
+				}
+			};
+			FileConnection fconn = new FileConnection(s, listener);
+			fconn.login(user);
+			fconn.sendFile(data, serverPath);
+			fconn.finish();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

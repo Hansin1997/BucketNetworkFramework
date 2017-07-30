@@ -1,3 +1,4 @@
+
 package network;
 
 import java.io.IOException;
@@ -7,29 +8,29 @@ import java.util.Collections;
 import java.util.List;
 
 import network.connection.Connection;
-import network.connection.UserConnection;
+import network.connection.FileConnection;
 import network.listener.BucketListener;
 
-public class SocketPool {
+public class FileSocketPool {
 
 	private int maxCount;
-	private List<ClientThread> client;
+	private List<FileThread> client;
 	//private List<ClientThread> waitedClient;
 
-	public List<ClientThread> getClient() {
+	public List<FileThread> getClient() {
 		return client;
 	}
 
-	public void setClient(List<ClientThread> client) {
+	public void setClient(List<FileThread> client) {
 		this.client = client;
 	}
 
-	public SocketPool() {
+	public FileSocketPool() {
 		this(500);
 	}
 
-	public SocketPool(int maxCount) {
-		client = Collections.synchronizedList(new ArrayList<ClientThread>());
+	public FileSocketPool(int maxCount) {
+		client = Collections.synchronizedList(new ArrayList<FileThread>());
 		//waitedClient = Collections.synchronizedList(new ArrayList<ClientThread>());
 		
 		this.maxCount = maxCount;
@@ -46,7 +47,7 @@ public class SocketPool {
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
 
 		if (client.size() < maxCount) {
-			ClientThread t = new ClientThread(socket, listener);
+			FileThread t = new FileThread(socket, listener);
 			client.add(t);
 			t.start();
 			return true;
@@ -57,19 +58,19 @@ public class SocketPool {
 		}
 	}
 
-	public void remove(ClientThread t) {
+	public void remove(FileThread t) {
 
 		t.getConnection().finish();
 		client.remove(t);
 	}
 
-	public void remove(Connection conn) {
-		ClientThread find = getClientFromConnection(conn);
+	public void remove(Connection conn){
+		FileThread find = getClientFromConnection(conn);
 		if (find != null)
 			remove(find);
 	}
 
-	public ClientThread getClientFromConnection(Connection conn) {
+	public FileThread getClientFromConnection(Connection conn) {
 		for (int i = 0; i < client.size(); i++) {
 			if (client.get(i).getConnection().equals(conn))
 				return client.get(i);
@@ -77,7 +78,7 @@ public class SocketPool {
 		return null;
 	}
 
-	public UserConnection getUserConnection(String Username) {
+	public FileConnection getUserConnection(String Username) {
 		if (Username == null)
 			return null;
 		for (int i = 0; i < client.size(); i++) {
@@ -95,17 +96,5 @@ public class SocketPool {
 		return client.size();
 	}
 
-	public void broadcast(String str) {
-		for (int i = 0; i < client.size(); i++) {
-			try {
-
-				client.get(i).getConnection().send(str);
-
-			} catch (IOException e) {
-
-			}
-		}
-	}
 
 }
-
