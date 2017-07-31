@@ -66,8 +66,9 @@ public class FileSocketPool {
 
 	public void remove(Connection conn){
 		FileThread find = getClientFromConnection(conn);
-		if (find != null)
+		if (find != null){
 			remove(find);
+		}
 	}
 
 	public FileThread getClientFromConnection(Connection conn) {

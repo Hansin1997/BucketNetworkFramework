@@ -292,7 +292,8 @@ public class Tool {
 		if(!f.getParentFile().exists())
 			f.getParentFile().mkdirs();
 		
-		f.deleteOnExit();
+		if(f.exists())
+			f.delete();
 		f.createNewFile();
 		return f;
 		

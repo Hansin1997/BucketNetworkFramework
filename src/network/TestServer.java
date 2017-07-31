@@ -21,48 +21,47 @@ public class TestServer {
 	FileSocketPool fpool;
 	SocketPool pool;
 	DatabaseManager db;
-	
-	public TestServer(String MySQL_Username, String MySQL_Password, String DataBase,final int port) 
+
+	public TestServer(String MySQL_Username, String MySQL_Password, String DataBase, final int port)
 
 	{
 
-
-		db = new DatabaseManager(MySQL_Username,  MySQL_Password, DataBase);
+		db = new DatabaseManager(MySQL_Username, MySQL_Password, DataBase);
 		pool = new SocketPool(1024);
 		fpool = new FileSocketPool(1024);
 
 		Gobal.setDb(db);
 		Gobal.setPool(pool);
-		
-		new Thread(){
+
+		new Thread() {
 			public void run() {
-				
+
 				ServerSocket s;
 				try {
 					s = new ServerSocket(port);
 					while (true) {
 						Socket c = s.accept();
 
-						if(db.isClose())
+						if (db.isClose())
 							db.ConnectMySQL();
-						
+
 						final BucketListener listener = new BucketListener() {
 
 							@Override
 							public void onDataCome(network.connection.Connection c, String message) {
-								
-									try {
-										if(db.isClose())
-											db.ConnectMySQL();
-									} catch (ClassNotFoundException e1) {
-										e1.printStackTrace();
-									} catch (SQLException e1) {
-										e1.printStackTrace();
-									}
-								
+
+								try {
+									if (db.isClose())
+										db.ConnectMySQL();
+								} catch (ClassNotFoundException e1) {
+									e1.printStackTrace();
+								} catch (SQLException e1) {
+									e1.printStackTrace();
+								}
+
 								UserConnection connection = (UserConnection) c;
 								Gson gson = new GsonBuilder().create();
-								
+
 								try {
 									MainCommand bo = gson.fromJson(message, MainCommand.class);
 									bo.client = connection;
@@ -90,48 +89,46 @@ public class TestServer {
 				} catch (SQLException e2) {
 					e2.printStackTrace();
 				}
-				
+
 			};
 		}.start();
 
-		new Thread(){
+		new Thread() {
 			public void run() {
 				ServerSocket s;
 				try {
 					s = new ServerSocket(port + 1);
 					while (true) {
 						Socket c = s.accept();
-						
-						
-							try {
-								if(db.isClose())
-									db.ConnectMySQL();
-							} catch (ClassNotFoundException | SQLException e) {
-								e.printStackTrace();
-							}
-							
+
+						try {
+							if (db.isClose())
+								db.ConnectMySQL();
+						} catch (ClassNotFoundException | SQLException e) {
+							e.printStackTrace();
+						}
+
 						BucketListener listener = new BucketListener() {
-							
+
 							@Override
 							public void onDisconnection(Connection conn) {
-								fpool.remove(conn);
-								
+
 							}
-							
+
 							@Override
 							public void onDataCome(Connection conn, String message) {
 								fpool.remove(conn);
-								
+
 							}
 						};
 						fpool.add(c, listener);
 					}
-				}catch(IOException e){
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			};
 		}.start();
-		
+
 	}
-	
+
 }

@@ -56,14 +56,15 @@ public class FileConnection extends Connection{
 		if ((infoStr = readLine()) != "EOF") {
 			try {
 				FileInformation fileInfo = FileInformation.fromJSON(infoStr);
-
 				if(fileInfo == null)
 					throw new JsonParseException("FileInformation parse error!");
 
 				long len;
 				len = fileInfo.getSize();
 				File f = Tool.createFile(rootPath + "/" + username + "/" + fileInfo.getPath());
-				BufferedOutputStream o = new BufferedOutputStream(new FileOutputStream(f));
+				
+				FileOutputStream fout = new FileOutputStream(f);
+				BufferedOutputStream o = new BufferedOutputStream(fout);
 				int b = 0;
 				for(int i = 0;i < len; i++)
 				{
@@ -74,6 +75,7 @@ public class FileConnection extends Connection{
 				}
 				o.flush();
 				o.close();
+				fout.close();
 				
 				success = true;
 			} catch (NumberFormatException | JsonParseException | IOException | NullPointerException e) {

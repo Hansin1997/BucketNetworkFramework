@@ -68,11 +68,22 @@ public class Connection {
 	
 	public void finish()
 	{
+		stopListen();
 		try {
-			stopListen();
 			in.close();
+
+		} catch (IOException e) {
+		}
+
+		try {
 			out.close();
+
+		} catch (IOException e) {
+		}
+
+		try {
 			socket.close();
+
 		} catch (IOException e) {
 		}
 
