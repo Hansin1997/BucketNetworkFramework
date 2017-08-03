@@ -1,6 +1,5 @@
 package network.command.server;
 
-import Common.Gobal;
 import network.bucketobject.ChangeQuery;
 import network.bucketobject.Query;
 import network.command.BucketCommand;
@@ -20,7 +19,7 @@ public class ChangeQueryCommand extends BucketCommand{
 	
 	public void execute() {
 		
-		 Gobal.db.Change(query);
+		db.Change(query);
 	}
 
 }

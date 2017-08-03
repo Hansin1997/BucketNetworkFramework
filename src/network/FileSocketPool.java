@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Database.DatabaseManager;
 import network.connection.Connection;
 import network.connection.FileConnection;
 import network.listener.BucketListener;
@@ -15,6 +16,7 @@ public class FileSocketPool {
 
 	private int maxCount;
 	private List<FileThread> client;
+	private DatabaseManager db;
 	//private List<ClientThread> waitedClient;
 
 	public List<FileThread> getClient() {
@@ -25,14 +27,14 @@ public class FileSocketPool {
 		this.client = client;
 	}
 
-	public FileSocketPool() {
-		this(500);
+	public FileSocketPool(DatabaseManager db) {
+		this(500,db);
 	}
 
-	public FileSocketPool(int maxCount) {
+	public FileSocketPool(int maxCount,DatabaseManager db) {
 		client = Collections.synchronizedList(new ArrayList<FileThread>());
 		//waitedClient = Collections.synchronizedList(new ArrayList<ClientThread>());
-		
+		this.db = db;
 		this.maxCount = maxCount;
 	}
 
@@ -47,7 +49,7 @@ public class FileSocketPool {
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
 
 		if (client.size() < maxCount) {
-			FileThread t = new FileThread(socket, listener);
+			FileThread t = new FileThread(socket,db, listener);
 			client.add(t);
 			t.start();
 			return true;

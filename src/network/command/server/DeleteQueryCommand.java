@@ -1,6 +1,5 @@
 package network.command.server;
 
-import Common.Gobal;
 import network.bucketobject.DeleteQuery;
 import network.bucketobject.Query;
 import network.command.BucketCommand;
@@ -20,7 +19,7 @@ public class DeleteQueryCommand extends BucketCommand{
 	
 	public void execute() {
 		
-		 Gobal.db.Delete(query);
+		 db.Delete(query);
 	}
 
 }

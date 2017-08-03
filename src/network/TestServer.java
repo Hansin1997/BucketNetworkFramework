@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
 
-import Common.Gobal;
 import Database.DatabaseManager;
 import network.command.server.MainCommand;
 import network.connection.Connection;
@@ -27,11 +26,8 @@ public class TestServer {
 	{
 
 		db = new DatabaseManager(MySQL_Username, MySQL_Password, DataBase);
-		pool = new SocketPool(1024);
-		fpool = new FileSocketPool(1024);
-
-		Gobal.setDb(db);
-		Gobal.setPool(pool);
+		pool = new SocketPool(1024,db);
+		fpool = new FileSocketPool(1024,db);
 
 		new Thread() {
 			public void run() {
@@ -65,6 +61,8 @@ public class TestServer {
 								try {
 									MainCommand bo = gson.fromJson(message, MainCommand.class);
 									bo.client = connection;
+									bo.db = db;
+									bo.pool = pool;
 									bo.execute();
 								} catch (IllegalStateException | JsonParseException e) {
 									e.printStackTrace();
@@ -112,7 +110,7 @@ public class TestServer {
 
 							@Override
 							public void onDisconnection(Connection conn) {
-
+								fpool.remove(conn);
 							}
 
 							@Override

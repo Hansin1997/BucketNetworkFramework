@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
 
-import Common.Gobal;
 import Common.Tool;
+import Database.DatabaseManager;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
@@ -51,7 +51,7 @@ public class Checker {
 		return re;
 	}
 	
-	public USER doCheck()
+	public USER doCheck(DatabaseManager db)
 	{
 		if(command == null || user ==null)
 			return null;
@@ -67,14 +67,14 @@ public class Checker {
 		{
 			case "LOGIN":
 				q.addQuery("password", "=\'" + user.password + "\'");
-				result = Gobal.getDb().Query(q);
+				result = db.Query(q);
 
 				if(result.getCount() > 0)
 					re = Tool.object2E(result.getResults().get(0), USER.class);
 				break;
 			case "SIGNIN":
 				q.setJustCount(true);
-				result = Gobal.getDb().Query(q);
+				result = db.Query(q);
 				if(result.getCount() == 0)
 				{
 					user.setType(1);
@@ -82,7 +82,7 @@ public class Checker {
 					tmp.add(user);
 					JsonArray array = Tool.object2E(tmp, JsonArray.class);
 					try {
-						Gobal.getDb().SQLexecute(Tool.arrayInsert2SQL(USER.class.getSimpleName(),array ));
+						db.SQLexecute(Tool.arrayInsert2SQL(USER.class.getSimpleName(),array ));
 						re = user;
 					} catch (SQLException e) {
 						e.printStackTrace();

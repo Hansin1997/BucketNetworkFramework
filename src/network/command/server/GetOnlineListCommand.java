@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 
-import Common.Gobal;
 import Common.Tool;
+import Database.DatabaseManager;
 import network.ClientThread;
+import network.SocketPool;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
@@ -40,14 +41,14 @@ public class GetOnlineListCommand extends BucketCommand {
 	}
 
 	public BucketCommand toClientCommand() {
-		return getOnlineList().toClientCommand(sign);
+		return getOnlineList(pool,db).toClientCommand(sign);
 	}
 
-	public static QueryResult getOnlineList() {
+	public static QueryResult getOnlineList(SocketPool pool,DatabaseManager db) {
 		QueryResult result = new QueryResult();
 		ArrayList<JsonObject> array = new ArrayList<JsonObject>();
 
-		for (ClientThread c : Gobal.getPool().getClient()) {
+		for (ClientThread c : pool.getClient()) {
 			String username = c.getConnection().getUsername();
 			if (username != null) {
 				Query q = new Query();
@@ -55,7 +56,7 @@ public class GetOnlineListCommand extends BucketCommand {
 				q.setCount(-1);
 
 				q.addQuery("username", "=\'" + username + "\'");
-				QueryResult r = Gobal.db.Query(q);
+				QueryResult r = db.Query(q);
 				if (r.count < 1)
 					continue;
 

@@ -170,7 +170,7 @@ public class TestClient extends BucketListener {
 					
 				}
 			};
-			FileConnection fconn = new FileConnection(s, listener);
+			FileConnection fconn = new FileConnection(s,null, listener);
 			fconn.login(user);
 			fconn.sendFile(file, serverPath);
 			fconn.finish();
@@ -198,7 +198,7 @@ public class TestClient extends BucketListener {
 					
 				}
 			};
-			FileConnection fconn = new FileConnection(s, listener);
+			FileConnection fconn = new FileConnection(s,null, listener);
 			fconn.login(user);
 			fconn.sendFile(localPath, serverPath);
 			fconn.finish();
@@ -226,7 +226,7 @@ public class TestClient extends BucketListener {
 					
 				}
 			};
-			FileConnection fconn = new FileConnection(s, listener);
+			FileConnection fconn = new FileConnection(s,null, listener);
 			fconn.login(user);
 			fconn.sendFile(data, serverPath);
 			fconn.finish();

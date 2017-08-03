@@ -43,6 +43,8 @@ public class MainCommand extends BucketCommand {
 		if (bo != null) {
 			bo.client = client;
 			bo.setSign(sign);
+			bo.db = db;
+			bo.pool = pool;
 			bo.execute();
 		}else{
 			client.finish();

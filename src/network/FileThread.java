@@ -3,6 +3,7 @@ package network;
 import java.io.IOException;
 import java.net.Socket;
 
+import Database.DatabaseManager;
 import network.connection.FileConnection;
 import network.listener.BucketListener;
 
@@ -10,8 +11,8 @@ public class FileThread extends Thread {
 
 	private FileConnection connection;
 
-	public FileThread(Socket socket, BucketListener listener) throws IOException {
-		connection = new FileConnection(socket, listener);
+	public FileThread(Socket socket,DatabaseManager db, BucketListener listener) throws IOException {
+		connection = new FileConnection(socket,db, listener);
 		connection.setServer(true);
 	}
 

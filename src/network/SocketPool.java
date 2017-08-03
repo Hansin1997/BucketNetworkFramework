@@ -6,14 +6,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import Database.DatabaseManager;
 import network.connection.Connection;
 import network.connection.UserConnection;
 import network.listener.BucketListener;
+import network.listener.PoolListener;
 
 public class SocketPool {
 
 	private int maxCount;
 	private List<ClientThread> client;
+	private DatabaseManager db;
 	//private List<ClientThread> waitedClient;
 
 	public List<ClientThread> getClient() {
@@ -24,14 +27,14 @@ public class SocketPool {
 		this.client = client;
 	}
 
-	public SocketPool() {
-		this(500);
+	public SocketPool(DatabaseManager db) {
+		this(500,db);
 	}
 
-	public SocketPool(int maxCount) {
+	public SocketPool(int maxCount,DatabaseManager db) {
 		client = Collections.synchronizedList(new ArrayList<ClientThread>());
 		//waitedClient = Collections.synchronizedList(new ArrayList<ClientThread>());
-		
+		this.db = db;
 		this.maxCount = maxCount;
 	}
 
@@ -46,7 +49,17 @@ public class SocketPool {
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
 
 		if (client.size() < maxCount) {
-			ClientThread t = new ClientThread(socket, listener);
+			ClientThread t = new ClientThread(socket,db,new PoolListener() {
+				
+				@Override
+				public void push(String username, Connection conn) {
+					UserConnection lastConn;
+					while((lastConn = getUserConnection(username)) != null && conn != lastConn)
+						remove(lastConn);
+					
+				}
+			}, listener);
+			
 			client.add(t);
 			t.start();
 			return true;

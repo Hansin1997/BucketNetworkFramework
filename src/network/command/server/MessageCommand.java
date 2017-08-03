@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import Common.Gobal;
 import Common.Tool;
 import network.bucketobject.Message;
 import network.bucketobject.Query;
@@ -35,7 +34,7 @@ public class MessageCommand extends BucketCommand {
 
 		}
 
-		UserConnection r = Gobal.getPool().getUserConnection(message.receiver);
+		UserConnection r = pool.getUserConnection(message.receiver);
 		if (r != null) {
 			try {
 				r.send(message.toClientCommand());
@@ -46,7 +45,7 @@ public class MessageCommand extends BucketCommand {
 			query.setTable_name(USER.class.getSimpleName());
 			query.addQuery("username", "=\'" + message.receiver + "\'");
 			query.setJustCount(true);
-			QueryResult result = Gobal.getDb().Query(query);
+			QueryResult result = db.Query(query);
 			if(result.getCount() > 0){
 				ArrayList<Message> array = new ArrayList<Message>();
 				array.add(message);

@@ -9,14 +9,15 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 
-import Common.Gobal;
 import Common.Tool;
+import Database.DatabaseManager;
 import network.command.BucketCommand;
 import network.listener.BucketListener;
 
 public class Connection {
 
 	public Socket socket;
+	public DatabaseManager db;
 
 	private String encoding;
 	protected BucketListener listener;
@@ -26,9 +27,10 @@ public class Connection {
 	protected BufferedOutputStream out;
 	protected BufferedInputStream in;
 
-	public Connection(Socket socket, BucketListener messageListener) throws IOException {
+	public Connection(Socket socket,DatabaseManager db, BucketListener messageListener) throws IOException {
 		encoding = "GBK";
 		this.socket = socket;
+		this.db = db;
 		this.listener = messageListener;
 		this.out = (new BufferedOutputStream(socket.getOutputStream()));
 		this.in = (new BufferedInputStream(socket.getInputStream()));
@@ -138,10 +140,11 @@ public class Connection {
 
 			}
 		} catch (java.net.SocketException | java.net.SocketTimeoutException e) {
-			if(Gobal.getPool() != null)
-				Gobal.getPool().remove(this);
+			
+			if(listener != null)
+				listener.onDisconnection(this);
 		}
-
+		
 		return "EOF";
 
 	}

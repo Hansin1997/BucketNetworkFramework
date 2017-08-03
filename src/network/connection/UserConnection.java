@@ -8,8 +8,8 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import Common.Gobal;
 import Common.Tool;
+import Database.DatabaseManager;
 import network.bucketobject.DeleteQuery;
 import network.bucketobject.Message;
 import network.bucketobject.Query;
@@ -18,12 +18,14 @@ import network.bucketobject.USER;
 import network.command.client.ClientCommand;
 import network.listener.BucketListener;
 import network.listener.LoginListener;
+import network.listener.PoolListener;
 
 public class UserConnection extends Connection {
 
 	public String username;
 	private boolean isServer;
 	private LoginListener loginListener;
+	private PoolListener poolListener;
 
 	public void setLoginListener(LoginListener loginListener) {
 		this.loginListener = loginListener;
@@ -37,12 +39,18 @@ public class UserConnection extends Connection {
 		this.isServer = isServer;
 	}
 
+	public UserConnection(Socket socket,DatabaseManager db,PoolListener pl, BucketListener messageListener) throws IOException {
+		this(socket,db,pl, messageListener, false);
+	}
+	
 	public UserConnection(Socket socket, BucketListener messageListener) throws IOException {
-		this(socket, messageListener, false);
+		this(socket,null,null, messageListener, false);
 	}
 
-	public UserConnection(Socket socket, BucketListener messageListener, boolean isServer) throws IOException {
-		super(socket, messageListener);
+
+	public UserConnection(Socket socket,DatabaseManager db,PoolListener pl, BucketListener messageListener, boolean isServer) throws IOException {
+		super(socket,db, messageListener);
+		this.poolListener = pl;
 		this.isServer = isServer;
 	}
 
@@ -89,7 +97,7 @@ public class UserConnection extends Connection {
 		
 		ClientCommand cc = new ClientCommand();
 
-		USER checkerUser = checker.doCheck();
+		USER checkerUser = checker.doCheck(db);
 		if( checkerUser == null)
 		{
 			cc.setCommand("CONNECT");
@@ -97,9 +105,10 @@ public class UserConnection extends Connection {
 			send(cc);
 			return false;
 		}else{
-			UserConnection lastConn;
-			while((lastConn = Gobal.getPool().getUserConnection(checkerUser.username)) != null)
-				Gobal.getPool().remove(lastConn);
+			
+			if(poolListener != null)
+				poolListener.push(checkerUser.getUsername(), this);
+
 			
 			cc.setCommand("CONNECT");
 			cc.setValues("SUCCESS");
@@ -125,7 +134,7 @@ public class UserConnection extends Connection {
 		query.setTable_name(Message.class.getSimpleName());
 		query.addQuery("receiver", "=\'" + username + "\'");
 		
-		QueryResult result = Gobal.getDb().Query(query);
+		QueryResult result = db.Query(query);
 		for(JsonObject obj : result.getResults()){
 			Message msg = Tool.object2E(obj,Message.class);
 			array.add(msg);
@@ -134,7 +143,7 @@ public class UserConnection extends Connection {
 		DeleteQuery dquery = new DeleteQuery();
 		dquery.setTable_name(Message.class.getSimpleName());
 		dquery.addQuery("receiver", "=\'" + username + "\'");
-		Gobal.getDb().Delete(dquery);
+		db.Delete(dquery);
 		return array;
 	}
 }

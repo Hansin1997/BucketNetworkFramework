@@ -2,7 +2,6 @@ package network.command.server;
 
 import java.io.IOException;
 
-import Common.Gobal;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
 import network.command.BucketCommand;
@@ -27,7 +26,7 @@ public class QueryCommand extends BucketCommand{
 		if(conn == null)
 			return;
 		
-		QueryResult result = Gobal.db.Query(query);
+		QueryResult result = db.Query(query);
 		ClientCommand pkg = (ClientCommand) result.toClientCommand(sign);
 		
 		

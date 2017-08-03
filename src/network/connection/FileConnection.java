@@ -12,6 +12,7 @@ import java.net.Socket;
 import com.google.gson.JsonParseException;
 
 import Common.Tool;
+import Database.DatabaseManager;
 import network.bucketobject.USER;
 import network.listener.BucketListener;
 
@@ -23,9 +24,9 @@ public class FileConnection extends Connection{
 
 	private String username;
 
-	public FileConnection(Socket socket, BucketListener messageListener) throws IOException {
+	public FileConnection(Socket socket,DatabaseManager db, BucketListener messageListener) throws IOException {
 		
-		super(socket, messageListener);
+		super(socket,db, messageListener);
 	}
 	
 	public void setServer(boolean isServer) {
@@ -84,7 +85,6 @@ public class FileConnection extends Connection{
 		}
 
 		if (super.listener != null){
-			super.listener.onDisconnection(this);
 			listener.onDataCome(this,success?"SUCCESS":"FAIL");
 		}
 
@@ -96,7 +96,7 @@ public class FileConnection extends Connection{
 			return false;
 
 		checker.setCommand("LOGIN");
-		USER checkerUser = checker.doCheck();
+		USER checkerUser = checker.doCheck(db);
 		if( checkerUser == null)
 		{
 			return false;
