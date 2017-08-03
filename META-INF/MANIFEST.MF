@@ -1,10 +1,9 @@
-Manifest-Version: 1.0
+anifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: BucketNetworkFramework
 Bundle-SymbolicName: BucketNetworkFramework
 Bundle-Version: 1.0.0.qualifier
-Bundle-ClassPath: BucketNetworkFramework.jar,
- Jar/mysql-connector-java-5.1.40-bin.jar,
+Bundle-ClassPath: Jar/mysql-connector-java-5.1.40-bin.jar,
  Jar/gson-2.7.jar
 Export-Package: Common,
  Database,

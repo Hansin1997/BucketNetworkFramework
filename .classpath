@@ -2,8 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="D:/Files/Jar/mysql-connector-java-5.1.40-bin.jar"/>
-	<classpathentry kind="lib" path="D:/Files/Jar/gson-2.7.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="D:/documents/workspace2/BucketNetworkFramework/Jar/gson-2.7.jar"/>
+	<classpathentry kind="lib" path="D:/documents/workspace2/BucketNetworkFramework/Jar/mysql-connector-java-5.1.40-bin.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
