@@ -35,12 +35,11 @@ public class MessageCommand extends BucketCommand {
 		}
 
 		UserConnection r = pool.getUserConnection(message.receiver);
-		if (r != null) {
-			try {
-				r.send(message.toClientCommand());
-			} catch (IOException e) {
-			}
-		}else{
+		
+		try {
+			r.send(message.toClientCommand());
+		} catch (IOException | NullPointerException e) {
+			
 			Query query = new Query();
 			query.setTable_name(USER.class.getSimpleName());
 			query.addQuery("username", "=\'" + message.receiver + "\'");
@@ -51,6 +50,8 @@ public class MessageCommand extends BucketCommand {
 				array.add(message);
 				
 				DataSaver ds = new DataSaver();
+				ds.db = db;
+				ds.pool = pool;
 				ds.setTable(Tool.object2Table(array.get(0)));
 				ds.setValues(Tool.List2JsonArray(array));
 				ds.execute();

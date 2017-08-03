@@ -28,8 +28,10 @@ public class ClientThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}finally {
+			
 			if(connection != null && connection.getListener() != null)
 				connection.getListener().onDisconnection(connection);
+		
 		}
 
 	}
