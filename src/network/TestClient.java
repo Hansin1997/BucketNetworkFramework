@@ -97,18 +97,15 @@ public class TestClient extends BucketListener {
 		} else {
 			mm = q.toServerCommand();
 		}
-		
+
 		conn.send(mm);
 	}
-	
 
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void Query(Query q) throws IOException {
 		QueryListener l = null;
 		Query(q, l);
 	}
-
 
 	public void addBuss(int sign, ClientListener listener) {
 		business.put(sign, listener);
@@ -122,7 +119,7 @@ public class TestClient extends BucketListener {
 		this.user = user;
 		conn.login(user, listener);
 	}
-	
+
 	public void Signin(USER user, LoginListener listener) throws IOException {
 		this.user = user;
 		conn.Signin(user, listener);
@@ -133,10 +130,10 @@ public class TestClient extends BucketListener {
 		a.add(o);
 		Update(a);
 	}
-	
-	public  void Update(ArrayList<Object> array) throws IOException {
 
-		if(array.size() < 1)
+	public void Update(ArrayList<Object> array) throws IOException {
+
+		if (array.size() < 1)
 			return;
 
 		MainCommand mc = new MainCommand();
@@ -147,92 +144,83 @@ public class TestClient extends BucketListener {
 		ds.setValues(Tool.List2JsonArray(array));
 		mc.setCommand(ds.getClass().getName());
 		mc.setValues(ds);
-		
+
 		conn.send(mc);
 	}
-	
-	public void sendFile(File file,String serverPath){
-		if(conn == null)
-			return;
+
+	public void sendFile(File file, String serverPath) throws NullPointerException, UnknownHostException, IOException {
+		if (conn == null || user == null)
+			throw new NullPointerException();
 		Socket s;
-		try {
-			s = new Socket(host,port + 1);
-			BucketListener listener = new BucketListener() {
-				
-				@Override
-				public void onDisconnection(Connection conn) {
-					conn.finish();
-				}
-				
-				@Override
-				public void onDataCome(Connection conn, String message) {
-					conn.finish();
-					
-				}
-			};
-			FileConnection fconn = new FileConnection(s,null, listener);
-			fconn.login(user);
-			fconn.sendFile(file, serverPath);
-			fconn.finish();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		s = new Socket(host, port + 1);
+		BucketListener listener = new BucketListener() {
+
+			@Override
+			public void onDisconnection(Connection conn) {
+				conn.finish();
+			}
+
+			@Override
+			public void onDataCome(Connection conn, String message) {
+				conn.finish();
+
+			}
+		};
+		FileConnection fconn = new FileConnection(s, null, listener);
+		fconn.login(user);
+		fconn.sendFile(file, serverPath);
+		fconn.finish();
 	}
-	
-	public void sendFile(String localPath,String serverPath){
-		if(conn == null || user == null)
-			return;
+
+	public void sendFile(String localPath, String serverPath)
+			throws NullPointerException, UnknownHostException, IOException {
+		if (conn == null || user == null)
+			throw new NullPointerException();
 		Socket s;
-		try {
-			s = new Socket(host,port + 1);
-			BucketListener listener = new BucketListener() {
-				
-				@Override
-				public void onDisconnection(Connection conn) {
-					conn.finish();
-				}
-				
-				@Override
-				public void onDataCome(Connection conn, String message) {
-					conn.finish();
-					
-				}
-			};
-			FileConnection fconn = new FileConnection(s,null, listener);
-			fconn.login(user);
-			fconn.sendFile(localPath, serverPath);
-			fconn.finish();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		s = new Socket(host, port + 1);
+		BucketListener listener = new BucketListener() {
+
+			@Override
+			public void onDisconnection(Connection conn) {
+				conn.finish();
+			}
+
+			@Override
+			public void onDataCome(Connection conn, String message) {
+				conn.finish();
+
+			}
+		};
+		FileConnection fconn = new FileConnection(s, null, listener);
+		fconn.login(user);
+		fconn.sendFile(localPath, serverPath);
+		fconn.finish();
 	}
-	
-	public void sendFile(byte[] data,String serverPath){
-		if(conn == null)
-			return;
+
+	public void sendFile(byte[] data, String serverPath)
+			throws NullPointerException, UnknownHostException, IOException {
+		if (conn == null || user == null)
+			throw new NullPointerException();
 		Socket s;
-		try {
-			s = new Socket(host,port + 1);
-			BucketListener listener = new BucketListener() {
-				
-				@Override
-				public void onDisconnection(Connection conn) {
-					conn.finish();
-				}
-				
-				@Override
-				public void onDataCome(Connection conn, String message) {
-					conn.finish();
-					
-				}
-			};
-			FileConnection fconn = new FileConnection(s,null, listener);
-			fconn.login(user);
-			fconn.sendFile(data, serverPath);
-			fconn.finish();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		s = new Socket(host, port + 1);
+		BucketListener listener = new BucketListener() {
+
+			@Override
+			public void onDisconnection(Connection conn) {
+				conn.finish();
+			}
+
+			@Override
+			public void onDataCome(Connection conn, String message) {
+				conn.finish();
+
+			}
+		};
+		FileConnection fconn = new FileConnection(s, null, listener);
+		fconn.login(user);
+		fconn.sendFile(data, serverPath);
+		fconn.finish();
 	}
 
 	@Override
@@ -240,17 +228,15 @@ public class TestClient extends BucketListener {
 
 		UserConnection uconn = (UserConnection) conn;
 		ClientCommand cm = Tool.JSON2E(message, ClientCommand.class);
-		if(cm == null)
-		{
+		if (cm == null) {
 			System.out.println("ERROR!!  : " + message);
 			return;
 		}
 
-
 		if (messageListener != null && cm.getCommand().equals(Message.class.getSimpleName())) {
 			messageListener.onDataCome(conn, cm);
 		} else if (uconn != null && uconn.getLoginListener() != null && cm.getCommand().equals("CONNECT")) {
-			//System.out.println(message);
+			// System.out.println(message);
 			uconn.getLoginListener().onDataCome(uconn, cm);
 		} else {
 			if (cm.sign == 0) {
@@ -278,6 +264,5 @@ public class TestClient extends BucketListener {
 	public UserConnection getConn() {
 		return conn;
 	}
-	
-	
+
 }
