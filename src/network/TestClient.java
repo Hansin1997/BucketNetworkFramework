@@ -83,11 +83,14 @@ public class TestClient extends BucketListener {
 		conn.send(msg.toServerCommand());
 	}
 
-	@SuppressWarnings({ "unused", "unchecked" })
+
 	public <T> void Query(Query q, QueryListener<T> listener) throws IOException {
-		Class<T> entityClass = (Class<T>) ((ParameterizedType) listener.getClass().getGenericSuperclass())
-				.getActualTypeArguments()[0];
-		q.setTable_name(entityClass.getSimpleName());
+		if(q.getTable_name() == null || q.getTable_name().trim().length() == 0){
+			@SuppressWarnings("unchecked")
+			Class<T> entityClass = (Class<T>) ((ParameterizedType) listener.getClass().getGenericSuperclass())
+					.getActualTypeArguments()[0];
+			q.setTable_name(entityClass.getSimpleName());
+		}
 
 		BucketCommand mm;
 		if (listener != null) {
