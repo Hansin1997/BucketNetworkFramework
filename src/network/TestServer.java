@@ -29,6 +29,7 @@ public class TestServer {
 		pool = new SocketPool(1024,db);
 		fpool = new FileSocketPool(1024,db);
 
+		//客户主线程
 		new Thread() {
 			public void run() {
 
@@ -91,6 +92,8 @@ public class TestServer {
 			};
 		}.start();
 
+		
+		//客户文件上传主线程
 		new Thread() {
 			public void run() {
 				ServerSocket s;
