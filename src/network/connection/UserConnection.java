@@ -68,7 +68,7 @@ public class UserConnection extends Connection {
 			socket.setSoTimeout(2000);
 
 			if (check(readLine())) {
-				socket.setSoTimeout(0);
+				socket.setSoTimeout(1000 * 60 * 30);
 				super.startListen();
 			} else {
 				socket.close();

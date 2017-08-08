@@ -70,22 +70,8 @@ public class Connection {
 	
 	public void finish()
 	{
-		stopListen();
-		try {
-			in.close();
-
-		} catch (IOException e) {
-		}
-
-		try {
-			out.close();
-
-		} catch (IOException e) {
-		}
-
 		try {
 			socket.close();
-
 		} catch (IOException e) {
 		}
 

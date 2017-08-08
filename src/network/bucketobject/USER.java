@@ -1,5 +1,7 @@
 package network.bucketobject;
 
+import Common.Tool;
+
 public class USER {
 
 	public String username;
@@ -57,6 +59,12 @@ public class USER {
 
 	public String getUsername() {
 		return username;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return Tool.toJson(this);
 	}
 
 }

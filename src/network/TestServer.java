@@ -21,9 +21,7 @@ public class TestServer {
 	SocketPool pool;
 	DatabaseManager db;
 
-	public TestServer(String MySQL_Username, String MySQL_Password, String DataBase, final int port)
-
-	{
+	public TestServer(String MySQL_Username, String MySQL_Password, String DataBase, final int port){
 
 		db = new DatabaseManager(MySQL_Username, MySQL_Password, DataBase);
 		pool = new SocketPool(1024,db);
@@ -68,6 +66,7 @@ public class TestServer {
 								} catch (IllegalStateException | JsonParseException e) {
 									e.printStackTrace();
 								}
+								
 
 							}
 
@@ -76,6 +75,8 @@ public class TestServer {
 								pool.remove(conn);
 
 							}
+							
+							
 						};
 
 						pool.add(c, listener);
