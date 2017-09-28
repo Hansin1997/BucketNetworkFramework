@@ -71,6 +71,8 @@ public class Connection {
 	public void finish()
 	{
 		try {
+			out.flush();
+			socket.getOutputStream().flush();
 			socket.close();
 		} catch (IOException e) {
 		}

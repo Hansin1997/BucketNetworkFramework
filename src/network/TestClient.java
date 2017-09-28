@@ -151,20 +151,23 @@ public class TestClient extends BucketListener {
 		conn.send(mc);
 	}
 
-	public void sendFile(File file, String serverPath) throws NullPointerException, UnknownHostException, IOException {
+	public void sendFile(File file, String serverPath,final BucketListener l) throws NullPointerException, UnknownHostException, IOException {
 		if (conn == null || user == null)
 			throw new NullPointerException();
 		Socket s;
 		s = new Socket(host, port + 1);
+		s.setSoTimeout(2000);
 		BucketListener listener = new BucketListener() {
 
 			@Override
 			public void onDisconnection(Connection conn) {
+				l.onDisconnection(conn);
 				conn.finish();
 			}
 
 			@Override
 			public void onDataCome(Connection conn, String message) {
+				l.onDataCome(conn, message);
 				conn.finish();
 
 			}
@@ -172,25 +175,26 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(file, serverPath);
-		fconn.finish();
 	}
 
-	public void sendFile(String localPath, String serverPath)
+	public void sendFile(String localPath, String serverPath,final BucketListener l)
 			throws NullPointerException, UnknownHostException, IOException {
 		if (conn == null || user == null)
 			throw new NullPointerException();
 		Socket s;
-
 		s = new Socket(host, port + 1);
+		s.setSoTimeout(2000);
 		BucketListener listener = new BucketListener() {
 
 			@Override
 			public void onDisconnection(Connection conn) {
+				l.onDisconnection(conn);
 				conn.finish();
 			}
 
 			@Override
 			public void onDataCome(Connection conn, String message) {
+				l.onDataCome(conn, message);
 				conn.finish();
 
 			}
@@ -198,24 +202,26 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(localPath, serverPath);
-		fconn.finish();
 	}
 
-	public void sendFile(byte[] data, String serverPath)
+	public void sendFile(byte[] data, String serverPath,final BucketListener l)
 			throws NullPointerException, UnknownHostException, IOException {
 		if (conn == null || user == null)
 			throw new NullPointerException();
 		Socket s;
 		s = new Socket(host, port + 1);
+		s.setSoTimeout(2000);
 		BucketListener listener = new BucketListener() {
 
 			@Override
 			public void onDisconnection(Connection conn) {
+				l.onDisconnection(conn);
 				conn.finish();
 			}
 
 			@Override
 			public void onDataCome(Connection conn, String message) {
+				l.onDataCome(conn, message);
 				conn.finish();
 
 			}
@@ -223,7 +229,6 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(data, serverPath);
-		fconn.finish();
 	}
 
 	@Override
