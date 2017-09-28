@@ -114,14 +114,11 @@ public class TestServer {
 
 							@Override
 							public void onDisconnection(Connection conn) {
-								System.out.println("Remove");
 								fpool.remove(conn);
 							}
 
 							@Override
 							public void onDataCome(Connection conn, String message) {
-
-								System.out.println("Remove2");
 								fpool.remove(conn);
 
 							}

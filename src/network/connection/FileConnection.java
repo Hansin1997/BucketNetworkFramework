@@ -90,7 +90,6 @@ public class FileConnection extends Connection {
 		
 		try {
 			send(cc);
-			System.out.println("Finish" + success);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -124,14 +123,14 @@ public class FileConnection extends Connection {
 	public void sendFile(File file, String serverPath) throws IOException {
 		FileInformation fileInfo = new FileInformation(serverPath, file.length());
 		writeLine(fileInfo.toJSON());
-		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+		BufferedInputStream IN = new BufferedInputStream(new FileInputStream(file));
 		int b;
-		while ((b = in.read()) != -1) {
+		while ((b = IN.read()) != -1) {
 			out.write(b);
 		}
 		out.flush();
-		in.close();
-		super.startListen();
+		IN.close();
+		
 	}
 
 	public void sendFile(byte[] data, String serverPath) throws IOException {
@@ -139,7 +138,6 @@ public class FileConnection extends Connection {
 		writeLine(fileInfo.toJSON());
 		out.write(data);
 		out.flush();
-		super.startListen();
 	}
 
 	public void login(USER user) throws IOException {

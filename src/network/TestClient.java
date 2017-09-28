@@ -175,6 +175,7 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(file, serverPath);
+		fconn.startListen();
 	}
 
 	public void sendFile(String localPath, String serverPath,final BucketListener l)
@@ -202,6 +203,7 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(localPath, serverPath);
+		fconn.startListen();
 	}
 
 	public void sendFile(byte[] data, String serverPath,final BucketListener l)
@@ -229,6 +231,7 @@ public class TestClient extends BucketListener {
 		FileConnection fconn = new FileConnection(s, null, listener);
 		fconn.login(user);
 		fconn.sendFile(data, serverPath);
+		fconn.startListen();
 	}
 
 	@Override
