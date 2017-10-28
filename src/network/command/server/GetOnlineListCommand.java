@@ -7,19 +7,20 @@ import com.google.gson.JsonObject;
 
 import Common.Tool;
 import Database.DatabaseManager;
-import network.ClientThread;
-import network.SocketPool;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
 import network.command.BucketCommand;
+import network.connection.Connection;
 import network.connection.UserConnection;
+import network.pool.Pool;
+import network.pool.thread.ClientThread;
 
 public class GetOnlineListCommand extends BucketCommand {
 
 	@Override
 	public void execute() {
-		UserConnection conn = client;
+		Connection conn = client;
 		if (conn == null)
 			return;
 
@@ -44,11 +45,12 @@ public class GetOnlineListCommand extends BucketCommand {
 		return getOnlineList(pool,db).toClientCommand(sign);
 	}
 
-	public static QueryResult getOnlineList(SocketPool pool,DatabaseManager db) {
+	public static QueryResult getOnlineList(Pool pool,DatabaseManager db) {
 		QueryResult result = new QueryResult();
 		ArrayList<JsonObject> array = new ArrayList<JsonObject>();
 
-		for (ClientThread c : pool.getClient()) {
+		for (Thread tmp : pool.getClient()) {
+			ClientThread c = (ClientThread)tmp;
 			String username = c.getConnection().getUsername();
 			if (username != null) {
 				Query q = new Query();

@@ -1,4 +1,5 @@
-package network;
+
+package network.pool;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -8,31 +9,32 @@ import java.util.List;
 
 import Database.DatabaseManager;
 import network.connection.Connection;
-import network.connection.UserConnection;
+import network.connection.FileConnection;
 import network.listener.BucketListener;
-import network.listener.PoolListener;
+import network.pool.thread.FileThread;
 
-public class SocketPool {
+public class FileSocketPool extends Pool{
 
 	private int maxCount;
-	private List<ClientThread> client;
+	private List<FileThread> client;
 	private DatabaseManager db;
 	//private List<ClientThread> waitedClient;
 
-	public List<ClientThread> getClient() {
+	@SuppressWarnings("unchecked")
+	public List<FileThread> getClient() {
 		return client;
 	}
 
-	public void setClient(List<ClientThread> client) {
+	public void setClient(List<FileThread> client) {
 		this.client = client;
 	}
 
-	public SocketPool(DatabaseManager db) {
+	public FileSocketPool(DatabaseManager db) {
 		this(500,db);
 	}
 
-	public SocketPool(int maxCount,DatabaseManager db) {
-		client = Collections.synchronizedList(new ArrayList<ClientThread>());
+	public FileSocketPool(int maxCount,DatabaseManager db) {
+		client = Collections.synchronizedList(new ArrayList<FileThread>());
 		//waitedClient = Collections.synchronizedList(new ArrayList<ClientThread>());
 		this.db = db;
 		this.maxCount = maxCount;
@@ -49,17 +51,7 @@ public class SocketPool {
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
 
 		if (client.size() < maxCount) {
-			ClientThread t = new ClientThread(socket,db,new PoolListener() {
-				
-				@Override
-				public void push(String username, Connection conn) {
-					UserConnection lastConn;
-					while((lastConn = getUserConnection(username)) != null && conn != lastConn)
-						remove(lastConn);
-					
-				}
-			}, listener);
-			
+			FileThread t = new FileThread(socket,db, listener);
 			client.add(t);
 			t.start();
 			return true;
@@ -70,19 +62,20 @@ public class SocketPool {
 		}
 	}
 
-	public void remove(ClientThread t) {
+	public void remove(FileThread t) {
 
 		t.getConnection().finish();
 		client.remove(t);
 	}
 
-	public void remove(Connection conn) {
-		ClientThread find = getClientFromConnection(conn);
-		if (find != null)
+	public void remove(Connection conn){
+		FileThread find = getClientFromConnection(conn);
+		if (find != null){
 			remove(find);
+		}
 	}
 
-	public ClientThread getClientFromConnection(Connection conn) {
+	public FileThread getClientFromConnection(Connection conn) {
 		for (int i = 0; i < client.size(); i++) {
 			if (client.get(i).getConnection().equals(conn))
 				return client.get(i);
@@ -90,7 +83,7 @@ public class SocketPool {
 		return null;
 	}
 
-	public UserConnection getUserConnection(String Username) {
+	public FileConnection getUserConnection(String Username) {
 		if (Username == null)
 			return null;
 		for (int i = 0; i < client.size(); i++) {
@@ -103,30 +96,26 @@ public class SocketPool {
 		}
 		return null;
 	}
-	
-	public List<UserConnection> getUserConnections() {
-		ArrayList<UserConnection> result = new ArrayList<UserConnection>();
-		for (int i = 0; i < client.size(); i++) {
-			result.add(client.get(i).getConnection());
-		}
-		return result;
-	}
 
 	public int getOnlineCount() {
 		return client.size();
 	}
 
+	@Override
 	public void broadcast(String str) {
-		for (int i = 0; i < client.size(); i++) {
-			try {
-
-				client.get(i).getConnection().send(str);
-
-			} catch (IOException e) {
-
-			}
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
-}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public FileConnection getConnection(String str) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
+}

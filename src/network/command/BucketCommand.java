@@ -2,14 +2,14 @@ package network.command;
 
 import Common.Tool;
 import Database.DatabaseManager;
-import network.SocketPool;
-import network.connection.UserConnection;
+import network.connection.Connection;
+import network.pool.Pool;
 
 public abstract class BucketCommand {
 
-	public transient UserConnection client;
+	public transient Connection client;
 	public transient DatabaseManager db;
-	public transient SocketPool pool;
+	public transient Pool pool;
 
 	public int sign = 0;
 

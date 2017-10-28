@@ -14,6 +14,8 @@ import network.command.server.MainCommand;
 import network.connection.Connection;
 import network.connection.UserConnection;
 import network.listener.BucketListener;
+import network.pool.FileSocketPool;
+import network.pool.SocketPool;
 
 public class TestServer {
 
@@ -27,7 +29,7 @@ public class TestServer {
 		pool = new SocketPool(1024,db);
 		fpool = new FileSocketPool(1024,db);
 
-		//¿Í»§Ö÷Ïß³Ì
+		//ï¿½Í»ï¿½ï¿½ï¿½ï¿½ß³ï¿½
 		new Thread() {
 			public void run() {
 
@@ -94,7 +96,7 @@ public class TestServer {
 		}.start();
 
 		
-		//¿Í»§ÎÄ¼þÉÏ´«Ö÷Ïß³Ì
+		//ï¿½Í»ï¿½ï¿½Ä¼ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½ß³ï¿½
 		new Thread() {
 			public void run() {
 				ServerSocket s;

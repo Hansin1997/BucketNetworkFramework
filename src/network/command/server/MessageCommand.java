@@ -28,16 +28,25 @@ public class MessageCommand extends BucketCommand {
 	public void execute() {
 
 		message.setSendTime(new Date());
-
-		if (client.username != null && !client.username.equals("")) {
-			message.setSender(client.username);
-
+		
+		try {
+			UserConnection client = (UserConnection )super.client;
+			
+			if (client.username != null && !client.username.equals("")) {
+				message.setSender(client.username);
+			}
+			
+		}catch(ClassCastException e) {
+			
 		}
+		
+		
 
+		
 		if (message.getReceiver().equals("")) {
 			pool.broadcast(message.toClientCommand().toJSON());
 		} else {
-			UserConnection r = pool.getUserConnection(message.receiver);
+			UserConnection r = pool.getConnection(message.receiver);
 
 			try {
 				r.send(message.toClientCommand());

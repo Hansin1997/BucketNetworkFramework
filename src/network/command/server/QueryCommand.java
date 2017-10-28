@@ -6,7 +6,7 @@ import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
 import network.command.BucketCommand;
 import network.command.client.ClientCommand;
-import network.connection.UserConnection;
+import network.connection.Connection;
 
 public class QueryCommand extends BucketCommand{
 
@@ -22,7 +22,7 @@ public class QueryCommand extends BucketCommand{
 	
 	@Override
 	public void execute() {
-		UserConnection conn = client;
+		Connection conn = client;
 		if(conn == null)
 			return;
 		

@@ -1,4 +1,4 @@
-package network;
+package network.pool.thread;
 
 import java.io.IOException;
 import java.net.Socket;
