@@ -181,7 +181,7 @@ public class DatabaseManager {
 					for (int i = 0; i < meta.getColumnCount(); i++) {
 						String key = meta.getColumnName(i + 1);
 						
-						if(!(isUserTable && key.equals("password")))//±ÜÃâÃÜÂëĞ¹Â¶
+						if(!(isUserTable && key.equals("password")))//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¹Â¶
 							obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
 						else
 							obj.add(key,gson.fromJson("", JsonElement.class));

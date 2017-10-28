@@ -103,6 +103,14 @@ public class SocketPool {
 		}
 		return null;
 	}
+	
+	public List<UserConnection> getUserConnections() {
+		ArrayList<UserConnection> result = new ArrayList<UserConnection>();
+		for (int i = 0; i < client.size(); i++) {
+			result.add(client.get(i).getConnection());
+		}
+		return result;
+	}
 
 	public int getOnlineCount() {
 		return client.size();
