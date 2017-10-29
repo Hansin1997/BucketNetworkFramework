@@ -141,5 +141,13 @@ public class Connection {
 		out.write((str + "\n").getBytes(getEncoding()));
 		out.flush();
 	}
+	
+	public BufferedOutputStream getOut() {
+		return out;
+	}
+	
+	public BufferedInputStream getIn() {
+		return in;
+	}
 
 }
