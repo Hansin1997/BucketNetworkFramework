@@ -38,6 +38,10 @@ public class UserConnection extends Connection {
 	public void setServer(boolean isServer) {
 		this.isServer = isServer;
 	}
+	
+	public boolean isServer() {
+		return isServer;
+	}
 
 	public UserConnection(Socket socket,DatabaseManager db,PoolListener pl, BucketListener messageListener) throws IOException {
 		this(socket,db,pl, messageListener, false);
@@ -116,7 +120,7 @@ public class UserConnection extends Connection {
 			username = checkerUser.username;
 			send(cc);
 			
-			//·¢ËÍÀëÏßÏûÏ¢
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
 			List<Message> msgList = getUnreadMessage();
 			for(Message msg : msgList){
 				send(msg.toClientCommand());
@@ -127,7 +131,7 @@ public class UserConnection extends Connection {
 
 	}
 	
-	//»ñÈ¡´¢´æÔÚÊı¾İ¿âÖĞµÄÀëÏßÏûÏ¢£¬²¢É¾³ı
+	//ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ¿ï¿½ï¿½Ğµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½
 	private List<Message> getUnreadMessage(){
 		ArrayList<Message> array = new ArrayList<Message>();
 		Query query = new Query();
