@@ -270,6 +270,8 @@ public class TestClient extends BucketListener {
 	public void onDisconnection(Connection conn) {
 		if (listener != null)
 			listener.onDisconnection(conn);
+		if(messageListener != null)
+			messageListener.onDisconnection(conn);
 	}
 
 	public UserConnection getConn() {
