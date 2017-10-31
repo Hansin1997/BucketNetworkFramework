@@ -12,7 +12,6 @@ import network.bucketobject.QueryResult;
 import network.bucketobject.USER;
 import network.command.BucketCommand;
 import network.connection.Connection;
-import network.connection.UserConnection;
 import network.pool.Pool;
 import network.pool.thread.ClientThread;
 

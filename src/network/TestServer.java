@@ -46,7 +46,7 @@ public class TestServer {
 
 							@Override
 							public void onDataCome(network.connection.Connection c, String message) {
-
+								
 								try {
 									if (db.isClose())
 										db.ConnectMySQL();

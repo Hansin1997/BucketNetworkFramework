@@ -16,8 +16,9 @@ public abstract class OnlineListListener extends ClientListener {
 	public void onDataCome(Connection conn, ClientCommand message) {
 		ClientCommand cm = message;
 		QueryResult result = Tool.object2E(cm.getValues(), QueryResult.class);
-
-		List<USER> a = Tool.ObjectList(result.getResults(), USER.class);
+		List<USER> a = null;
+		if(result.getResults() != null)
+			a = Tool.ObjectList(result.getResults(), USER.class);
 		this.onResultsCome(conn, result.getCount(), a);
 
 	}

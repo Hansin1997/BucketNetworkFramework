@@ -41,8 +41,6 @@ public class MessageCommand extends BucketCommand {
 		}
 		
 		
-
-		
 		if (message.getReceiver().equals("")) {
 			pool.broadcast(message.toClientCommand().toJSON());
 		} else {

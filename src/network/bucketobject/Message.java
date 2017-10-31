@@ -17,6 +17,7 @@ public class Message {
 	public String type;
 
 	public Date sendTime;
+	
 
 	public Message() {
 		sender = receiver = content = type = "";
