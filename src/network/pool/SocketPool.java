@@ -120,13 +120,13 @@ public class SocketPool extends Pool{
 	}
 
 	public void broadcast(String str) {
-		for (int i = 0; i < client.size(); i++) {
+		for(ClientThread c : client) {
 			try {
 
-				client.get(i).getConnection().send(str);
+				c.getConnection().send(str);
 
 			} catch (IOException e) {
-
+				c.getConnection().finish();
 			}
 		}
 	}
