@@ -72,16 +72,18 @@ public class SocketPool extends Pool{
 		}
 	}
 
-	public void remove(ClientThread t) {
+	public boolean remove(ClientThread t) {
 
 		t.getConnection().finish();
-		client.remove(t);
+		return client.remove(t);
 	}
 
-	public void remove(Connection conn) {
+	public boolean remove(Connection conn) {
 		ClientThread find = getClientFromConnection(conn);
 		if (find != null)
-			remove(find);
+			return remove(find);
+		else
+			return false;
 	}
 
 	public ClientThread getClientFromConnection(Connection conn) {
@@ -126,7 +128,7 @@ public class SocketPool extends Pool{
 				c.getConnection().send(str);
 
 			} catch (IOException e) {
-				c.getConnection().finish();
+				remove(c);
 			}
 		}
 	}
