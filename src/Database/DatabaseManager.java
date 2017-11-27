@@ -181,7 +181,7 @@ public class DatabaseManager {
 					for (int i = 0; i < meta.getColumnCount(); i++) {
 						String key = meta.getColumnName(i + 1);
 						
-						if(!(isUserTable && key.equals("password")))//��������й¶
+						if(!(isUserTable && key.equals("password")))
 							obj.add(key, gson.fromJson(gson.toJson(rs.getObject(rs.findColumn(key))), JsonElement.class));
 						else
 							obj.add(key,gson.fromJson("", JsonElement.class));
@@ -195,7 +195,7 @@ public class DatabaseManager {
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-
+			result.setError(e.toString());
 		}
 		result.setCount(array.size());
 		

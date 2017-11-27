@@ -103,17 +103,17 @@ public class Tool {
 
 	static public String table2SQL(Table table) {
 
-		String mid = "";
+		String mid = "`id` INT NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`)";
 
 		for (int i = 0; i < table.getValues().size(); i++) {
-
+			mid += ",";
 			Data d = table.getValues().get(i);
 
 			mid += d.getKey() + " " + d.getValue();
 
-			if (i < table.getValues().size() - 1)
+			//if (i < table.getValues().size() - 1)
 
-				mid += ",";
+				
 
 		}
 

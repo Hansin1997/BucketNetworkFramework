@@ -12,6 +12,15 @@ public class QueryResult {
 
 	public int count;
 	public List<JsonObject> results;
+	public String error;
+	
+	public void setError(String error) {
+		this.error = error;
+	}
+	
+	public String getError() {
+		return error;
+	}
 
 	public void setCount(int count) {
 		this.count = count;

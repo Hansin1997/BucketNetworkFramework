@@ -13,7 +13,7 @@ public abstract class QueryListener<T> extends ClientListener{
 	
 	
 	
-	public abstract void onResultsCome(Connection conn, int Count, List<T> Objs);
+	public abstract void onResultsCome(Connection conn, int Count, List<T> Objs,String error);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -25,7 +25,7 @@ public abstract class QueryListener<T> extends ClientListener{
 				.getActualTypeArguments()[0];
 
 		List<T> a = Tool.ObjectList(result.getResults(), entityClass);
-		this.onResultsCome(conn, result.getCount(), a);
+		this.onResultsCome(conn, result.getCount(), a,result.getError());
 
 	}
 
