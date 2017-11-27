@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import Common.Tool;
-import network.bucketobject.Message;
+import network.bucketmodle.Message;
+import network.bucketmodle.USER;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
-import network.bucketobject.USER;
 import network.command.BucketCommand;
 import network.connection.UserConnection;
 

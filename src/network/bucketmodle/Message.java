@@ -1,4 +1,4 @@
-package network.bucketobject;
+package network.bucketmodle;
 
 import java.util.Date;
 
@@ -7,7 +7,7 @@ import network.command.client.ClientCommand;
 import network.command.server.MainCommand;
 import network.command.server.MessageCommand;
 
-public class Message {
+public class Message extends BucketModle{
 
 	public String sender;
 
@@ -20,6 +20,7 @@ public class Message {
 	
 
 	public Message() {
+		super();
 		sender = receiver = content = type = "";
 
 	}

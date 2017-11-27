@@ -1,8 +1,8 @@
-package network.bucketobject;
+package network.bucketmodle;
 
 import Common.Tool;
 
-public class USER {
+public class USER extends BucketModle {
 
 	public String username;
 	public String password;
@@ -11,7 +11,7 @@ public class USER {
 	public int type;
 
 	public USER(String username, String password, String nickname, int type) {
-
+		super();
 		setNickname(nickname);
 		setPassword(password);
 		setType(type);

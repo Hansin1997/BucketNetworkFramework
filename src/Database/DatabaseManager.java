@@ -15,11 +15,11 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import network.bucketmodle.USER;
 import network.bucketobject.ChangeQuery;
 import network.bucketobject.DeleteQuery;
 import network.bucketobject.Query;
 import network.bucketobject.QueryResult;
-import network.bucketobject.USER;
 
 public class DatabaseManager {
 

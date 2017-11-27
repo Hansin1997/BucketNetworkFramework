@@ -13,13 +13,13 @@ import com.google.gson.JsonParseException;
 
 import Common.Tool;
 import Database.DatabaseManager;
-import network.bucketobject.USER;
+import network.bucketmodle.USER;
 import network.command.client.ClientCommand;
 import network.listener.BucketListener;
 
 public class FileConnection extends Connection {
 
-	public static String rootPath = "bucket-upload"; // ÎÄ¼þ´¢´æ¸ùÄ¿Â¼
+	public static String rootPath = "bucket-upload"; // ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿Â¼
 
 	private boolean isServer;
 

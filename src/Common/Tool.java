@@ -64,6 +64,21 @@ public class Tool {
 		return table;
 
 	}
+	
+	static public List<Data> object2List(Object obj) throws IllegalArgumentException, IllegalAccessException{
+		ArrayList<Data> list = new ArrayList<Data>();
+		Class<?> clazz = obj.getClass();
+		Field[] F = clazz.getFields();
+		
+		for(Field f : F) {
+			f.setAccessible(true);
+			if(f.get(obj) == null)
+				continue;
+			list.add(new Data(f.getName(),f.get(obj)));
+		}
+		
+		return list;
+	}
 
 	static public String table2JSON(Table table) {
 
@@ -197,7 +212,7 @@ public class Tool {
 				}
 
 			} catch (IndexOutOfBoundsException e) {
-
+				e.printStackTrace();
 			}
 
 		}

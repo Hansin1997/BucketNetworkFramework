@@ -3,8 +3,8 @@ package network.listener;
 import java.util.List;
 
 import Common.Tool;
+import network.bucketmodle.USER;
 import network.bucketobject.QueryResult;
-import network.bucketobject.USER;
 import network.command.client.ClientCommand;
 import network.connection.Connection;
 

@@ -1,7 +1,7 @@
 package network.listener;
 
 import Common.Tool;
-import network.bucketobject.Message;
+import network.bucketmodle.Message;
 import network.command.client.ClientCommand;
 import network.connection.Connection;
 
