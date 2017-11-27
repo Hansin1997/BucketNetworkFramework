@@ -49,6 +49,10 @@ public class TestClient extends BucketListener {
 			public void run() {
 				try {
 					conn.startListen();
+					if(listener != null) 
+						listener.onDisconnection(conn);
+					if(messageListener != null)
+						messageListener.onDisconnection(conn);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
