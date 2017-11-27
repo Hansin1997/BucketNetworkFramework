@@ -3,7 +3,6 @@ package network.command.server;
 import java.sql.SQLException;
 
 import Common.Tool;
-import network.bucketobject.QueryResult;
 
 public class DataSaver extends DataCommand {
 
