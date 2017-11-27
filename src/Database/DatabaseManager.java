@@ -293,4 +293,8 @@ public class DatabaseManager {
 			return true;
 		}
 	}
+	
+	public Connection getConnection() {
+		return conn;
+	}
 }

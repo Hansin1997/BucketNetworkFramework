@@ -13,7 +13,8 @@ public class Query {
 	public String table_name;
 	public List<Data> values;
 	public int count;
-	public boolean justCount; // �Ƿ�ֻ��ѯ��Ŀ
+	public boolean justCount; //是否只查询数据数目
+
 
 	public Query() {
 		this("", -1);

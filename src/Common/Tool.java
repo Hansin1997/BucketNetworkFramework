@@ -112,7 +112,7 @@ public class Tool {
 			mid += ",";
 
 
-			mid += d.getKey() + " " + d.getValue();
+			mid += d.getKey() + " " + d.getValue() + " binary";
 
 			//if (i < table.getValues().size() - 1)
 
