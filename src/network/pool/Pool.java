@@ -13,4 +13,6 @@ public abstract class Pool {
 	abstract public <T extends Thread> List<T> getClient();
 	
 	abstract public <T extends Connection> T getConnection(String str);
+	
+	abstract public boolean remove(Connection conn);
 }

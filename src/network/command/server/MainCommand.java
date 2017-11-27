@@ -37,7 +37,7 @@ public class MainCommand extends BucketCommand {
 
 			bo = (BucketCommand) gson.fromJson(gson.toJson(values), Class.forName(command));
 		} catch (JsonSyntaxException | ClassNotFoundException e) {
-
+			client.getListener().onException(e);
 		}
 
 		if (bo != null) {
@@ -47,7 +47,7 @@ public class MainCommand extends BucketCommand {
 			bo.pool = pool;
 			bo.execute();
 		}else{
-			client.finish();
+			pool.remove(client);
 		}
 
 	}

@@ -61,18 +61,22 @@ public class FileSocketPool extends Pool{
 			return false;
 		}
 	}
-
-	public void remove(FileThread t) {
+	
+	
+	public boolean remove(FileThread t) {
 
 		t.getConnection().finish();
-		client.remove(t);
+		return client.remove(t);
 	}
 
-	public void remove(Connection conn){
+	
+	public boolean remove(Connection conn){
 		FileThread find = getClientFromConnection(conn);
 		if (find != null){
-			remove(find);
-		}
+			return remove(find);
+			
+		}else
+			return false;
 	}
 
 	public FileThread getClientFromConnection(Connection conn) {
@@ -114,6 +118,8 @@ public class FileSocketPool extends Pool{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
 
 
 
