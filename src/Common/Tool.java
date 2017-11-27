@@ -106,8 +106,11 @@ public class Tool {
 		String mid = "`id` INT NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`)";
 
 		for (int i = 0; i < table.getValues().size(); i++) {
-			mid += ",";
 			Data d = table.getValues().get(i);
+			if(d.getKey().equals("id"))
+				continue;
+			mid += ",";
+
 
 			mid += d.getKey() + " " + d.getValue();
 
