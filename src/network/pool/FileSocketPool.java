@@ -49,24 +49,27 @@ public class FileSocketPool extends Pool{
 	}
 
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
+		synchronized (client) {
+			if (client.size() < maxCount) {
+				FileThread t = new FileThread(socket,db, listener);
+				client.add(t);
+				t.start();
+				return true;
+			} else {
 
-		if (client.size() < maxCount) {
-			FileThread t = new FileThread(socket,db, listener);
-			client.add(t);
-			t.start();
-			return true;
-		} else {
-
-			socket.close();
-			return false;
+				socket.close();
+				return false;
+			}
 		}
+
 	}
 	
 	
 	public boolean remove(FileThread t) {
-
-		t.getConnection().finish();
-		return client.remove(t);
+		synchronized (client) {
+			t.getConnection().finish();
+			return client.remove(t);
+		}
 	}
 
 	
@@ -80,29 +83,36 @@ public class FileSocketPool extends Pool{
 	}
 
 	public FileThread getClientFromConnection(Connection conn) {
-		for (int i = 0; i < client.size(); i++) {
-			if (client.get(i).getConnection().equals(conn))
-				return client.get(i);
+		synchronized (client) {
+			for (int i = 0; i < client.size(); i++) {
+				if (client.get(i).getConnection().equals(conn))
+					return client.get(i);
+			}
+			return null;
 		}
-		return null;
 	}
 
 	public FileConnection getUserConnection(String Username) {
 		if (Username == null)
 			return null;
-		for (int i = 0; i < client.size(); i++) {
-			if(client.get(i).getConnection().getUsername() == null)
-			{
-				continue;
+		synchronized (client) {
+			for (int i = 0; i < client.size(); i++) {
+				if(client.get(i).getConnection().getUsername() == null)
+				{
+					continue;
+				}
+				if (client.get(i).getConnection().getUsername().equals(Username))
+					return client.get(i).getConnection();
 			}
-			if (client.get(i).getConnection().getUsername().equals(Username))
-				return client.get(i).getConnection();
+			return null;
 		}
-		return null;
 	}
 
 	public int getOnlineCount() {
-		return client.size();
+		synchronized (client) {
+			return client.size();
+		}
+		
 	}
 
 	@Override

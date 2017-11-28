@@ -49,33 +49,37 @@ public class SocketPool extends Pool{
 	}
 
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
-
-		if (client.size() < maxCount) {
-			ClientThread t = new ClientThread(socket,db,new PoolListener() {
-				
-				@Override
-				public void push(String username, Connection conn) {
-					UserConnection lastConn;
-					while((lastConn = getConnection(username)) != null && conn != lastConn)
-						remove(lastConn);
+		synchronized (client) {
+			if (client.size() < maxCount) {
+				ClientThread t = new ClientThread(socket,db,new PoolListener() {
 					
-				}
-			}, listener);
-			
-			client.add(t);
-			t.start();
-			return true;
-		} else {
+					@Override
+					public void push(String username, Connection conn) {
+						UserConnection lastConn;
+						while((lastConn = getConnection(username)) != null && conn != lastConn)
+							remove(lastConn);
+						
+					}
+				}, listener);
+				
+				client.add(t);
+				t.start();
+				return true;
+			} else {
 
-			socket.close();
-			return false;
+				socket.close();
+				return false;
+			}
 		}
+
 	}
 
 	public boolean remove(ClientThread t) {
+		synchronized (client) {
+			t.getConnection().finish();
+			return client.remove(t);		
+		}
 
-		t.getConnection().finish();
-		return client.remove(t);
 	}
 
 	public boolean remove(Connection conn) {
@@ -87,50 +91,63 @@ public class SocketPool extends Pool{
 	}
 
 	public ClientThread getClientFromConnection(Connection conn) {
-		for (int i = 0; i < client.size(); i++) {
-			if (client.get(i).getConnection().equals(conn))
-				return client.get(i);
+		synchronized(client) {
+			for(ClientThread con : client) {
+				if (con.getConnection().equals(conn))
+					return con;
+			}
+			return null;
 		}
-		return null;
+
 	}
 
 	@SuppressWarnings("unchecked")
 	public UserConnection getConnection(String Username) {
 		if (Username == null)
 			return null;
-		for (int i = 0; i < client.size(); i++) {
-			if(client.get(i).getConnection().getUsername() == null)
-			{
-				continue;
+		synchronized(client) {
+			for (int i = 0; i < client.size(); i++) {
+				if(client.get(i).getConnection().getUsername() == null)
+				{
+					continue;
+				}
+				if (client.get(i).getConnection().getUsername().equals(Username))
+					return client.get(i).getConnection();
 			}
-			if (client.get(i).getConnection().getUsername().equals(Username))
-				return client.get(i).getConnection();
+			return null;
 		}
-		return null;
+
 	}
 	
 	public List<UserConnection> getUserConnections() {
-		ArrayList<UserConnection> result = new ArrayList<UserConnection>();
-		for (int i = 0; i < client.size(); i++) {
-			result.add(client.get(i).getConnection());
+		synchronized(client) {
+			ArrayList<UserConnection> result = new ArrayList<UserConnection>();
+			for(ClientThread con : client) {
+				result.add(con.getConnection());
+			}
+			return result;
 		}
-		return result;
 	}
 
 	public int getOnlineCount() {
-		return client.size();
+		synchronized(client) {
+			return client.size();
+		}
 	}
 
 	public void broadcast(String str) {
-		for(ClientThread c : client) {
-			try {
+		synchronized (client) {
+			for(ClientThread c : client) {
+				try {
 
-				c.getConnection().send(str);
+					c.getConnection().send(str);
 
-			} catch (IOException e) {
-				remove(c);
+				} catch (IOException e) {
+					remove(c);
+				}
 			}
 		}
+
 	}
 
 }
