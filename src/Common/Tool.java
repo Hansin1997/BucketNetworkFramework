@@ -117,7 +117,7 @@ public class Tool {
 	}
 
 	static public String table2SQL(Table table) {
-
+		
 		String mid = "`id` INT NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`)";
 
 		for (int i = 0; i < table.getValues().size(); i++) {
@@ -126,8 +126,10 @@ public class Tool {
 				continue;
 			mid += ",";
 
-
-			mid += d.getKey() + " " + d.getValue() + " binary";
+			if(d.getValue().equals("text"))
+				mid += d.getKey() + " " + d.getValue() + " binary";
+			else
+				mid += d.getKey() + " " + d.getValue();
 
 			//if (i < table.getValues().size() - 1)
 
