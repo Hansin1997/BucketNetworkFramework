@@ -8,7 +8,7 @@ public abstract class ClientListener {
 
 	public abstract void onDisconnection(Connection conn);
 	
-	public void onException(Exception e)
+	public void onException(Throwable e)
 	{
 		
 	}

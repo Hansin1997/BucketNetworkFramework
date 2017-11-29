@@ -7,7 +7,7 @@ public abstract class BucketListener {
 
 	public abstract void onDisconnection(Connection conn);
 	
-	public void onException(Exception e)
+	public void onException(Throwable e)
 	{
 		
 	}
