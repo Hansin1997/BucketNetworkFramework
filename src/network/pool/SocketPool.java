@@ -50,6 +50,7 @@ public class SocketPool extends Pool{
 
 	public boolean add(Socket socket, BucketListener listener) throws IOException {
 		synchronized (client) {
+			
 			if (client.size() < maxCount) {
 				ClientThread t = new ClientThread(socket,db,new PoolListener() {
 					
