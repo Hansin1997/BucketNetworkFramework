@@ -2,13 +2,14 @@ package network.connection;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import network.listener.EventListener;
+import listener.EventListener;
 import network.protocol.Protocol;
 
 /**
@@ -66,9 +67,17 @@ public class ServerConnection implements Runnable {
 		}finally {
 			if(listener != null)
 				listener.onDisconnect(this);
+			else
+				try {
+					socket.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 		
 	}
+	
+	
 	
 	
 	@SuppressWarnings({"rawtypes" })

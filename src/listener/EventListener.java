@@ -1,4 +1,4 @@
-package network.listener;
+package listener;
 
 import network.connection.ServerConnection;
 
