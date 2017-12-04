@@ -5,10 +5,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.List;
 
-import application.Application;
-import network.Server;
-import network.connection.ServerConnection;
-import network.protocol.HttpProtocol;
+import bucket.application.Application;
+import bucket.network.Server;
+import bucket.network.connection.ServerConnection;
+import bucket.network.protocol.HttpProtocol;
 
 public class TestApplication extends Application {
 

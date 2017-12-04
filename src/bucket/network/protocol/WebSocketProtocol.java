@@ -1,4 +1,4 @@
-package network.protocol;
+package bucket.network.protocol;
 
 /** 
 * @author Hansin1997 lbgzs2010@live.cn: 

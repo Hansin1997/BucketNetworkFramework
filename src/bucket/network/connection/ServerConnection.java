@@ -1,4 +1,4 @@
-package network.connection;
+package bucket.network.connection;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -9,8 +9,8 @@ import java.lang.reflect.Constructor;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import listener.EventListener;
-import network.protocol.Protocol;
+import bucket.listener.EventListener;
+import bucket.network.protocol.Protocol;
 
 /**
  * 连接类

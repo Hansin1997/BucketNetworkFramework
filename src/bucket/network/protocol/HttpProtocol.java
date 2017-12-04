@@ -1,4 +1,4 @@
-package network.protocol;
+package bucket.network.protocol;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

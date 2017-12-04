@@ -1,11 +1,11 @@
 package Test;
 
 
-import network.Server;
-import network.connection.ServerConnection;
-import network.protocol.BucketProtocol;
-import network.protocol.HttpProtocol;
-import network.protocol.WebSocketProtocol;
+import bucket.network.Server;
+import bucket.network.connection.ServerConnection;
+import bucket.network.protocol.BucketProtocol;
+import bucket.network.protocol.HttpProtocol;
+import bucket.network.protocol.WebSocketProtocol;
 
 public class ServerTest {
 

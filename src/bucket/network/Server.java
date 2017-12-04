@@ -1,4 +1,4 @@
-package network;
+package bucket.network;
 
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
@@ -10,9 +10,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import application.Application;
-import database.DatabaseManager;
-import network.connection.ServerConnection;
+import bucket.application.Application;
+import bucket.database.DatabaseManager;
+import bucket.network.connection.ServerConnection;
 
 public class Server implements RejectedExecutionHandler{
 

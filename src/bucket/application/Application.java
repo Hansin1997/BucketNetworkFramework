@@ -1,7 +1,7 @@
-package application;
+package bucket.application;
 
-import listener.EventListener;
-import network.Server;
+import bucket.listener.EventListener;
+import bucket.network.Server;
 
 public abstract class Application implements EventListener {
 
