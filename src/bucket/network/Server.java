@@ -14,30 +14,99 @@ import bucket.application.Application;
 import bucket.database.DatabaseManager;
 import bucket.network.connection.ServerConnection;
 
-public class Server implements RejectedExecutionHandler{
+/**
+ * 网络服务类
+ * 
+ * @author Hansin1997
+ * @version 2017/12/4
+ */
+public class Server implements RejectedExecutionHandler {
 
+	/**
+	 * ServerConnection列表
+	 */
 	private List<ServerConnection> list;
+	/**
+	 * 线程池
+	 */
 	private ThreadPoolExecutor pool;
+	/**
+	 * 线程池核心大小
+	 */
 	private int corePoolSize;
+	/**
+	 * 线程池最大大小
+	 */
 	private int maximumPoolSize;
+	/**
+	 * 服务端口号
+	 */
 	private int port;
+	/**
+	 * 服务运行标志
+	 */
 	private boolean running;
+	/**
+	 * 数据库管理器
+	 */
 	private DatabaseManager database;
+	/**
+	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 */
 	private String appClassName;
-	
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param appClassName
+	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 */
 	public Server(String appClassName) {
-		this(appClassName,6656,null, 512, 1024);
-	}
-	
-	public Server(String appClassName,int port) {
-		this(appClassName,port,null, 512, 1024);
-	}
-	
-	public Server(String appClassName,int port,DatabaseManager databaseManager) {
-		this(appClassName,port,databaseManager, 512, 1024);
+		this(appClassName, 6656, null, 512, 1024);
 	}
 
-	public Server(String appClassName,int port,DatabaseManager databaseManager, int corePoolSize, int maximumPoolSize) {
+	/**
+	 * 构造函数
+	 * 
+	 * @param appClassName
+	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 * @param port
+	 *            端口号
+	 */
+	public Server(String appClassName, int port) {
+		this(appClassName, port, null, 512, 1024);
+	}
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param appClassName
+	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 * @param port
+	 *            端口号
+	 * @param databaseManager
+	 *            数据库管理器
+	 */
+	public Server(String appClassName, int port, DatabaseManager databaseManager) {
+		this(appClassName, port, databaseManager, 512, 1024);
+	}
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param appClassName
+	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 * @param port
+	 *            端口号
+	 * @param databaseManager
+	 *            数据库管理器
+	 * @param corePoolSize
+	 *            线程池核心大小
+	 * @param maximumPoolSize
+	 *            线程池最大大小
+	 */
+	public Server(String appClassName, int port, DatabaseManager databaseManager, int corePoolSize,
+			int maximumPoolSize) {
 		this.appClassName = appClassName;
 		this.port = port;
 		this.database = databaseManager;
@@ -50,24 +119,32 @@ public class Server implements RejectedExecutionHandler{
 		this.pool.setRejectedExecutionHandler(this);
 	}
 
+	/**
+	 * 开始服务循环(同步)
+	 * 
+	 * @throws Exception
+	 */
 	public void start() throws Exception {
 		setRunning(true);
 		ServerSocket serverSocket = new ServerSocket(this.port);
-		while(isRunning()) {
+		while (isRunning()) {
 			Socket socket = serverSocket.accept();
-			
+
 			@SuppressWarnings("rawtypes")
 			Constructor c = Class.forName(appClassName).getConstructor(Server.class);
-			
-			ServerConnection conn = new ServerConnection(socket, (Application)c.newInstance(this));
-			
+
+			ServerConnection conn = new ServerConnection(socket, (Application) c.newInstance(this));
+
 			add(conn);
-			this.pool.execute(conn);
+
 		}
 		serverSocket.close();
 		setRunning(false);
 	}
 
+	/**
+	 * 停止服务循环
+	 */
 	public synchronized void stop() {
 		for (ServerConnection conn : list) {
 			try {
@@ -77,24 +154,50 @@ public class Server implements RejectedExecutionHandler{
 				e.printStackTrace();
 			}
 		}
-		
 		pool.shutdownNow();
 		setRunning(false);
 
 	}
 
+	/**
+	 * 加入一个ServerConnection并且提交到线程池
+	 * 
+	 * @param conn
+	 *            ServerConnection
+	 * @return 是否成功添加
+	 */
 	public synchronized boolean add(ServerConnection conn) {
-		return list.add(conn);
+		boolean r = list.add(conn);
+		if (r)
+			this.pool.execute(conn);
+		return r;
 	}
 
+	/**
+	 * 从列表移除ServerSocket
+	 * 
+	 * @param conn
+	 *            ServerConnection
+	 * @return 是否成功移除
+	 */
 	public synchronized boolean remove(ServerConnection conn) {
 		return list.remove(conn);
 	}
 
+	/**
+	 * 获取ServerConnection
+	 * 
+	 * @param index
+	 *            索引
+	 * @return 获取的ServerConnection对象
+	 */
 	public synchronized ServerConnection get(int index) {
 		return list.get(index);
 	}
 
+	/**
+	 * 当线程池无法添加新任务时调用此方法
+	 */
 	@Override
 	public void rejectedExecution(Runnable arg0, ThreadPoolExecutor arg1) {
 
@@ -107,42 +210,84 @@ public class Server implements RejectedExecutionHandler{
 		}
 
 	}
-	
-	//------------------------------------
-	
-	public synchronized int getCount(){
+
+	// ------------------------------------
+
+	/**
+	 * 获取当前ServerConnection数量
+	 * 
+	 * @return ServerConnection数量
+	 */
+	public synchronized int getCount() {
 		return list.size();
 	}
-	
+
+	/**
+	 * 获取ServerConnectionl列表
+	 * 
+	 * @return ServerConnection列表
+	 */
 	public List<ServerConnection> getList() {
 		return list;
 	}
-	
+
+	/**
+	 * 设置服务运行flag
+	 * 
+	 * @param running
+	 *            flag标志
+	 */
 	public void setRunning(boolean running) {
 		this.running = running;
 	}
-	
+
+	/**
+	 * 获取服务运行标记
+	 * 
+	 * @return flag标志
+	 */
 	public boolean isRunning() {
 		return running;
 	}
-	
+
+	/**
+	 * 获取数据库管理器
+	 * 
+	 * @return DatabaseManager
+	 */
 	public DatabaseManager getDatabase() {
 		return database;
 	}
-	
+
+	/**
+	 * 设置数据库管理器
+	 * 
+	 * @param database
+	 *            数据库管理器
+	 */
 	public void setDatabase(DatabaseManager database) {
 		this.database = database;
 	}
-	
+
+	/**
+	 * 获取Application的完整类名 该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理
+	 * 
+	 * @return 完整类名
+	 */
 	public String getAppClassName() {
 		return appClassName;
 	}
-	
+
+	/**
+	 * 设置Application完整类名 该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理
+	 * 
+	 * @param appClassName
+	 *            完整类名
+	 */
 	public void setAppClassName(String appClassName) {
 		this.appClassName = appClassName;
 	}
 
-	//---------------------------------------
-
+	// ---------------------------------------
 
 }

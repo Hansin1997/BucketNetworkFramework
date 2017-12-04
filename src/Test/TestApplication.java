@@ -12,6 +12,12 @@ import bucket.network.protocol.HttpProtocol;
 
 public class TestApplication extends Application {
 
+	/**
+	 * 构造方法
+	 * 
+	 * @param server
+	 *            传入Server对象
+	 */
 	public TestApplication(Server server) {
 		super(server);
 	}
@@ -61,8 +67,7 @@ public class TestApplication extends Application {
 
 			for (ServerConnection c : list) {
 				try {
-					c.getProtocol()
-							.send("{\"command\":\"Danmu\",\"values\":{\"content\":\"你妈买皮\"}}".getBytes());
+					c.getProtocol().send("{\"command\":\"Danmu\",\"values\":{\"content\":\"你妈买皮\"}}".getBytes());
 				} catch (Throwable e) {
 					c.getListener().onException(c, e);
 				}

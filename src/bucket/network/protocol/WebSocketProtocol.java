@@ -1,10 +1,5 @@
 package bucket.network.protocol;
 
-/** 
-* @author Hansin1997 lbgzs2010@live.cn: 
-* @version Date：2017年12月1日 下午3:16:41 
-* WebSocket 协议类
-*/
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -23,6 +18,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+/**
+ * WebSocket协议类
+ * 
+ * @author Hansin1997
+ * @version 2017/12/1
+ */
 public class WebSocketProtocol extends Protocol {
 
 	public static final String POXY_HEADER_SERVER = "^(HTTP)/([0-9]\\.[0-9]) 101 WebSocket Protocol Handshake$";
@@ -50,9 +51,9 @@ public class WebSocketProtocol extends Protocol {
 		super.setProtocolHeader(new HashMap<String, String>());
 		init();
 	}
-	
-	public WebSocketProtocol(Socket socket,InputStream in,OutputStream out) throws IOException {
-		super(socket,in,out);
+
+	public WebSocketProtocol(Socket socket, InputStream in, OutputStream out) throws IOException {
+		super(socket, in, out);
 		super.setProtocolInfo(new HashMap<String, Object>());
 		super.setProtocolHeader(new HashMap<String, String>());
 		init();
@@ -117,18 +118,18 @@ public class WebSocketProtocol extends Protocol {
 			info.put(INFO_METHOD, m.group(1).trim());
 
 			String path = m.group(2);
-			//------------------------------------------------------
-			String[] tmp2 = path.split("\\u003F"),tmp;//分割url中的问号
-			if(tmp2.length == 2) {
+			// ------------------------------------------------------
+			String[] tmp2 = path.split("\\u003F"), tmp;// 分割url中的问号
+			if (tmp2.length == 2) {
 				path = tmp2[0];
 				tmp = tmp2[1].split("&");
-				for(String data: tmp) {
+				for (String data : tmp) {
 					String[] kv = data.split("=");
-					if(kv.length == 2)
+					if (kv.length == 2)
 						get.put(kv[0], kv[1]);
 				}
 			}
-			//------------------------------------------------------
+			// ------------------------------------------------------
 			info.put(INFO_GET, get);
 			info.put(INFO_PATH, path);
 			super.setProtocolName(m.group(3) + " WebSocket");
