@@ -1,16 +1,9 @@
-# BucketNetworkFramework
-## A Simple Network Application Framework
-
-
-
-
-
-
-
-
-
 # Bucket网络应用框架
-## 一个简单易用的网络应用框架
+### 一个简单易用的网络应用框架
 
-### 功能
+## 功能
+> 简单、快速地搭建一个网络服务，如：
+> 普通Socket服务:实时在线聊天，在线网络游戏等。
+> 简易Http服务:Web程序,HTTP代理等。
+> WebSocket服务:实时视频弹幕，数据实时监控等。
 	
