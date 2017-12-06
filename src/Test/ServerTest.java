@@ -1,9 +1,9 @@
 package Test;
 
-import bucket.network.Server;
 import bucket.network.connection.ServerConnection;
 import bucket.network.protocol.BucketProtocol;
 import bucket.network.protocol.HttpProtocol;
+import bucket.network.protocol.Server;
 import bucket.network.protocol.WebSocketProtocol;
 
 /**

@@ -6,9 +6,9 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import bucket.application.Application;
-import bucket.network.Server;
 import bucket.network.connection.ServerConnection;
 import bucket.network.protocol.HttpProtocol;
+import bucket.network.protocol.Server;
 
 public class TestApplication extends Application {
 
@@ -24,7 +24,6 @@ public class TestApplication extends Application {
 
 	@Override
 	public void onConnect(ServerConnection connection) {
-
 		System.out.println(connection.getProtocol() + "   IN");
 		if (connection.getProtocol().getProtocolName().equals("HTTP")) {
 

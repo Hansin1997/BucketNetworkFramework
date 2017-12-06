@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="lib/gson-2.7.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.1.40-bin.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.11.jar"/>
+	<classpathentry kind="lib" path="lib/mongodb-driver-3.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/mongo-java-driver-3.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
