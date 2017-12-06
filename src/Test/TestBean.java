@@ -1,13 +1,7 @@
 package Test;
 
-import java.io.Serializable;
-
 public class TestBean {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public String name;
 	public int year;
 	public double offset;
@@ -40,5 +34,9 @@ public class TestBean {
 	
 	public int getYear() {
 		return year;
+	}
+	
+	public String toJson() {
+		return name + " " + year;
 	}
 }
