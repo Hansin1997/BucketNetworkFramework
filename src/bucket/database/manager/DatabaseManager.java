@@ -1,4 +1,4 @@
-package bucket.database;
+package bucket.database.manager;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -53,9 +53,6 @@ public abstract class DatabaseManager {
 
 	}
 
-	public DatabaseManager() {
-
-	}
 
 	/**
 	 * 设置数据库类型

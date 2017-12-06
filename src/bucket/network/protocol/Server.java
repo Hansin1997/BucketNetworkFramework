@@ -11,7 +11,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import bucket.application.Application;
-import bucket.database.DatabaseManager;
+import bucket.database.manager.DatabaseManager;
 import bucket.network.connection.ServerConnection;
 
 /**
