@@ -1,23 +1,14 @@
 package bucket.database;
 
-import org.bson.BsonDocument;
-import org.bson.Document;
-import org.bson.conversions.Bson;
-
-import com.mongodb.MongoClient;
-import com.mongodb.client.FindIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.MongoIterable;
-import com.mongodb.client.model.Filters;
-
 /**
- * 数据库管理器
+ * 数据库
  * 
  * @author Hansin1997
  * @version 2017/12/4
  */
 public abstract class Database {
+
+	public static final String TYPE_MONGO = "MONGO";
 
 	/**
 	 * 数据库类型
@@ -32,27 +23,36 @@ public abstract class Database {
 	 */
 	protected int dbPort;
 
-	public static void main(String[] args) {
-
-		MongoClient c = new MongoClient("localhost");
-		MongoDatabase db = c.getDatabase("test");
-		MongoIterable<String> list = db.listCollectionNames();
-		for (String s : list) {
-			MongoCollection<Document> doc = db.getCollection(s);
-			FindIterable<Document> f = doc.find();
-			Bson b1 = Filters.and(Filters.eq("name", "邹威"), Filters.lte("year", 20));
-			Bson b2 = BsonDocument.parse("{ name : \"邹威\" }");
-			
-			f = doc.find(b2);
-			System.out.println(b1);
-
-			for (Document d : f)
-				System.out.println((d.toJson()));
-		}
-		c.close();
-
+	/**
+	 * 默认构造函数
+	 * 
+	 * @param host
+	 *            数据库主机
+	 * @param port
+	 *            数据库端口
+	 */
+	public Database(String host, int port) {
+		setDbHost(host);
+		setDbPort(port);
 	}
-	
+
+	/**
+	 * 是否已连接数据库
+	 * 
+	 * @return 是否已连接
+	 */
+	public abstract boolean isConnected();
+
+	/**
+	 * 连接数据库
+	 */
+	public abstract void connect();
+
+	/**
+	 * 关闭数据库连接
+	 */
+	public abstract void close();
+
 	/**
 	 * 设置数据库类型
 	 * 
