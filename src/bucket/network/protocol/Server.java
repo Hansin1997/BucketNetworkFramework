@@ -11,7 +11,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import bucket.application.Application;
-import bucket.database.manager.DatabaseManager;
+import bucket.database.Database;
 import bucket.network.connection.ServerConnection;
 
 /**
@@ -49,7 +49,7 @@ public class Server implements RejectedExecutionHandler {
 	/**
 	 * 数据库管理器
 	 */
-	private DatabaseManager database;
+	private Database database;
 	/**
 	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
@@ -87,7 +87,7 @@ public class Server implements RejectedExecutionHandler {
 	 * @param databaseManager
 	 *            数据库管理器
 	 */
-	public Server(String appClassName, int port, DatabaseManager databaseManager) {
+	public Server(String appClassName, int port, Database databaseManager) {
 		this(appClassName, port, databaseManager, 512, 1024);
 	}
 
@@ -105,7 +105,7 @@ public class Server implements RejectedExecutionHandler {
 	 * @param maximumPoolSize
 	 *            线程池最大大小
 	 */
-	public Server(String appClassName, int port, DatabaseManager databaseManager, int corePoolSize,
+	public Server(String appClassName, int port, Database databaseManager, int corePoolSize,
 			int maximumPoolSize) {
 		this.appClassName = appClassName;
 		this.port = port;
@@ -255,7 +255,7 @@ public class Server implements RejectedExecutionHandler {
 	 * 
 	 * @return DatabaseManager
 	 */
-	public DatabaseManager getDatabase() {
+	public Database getDatabase() {
 		return database;
 	}
 
@@ -265,7 +265,7 @@ public class Server implements RejectedExecutionHandler {
 	 * @param database
 	 *            数据库管理器
 	 */
-	public void setDatabase(DatabaseManager database) {
+	public void setDatabase(Database database) {
 		this.database = database;
 	}
 

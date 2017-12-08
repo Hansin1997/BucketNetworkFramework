@@ -1,5 +1,6 @@
-package bucket.database.manager;
+package bucket.database;
 
+import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -16,7 +17,7 @@ import com.mongodb.client.model.Filters;
  * @author Hansin1997
  * @version 2017/12/4
  */
-public abstract class DatabaseManager {
+public abstract class Database {
 
 	/**
 	 * 数据库类型
@@ -40,11 +41,10 @@ public abstract class DatabaseManager {
 			MongoCollection<Document> doc = db.getCollection(s);
 			FindIterable<Document> f = doc.find();
 			Bson b1 = Filters.and(Filters.eq("name", "邹威"), Filters.lte("year", 20));
-			// BsonU
-
-			// new BasicDBObjectBuilder().
-			b1 = Filters.text(b1.toString());
-			// System.out.println(f.);
+			Bson b2 = BsonDocument.parse("{ name : \"邹威\" }");
+			
+			f = doc.find(b2);
+			System.out.println(b1);
 
 			for (Document d : f)
 				System.out.println((d.toJson()));
@@ -52,8 +52,7 @@ public abstract class DatabaseManager {
 		c.close();
 
 	}
-
-
+	
 	/**
 	 * 设置数据库类型
 	 * 

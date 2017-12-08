@@ -8,8 +8,6 @@ public class TestBean {
 	
 	public TestBean() {
 		setName("Hansin");
-		setOffset(3.1415);
-		setYear(20);
 	}
 	
 	public void setName(String name) {
