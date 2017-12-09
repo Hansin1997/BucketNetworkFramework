@@ -1,7 +1,7 @@
 package bucket.application;
 
 import bucket.listener.EventListener;
-import bucket.network.protocol.Server;
+import bucket.network.Server;
 
 /**
  * 应用类 服务接受的每一个客户都将创建一个Application对象进行事件处理

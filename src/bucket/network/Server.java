@@ -1,4 +1,4 @@
-package bucket.network.protocol;
+package bucket.network;
 
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
