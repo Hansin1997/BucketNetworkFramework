@@ -39,6 +39,15 @@ public abstract class BucketObject {
 	}
 
 	/**
+	 * 获取数据库表名
+	 * 
+	 * @return 数据库表名
+	 */
+	public String getTableName() {
+		return tableName;
+	}
+
+	/**
 	 * 设置所属数据库
 	 * 
 	 * @param db
@@ -52,15 +61,17 @@ public abstract class BucketObject {
 	 * 获取属性
 	 * 
 	 * @return 属性表
-	 * @throws Exception 异常
+	 * @throws Exception
+	 *             异常
 	 */
 	public Map<String, Object> getFields() throws Exception {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
 		Class<?> c = this.getClass();
 		Field[] fs = c.getFields();
 		for (Field f : fs) {
-			if (f.isAccessible())
-				fields.put(f.getName(), f.get(this));
+
+			// if (f.isAccessible())
+			fields.put(f.getName(), f.get(this));
 		}
 
 		return fields;

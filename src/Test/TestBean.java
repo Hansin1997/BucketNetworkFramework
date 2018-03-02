@@ -45,8 +45,14 @@ public class TestBean extends BucketObject{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Mongo mongo = new Mongo("127.0.0.1", 80);
+		Mongo mongo = new Mongo("127.0.0.1", 27017);
+		mongo.connect();
+
+		mongo.useDb("asd");
+		
 		TestBean t = mongo.instantiate(TestBean.class);
 		t.print();
+		mongo.insert(t);
+		mongo.close();
 	}
 }

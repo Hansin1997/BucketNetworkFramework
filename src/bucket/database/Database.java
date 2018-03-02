@@ -109,10 +109,35 @@ public abstract class Database {
 	public int getDbPort() {
 		return dbPort;
 	}
-	
+
+	/**
+	 * 实例化一个BucketObject对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @return BucketObject对象
+	 * @throws Exception
+	 *             异常
+	 */
 	public <T extends BucketObject> T instantiate(Class<T> clazz) throws Exception {
 		T result = clazz.getConstructor().newInstance();
 		result.setDatabase(this);
 		return result;
 	}
+
+	/**
+	 * 选择数据库
+	 * 
+	 * @param databaseName
+	 *            数据库名
+	 */
+	public abstract void useDb(String databaseName) throws Exception;
+
+	/**
+	 * 插入对象
+	 * 
+	 * @throws Exception
+	 *             异常
+	 */
+	public abstract void insert(BucketObject obj) throws Exception;
 }

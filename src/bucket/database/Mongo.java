@@ -1,6 +1,10 @@
 package bucket.database;
 
+import org.bson.Document;
+
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
 
 /**
  * mongodb 数据库
@@ -14,6 +18,11 @@ public class Mongo extends Database {
 	 * 数据库连接对象
 	 */
 	private MongoClient mongo;
+
+	/**
+	 * 数据库对象
+	 */
+	private MongoDatabase db;
 
 	/**
 	 * 默认构造函数
@@ -44,6 +53,25 @@ public class Mongo extends Database {
 			mongo.close();
 			mongo = null;
 		}
+	}
+
+	@Override
+	public void useDb(String databaseName) throws Exception {
+		if (mongo == null)
+			throw new Exception("Connection closed!");
+		db = mongo.getDatabase(databaseName);
+		if (db == null)
+			throw new Exception("Use Database Fail!");
+	}
+
+	@Override
+	public void insert(BucketObject obj) throws Exception {
+		if (db == null)
+			throw new Exception("Database unselected!");
+		MongoCollection<Document> coll = db.getCollection(obj.getTableName());
+		Document doc = new Document();
+		doc.putAll(obj.getFields());
+		coll.insertOne(doc);
 	}
 
 }
