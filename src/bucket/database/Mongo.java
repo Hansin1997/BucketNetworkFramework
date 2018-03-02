@@ -8,7 +8,7 @@ import com.mongodb.MongoClient;
  * @author hansin
  *
  */
-public class MongoDatabase extends Database {
+public class Mongo extends Database {
 
 	/**
 	 * 数据库连接对象
@@ -23,7 +23,7 @@ public class MongoDatabase extends Database {
 	 * @param port
 	 *            mongo端口
 	 */
-	public MongoDatabase(String host, int port) {
+	public Mongo(String host, int port) {
 		super(host, port);
 		setDbType(Database.TYPE_MONGO);
 	}

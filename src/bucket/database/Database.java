@@ -109,4 +109,10 @@ public abstract class Database {
 	public int getDbPort() {
 		return dbPort;
 	}
+	
+	public <T extends BucketObject> T instantiate(Class<T> clazz) throws Exception {
+		T result = clazz.getConstructor().newInstance();
+		result.setDatabase(this);
+		return result;
+	}
 }
