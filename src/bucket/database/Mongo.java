@@ -1,5 +1,7 @@
 package bucket.database;
 
+import java.util.Map;
+
 import org.bson.Document;
 
 import com.mongodb.MongoClient;
@@ -48,6 +50,13 @@ public class Mongo extends Database {
 	}
 
 	@Override
+	public void connect(String username, String password) {
+		System.out.println("MongoDB connect without login");
+		connect();
+
+	}
+
+	@Override
 	public void close() {
 		if (mongo != null) {
 			mongo.close();
@@ -58,20 +67,51 @@ public class Mongo extends Database {
 	@Override
 	public void useDb(String databaseName) throws Exception {
 		if (mongo == null)
-			throw new Exception("Connection closed!");
+			throw new DatabaseConnectionException("Connection closed!");
 		db = mongo.getDatabase(databaseName);
 		if (db == null)
-			throw new Exception("Use Database Fail!");
+			throw new DatabaseConnectionException("Use Database Fail!");
 	}
 
 	@Override
 	public void insert(BucketObject obj) throws Exception {
 		if (db == null)
-			throw new Exception("Database unselected!");
+			throw new DatabaseConnectionException("Database unselected!");
 		MongoCollection<Document> coll = db.getCollection(obj.getTableName());
 		Document doc = new Document();
 		doc.putAll(obj.getFields());
+		doc.remove("id");
+
 		coll.insertOne(doc);
+		obj.setId(doc.getObjectId("_id"));
+	}
+
+	@Override
+	public <T extends BucketObject> T instantiate(Class<T> clazz) throws Exception {
+		T bobj = super.instantiate(clazz);
+
+		return bobj;
+	}
+
+	@Override
+	public void update(BucketObject obj) throws Exception {
+
+		if (db == null)
+			throw new DatabaseConnectionException("Database unselected!");
+
+		MongoCollection<Document> coll = db.getCollection(obj.getTableName());
+		Document query = new Document();
+		query.append("_id", obj.getId());
+
+		Map<String, Object> fields = obj.getFields();
+		Document upd = new Document(fields);
+
+		if (coll.find(query).first() == null) {
+			throw new ObjectNotFoundException("MongoDB Object Not Found! _id:" + obj.getId());
+		}
+
+		coll.updateOne(query, new Document("$set", upd));
+
 	}
 
 }

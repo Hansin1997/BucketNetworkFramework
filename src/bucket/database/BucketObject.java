@@ -17,12 +17,12 @@ public abstract class BucketObject {
 	/**
 	 * 对应数据库的表名
 	 */
-	public String tableName;
+	protected String tableName;
 
 	/**
 	 * 主键
 	 */
-	public long id;
+	protected Object id;
 
 	/**
 	 * 所属数据库
@@ -58,6 +58,24 @@ public abstract class BucketObject {
 	}
 
 	/**
+	 * 设置主键值
+	 * 
+	 * @param id
+	 */
+	protected void setId(Object id) {
+		this.id = id;
+	}
+
+	/**
+	 * 获取主键值
+	 * 
+	 * @return 主键值
+	 */
+	public Object getId() {
+		return id;
+	}
+
+	/**
 	 * 获取属性
 	 * 
 	 * @return 属性表
@@ -77,6 +95,9 @@ public abstract class BucketObject {
 		return fields;
 	}
 
+	/**
+	 * 打印信息
+	 */
 	public void print() {
 		System.out.println(tableName);
 		System.out.println("---id\t" + id);
@@ -92,6 +113,21 @@ public abstract class BucketObject {
 
 		} catch (Exception e) {
 			System.out.println(" ** Expection!");
+		}
+
+	}
+
+	/**
+	 * 保存对象，可以是更新也可以是新增
+	 * 
+	 * @throws Exception
+	 *             异常
+	 */
+	public void save() throws Exception {
+		if (this.id == null) {
+			db.insert(this);
+		} else {
+			db.update(this);
 		}
 
 	}

@@ -9,6 +9,7 @@ package bucket.database;
 public abstract class Database {
 
 	public static final String TYPE_MONGO = "MONGO";
+	public static final String TYPE_MYSQL = "MYSQL";
 
 	/**
 	 * 数据库类型
@@ -47,6 +48,16 @@ public abstract class Database {
 	 * 连接数据库
 	 */
 	public abstract void connect();
+
+	/**
+	 * 连接数据库
+	 * 
+	 * @param username
+	 *            用户名
+	 * @param password
+	 *            密码
+	 */
+	public abstract void connect(String username, String password);
 
 	/**
 	 * 关闭数据库连接
@@ -136,8 +147,20 @@ public abstract class Database {
 	/**
 	 * 插入对象
 	 * 
+	 * @param obj
+	 *            对象
 	 * @throws Exception
 	 *             异常
 	 */
 	public abstract void insert(BucketObject obj) throws Exception;
+
+	/**
+	 * 更新对象
+	 * 
+	 * @param obj
+	 *            对象
+	 * @throws Exception
+	 *             异常
+	 */
+	public abstract void update(BucketObject obj) throws Exception;
 }

@@ -52,7 +52,19 @@ public class TestBean extends BucketObject{
 		
 		TestBean t = mongo.instantiate(TestBean.class);
 		t.print();
-		mongo.insert(t);
+		t.setYear(76);
+		t.setName("你麻麻");
+		t.save();
+		t.print();
+		t.setYear(88);
+		t.setName("你ggg麻");
+		t.save();
+		t.print();
+		t.setYear(22);
+		t.setName("哈哈麻麻");
+		mongo.close();
+		t.save();
+		t.print();
 		mongo.close();
 	}
 }
