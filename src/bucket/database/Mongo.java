@@ -1,10 +1,14 @@
 package bucket.database;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
@@ -104,14 +108,58 @@ public class Mongo extends Database {
 		query.append("_id", obj.getId());
 
 		Map<String, Object> fields = obj.getFields();
+
+		if (coll.find(query).first() == null) {
+			throw new ObjectNotFoundException("MongoDB Object Not Found! _id:" + obj.getId());
+		}
 		Document upd = new Document(fields);
+		coll.updateOne(query, new Document("$set", upd));
+
+	}
+
+	@Override
+	public void remove(BucketObject obj) throws Exception {
+		if (db == null)
+			throw new DatabaseConnectionException("Database unselected!");
+
+		MongoCollection<Document> coll = db.getCollection(obj.getTableName());
+		Document query = new Document();
+		query.append("_id", obj.getId());
 
 		if (coll.find(query).first() == null) {
 			throw new ObjectNotFoundException("MongoDB Object Not Found! _id:" + obj.getId());
 		}
 
-		coll.updateOne(query, new Document("$set", upd));
+		coll.findOneAndDelete(query);
 
+	}
+
+	@Override
+	public <T extends BucketObject> List<T> find(Class<T> clazz, Query query, long limit) throws Exception {
+		if (db == null)
+			throw new DatabaseConnectionException("Database unselected!");
+
+		ArrayList<T> result = new ArrayList<T>();
+		Field[] fields = clazz.getFields();
+
+		if (query == null) {
+			MongoCollection<Document> coll = db.getCollection(clazz.getSimpleName());
+			FindIterable<Document> r = coll.find();
+			
+			for (Document doc : r) {
+				T t = instantiate(clazz);
+				for (Field field : fields) {
+
+					field.set(t, doc.get(field.getName()));
+				}
+				result.add(t);
+
+			}
+
+			
+			
+		}
+		return result;
 	}
 
 }

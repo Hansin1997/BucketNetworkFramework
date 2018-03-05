@@ -124,12 +124,24 @@ public abstract class BucketObject {
 	 *             异常
 	 */
 	public void save() throws Exception {
+		if(db == null) {
+			throw new DatabaseConnectionException("db is null!");
+		}
+		
 		if (this.id == null) {
 			db.insert(this);
 		} else {
 			db.update(this);
 		}
 
+	}
+	
+	public void remove() throws Exception {
+		if(db == null) {
+			throw new DatabaseConnectionException("db is null!");
+		}
+		
+		db.remove(this);
 	}
 
 }

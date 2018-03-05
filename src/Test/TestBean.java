@@ -1,5 +1,7 @@
 package Test;
 
+import java.util.List;
+
 import bucket.database.BucketObject;
 import bucket.database.Mongo;
 
@@ -51,20 +53,12 @@ public class TestBean extends BucketObject{
 		mongo.useDb("asd");
 		
 		TestBean t = mongo.instantiate(TestBean.class);
-		t.print();
-		t.setYear(76);
-		t.setName("你麻麻");
+		t.setName("哈哈");
 		t.save();
-		t.print();
-		t.setYear(88);
-		t.setName("你ggg麻");
-		t.save();
-		t.print();
-		t.setYear(22);
-		t.setName("哈哈麻麻");
-		mongo.close();
-		t.save();
-		t.print();
+
+		List<TestBean> b = mongo.find(TestBean.class, null);
+		for(TestBean c : b)
+			c.print();
 		mongo.close();
 	}
 }

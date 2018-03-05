@@ -1,5 +1,7 @@
 package bucket.database;
 
+import java.util.List;
+
 /**
  * 数据库
  * 
@@ -122,6 +124,14 @@ public abstract class Database {
 	}
 
 	/**
+	 * 选择数据库
+	 * 
+	 * @param databaseName
+	 *            数据库名
+	 */
+	public abstract void useDb(String databaseName) throws Exception;
+
+	/**
 	 * 实例化一个BucketObject对象
 	 * 
 	 * @param clazz
@@ -137,12 +147,53 @@ public abstract class Database {
 	}
 
 	/**
-	 * 选择数据库
+	 * 查找对象
 	 * 
-	 * @param databaseName
-	 *            数据库名
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
+	 * @param limit
+	 *            最大数目
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
 	 */
-	public abstract void useDb(String databaseName) throws Exception;
+	public abstract <T extends BucketObject> List<T> find(Class<T> clazz, Query query, long limit) throws Exception;
+
+	/**
+	 * 查找对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
+	 */
+	public <T extends BucketObject> List<T> find(Class<T> clazz, Query query) throws Exception {
+		return find(clazz, query, -1);
+	};
+
+	/**
+	 * 查找一个对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
+	 */
+	public <T extends BucketObject> T findOne(Class<T> clazz, Query query) throws Exception {
+		List<T> result = find(clazz, query, 1);
+		if (result == null || result.isEmpty())
+			return null;
+		else
+			return result.get(0);
+	};
 
 	/**
 	 * 插入对象
@@ -155,6 +206,16 @@ public abstract class Database {
 	public abstract void insert(BucketObject obj) throws Exception;
 
 	/**
+	 * 删除对象
+	 * 
+	 * @param obj
+	 *            对象
+	 * @throws Exception
+	 *             异常
+	 */
+	public abstract void remove(BucketObject obj) throws Exception;
+
+	/**
 	 * 更新对象
 	 * 
 	 * @param obj
@@ -163,4 +224,5 @@ public abstract class Database {
 	 *             异常
 	 */
 	public abstract void update(BucketObject obj) throws Exception;
+
 }

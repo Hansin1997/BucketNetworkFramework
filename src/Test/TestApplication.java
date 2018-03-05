@@ -30,7 +30,7 @@ public class TestApplication extends Application {
 			try {
 				HttpProtocol p = (HttpProtocol) connection.getProtocol();
 
-				File f = new File("/usr/local/nginx/html" + p.getProtocolInfo().get("PATH"));
+				File f = new File("C:\\inetpub\\wwwroot" + p.getProtocolInfo().get("PATH"));
 				if (f.exists()) {
 					if (f.isDirectory()) {
 						p.parseServerHeader("404 Not Found", null);
