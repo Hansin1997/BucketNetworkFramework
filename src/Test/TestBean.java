@@ -1,7 +1,5 @@
 package Test;
 
-import java.util.List;
-
 import bucket.database.BucketObject;
 import bucket.database.Database;
 import bucket.database.Mongo;
@@ -49,18 +47,14 @@ public class TestBean extends BucketObject{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Database db = new Mongo("127.0.0.1", 27017);
+		Database db;
+		db = new Mongo("127.0.0.1", 27017);
 		db.connect();
 
-		db.useDb("asd");
-		
-//		TestBean t = mongo.instantiate(TestBean.class);
-//		t.setName("哈哈");
-//		t.save();
+		db.useDb("db1");
 
-		List<TestBean> b = db.find(TestBean.class, null,1);
-		for(TestBean c : b)
-			c.remove();
+		
+		
 		db.close();
 	}
 }

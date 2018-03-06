@@ -105,8 +105,7 @@ public class Server implements RejectedExecutionHandler {
 	 * @param maximumPoolSize
 	 *            线程池最大大小
 	 */
-	public Server(String appClassName, int port, Database databaseManager, int corePoolSize,
-			int maximumPoolSize) {
+	public Server(String appClassName, int port, Database databaseManager, int corePoolSize, int maximumPoolSize) {
 		this.appClassName = appClassName;
 		this.port = port;
 		this.database = databaseManager;
@@ -290,4 +289,13 @@ public class Server implements RejectedExecutionHandler {
 
 	// ---------------------------------------
 
+	/**
+	 * 设置端口号
+	 * 
+	 * @param port
+	 *            端口号
+	 */
+	public void setPort(int port) {
+		this.port = port;
+	}
 }
