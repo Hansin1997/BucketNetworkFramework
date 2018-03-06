@@ -3,6 +3,7 @@ package Test;
 import bucket.database.BucketObject;
 import bucket.database.Database;
 import bucket.database.Mongo;
+import bucket.database.Query;
 
 public class TestBean extends BucketObject{
 
@@ -53,7 +54,14 @@ public class TestBean extends BucketObject{
 
 		db.useDb("db1");
 
-		
+		Query.build()
+				.equ("name", "傻逼")
+				.and()
+				.gre("year", 18)
+				.or()
+				.les("year", 10)
+				.sort(false)
+				.print();
 		
 		db.close();
 	}
