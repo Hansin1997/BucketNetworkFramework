@@ -3,6 +3,7 @@ package Test;
 import java.util.List;
 
 import bucket.database.BucketObject;
+import bucket.database.Database;
 import bucket.database.Mongo;
 
 public class TestBean extends BucketObject{
@@ -13,9 +14,10 @@ public class TestBean extends BucketObject{
 	protected int haha = 10;
 	
 	public TestBean() {
-		setName("Hansin");
-		setYear(22);
-		setOffset(3.1415);
+		super();
+//		setName("Hansin");
+//		setYear(22);
+//		setOffset(3.1415);
 	}
 	
 	public void setName(String name) {
@@ -47,18 +49,18 @@ public class TestBean extends BucketObject{
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Mongo mongo = new Mongo("127.0.0.1", 27017);
-		mongo.connect();
+		Database db = new Mongo("127.0.0.1", 27017);
+		db.connect();
 
-		mongo.useDb("asd");
+		db.useDb("asd");
 		
-		TestBean t = mongo.instantiate(TestBean.class);
-		t.setName("哈哈");
-		t.save();
+//		TestBean t = mongo.instantiate(TestBean.class);
+//		t.setName("哈哈");
+//		t.save();
 
-		List<TestBean> b = mongo.find(TestBean.class, null);
+		List<TestBean> b = db.find(TestBean.class, null,1);
 		for(TestBean c : b)
-			c.print();
-		mongo.close();
+			c.remove();
+		db.close();
 	}
 }

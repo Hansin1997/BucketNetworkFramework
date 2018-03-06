@@ -33,9 +33,7 @@ public abstract class BucketObject {
 	 * 默认构造函数
 	 */
 	public BucketObject() {
-		if (tableName == null)
-			tableName = this.getClass().getSimpleName();
-
+		setTableName(this.getClass().getSimpleName());
 	}
 
 	/**
@@ -48,6 +46,16 @@ public abstract class BucketObject {
 	}
 
 	/**
+	 * 设置数据库表名
+	 * 
+	 * @param tableName
+	 *            数据库表名
+	 */
+	protected void setTableName(String tableName) {
+		this.tableName = tableName;
+	}
+
+	/**
 	 * 设置所属数据库
 	 * 
 	 * @param db
@@ -55,6 +63,15 @@ public abstract class BucketObject {
 	 */
 	public void setDatabase(Database db) {
 		this.db = db;
+	}
+
+	/**
+	 * 获取所属数据库
+	 * 
+	 * @return 所属数据库
+	 */
+	public Database getDatabase() {
+		return db;
 	}
 
 	/**
@@ -96,38 +113,55 @@ public abstract class BucketObject {
 	}
 
 	/**
+	 * 设置属性
+	 * 
+	 * @param fields
+	 *            属性
+	 * @throws Exception
+	 *             异常
+	 */
+	public void setFields(Map<String, Object> fields) throws Exception {
+		Class<?> c = this.getClass();
+		Field[] fs = c.getFields();
+		for (Field f : fs) {
+			f.set(this, fields.get(f.getName()));
+		}
+	}
+
+	/**
 	 * 打印信息
 	 */
 	public void print() {
+		System.out.println("-----------------------------------");
 		System.out.println(tableName);
-		System.out.println("---id\t" + id);
-		System.out.println("---Fields:");
+		System.out.println(" * id:\t" + id);
+		System.out.println(" * Fields:");
 
 		try {
 			Map<String, Object> fs = getFields();
 			Set<Entry<String, Object>> set = fs.entrySet();
 
 			for (Entry<String, Object> kv : set) {
-				System.out.println(" ** " + kv.getKey() + ":\t" + kv.getValue());
+				System.out.println("    * " + kv.getKey() + ":\t" + kv.getValue());
 			}
 
 		} catch (Exception e) {
-			System.out.println(" ** Expection!");
+			System.out.println("    * Expection!");
 		}
-
+		System.out.println("-----------------------------------");
 	}
 
 	/**
-	 * 保存对象，可以是更新也可以是新增
+	 * 保存对象(若对象在所属数据库不存在则插入)
 	 * 
 	 * @throws Exception
 	 *             异常
 	 */
 	public void save() throws Exception {
-		if(db == null) {
+		if (db == null) {
 			throw new DatabaseConnectionException("db is null!");
 		}
-		
+
 		if (this.id == null) {
 			db.insert(this);
 		} else {
@@ -135,13 +169,20 @@ public abstract class BucketObject {
 		}
 
 	}
-	
+
+	/**
+	 * 删除对象
+	 * 
+	 * @throws Exception
+	 *             异常
+	 */
 	public void remove() throws Exception {
-		if(db == null) {
+		if (db == null) {
 			throw new DatabaseConnectionException("db is null!");
 		}
-		
+
 		db.remove(this);
 	}
+
 
 }

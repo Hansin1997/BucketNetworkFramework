@@ -1,6 +1,5 @@
 package bucket.database;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -140,18 +139,16 @@ public class Mongo extends Database {
 			throw new DatabaseConnectionException("Database unselected!");
 
 		ArrayList<T> result = new ArrayList<T>();
-		Field[] fields = clazz.getFields();
 
 		if (query == null) {
-			MongoCollection<Document> coll = db.getCollection(clazz.getSimpleName());
+			
+			MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
 			FindIterable<Document> r = coll.find();
 			
 			for (Document doc : r) {
 				T t = instantiate(clazz);
-				for (Field field : fields) {
-
-					field.set(t, doc.get(field.getName()));
-				}
+				t.setFields(doc);
+				t.setId(doc.getObjectId("_id"));
 				result.add(t);
 
 			}
