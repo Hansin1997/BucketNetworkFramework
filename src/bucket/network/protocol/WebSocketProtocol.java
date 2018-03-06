@@ -26,6 +26,9 @@ import org.apache.commons.codec.digest.DigestUtils;
  */
 public class WebSocketProtocol extends Protocol {
 
+	/**
+	 * 
+	 */
 	public static final String POXY_HEADER_SERVER = "^(HTTP)/([0-9]\\.[0-9]) 101 WebSocket Protocol Handshake$";
 	public static final String POXY_HEADER_CLIENT = "^(GET) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_SERVER = Pattern.compile(WebSocketProtocol.POXY_HEADER_CLIENT);
@@ -59,7 +62,11 @@ public class WebSocketProtocol extends Protocol {
 		init();
 	}
 
-	// 计算响应密钥
+	/**
+	 * 计算响应密钥
+	 * 
+	 * @return
+	 */
 	private String getWebSocketAccept() {
 		String webSocketKey = getProtocolHeader().get("Sec-WebSocket-Key");
 		if (webSocketKey == null)
@@ -68,7 +75,12 @@ public class WebSocketProtocol extends Protocol {
 		return Base64.getEncoder().encodeToString(result);
 	}
 
-	// 服务端响应头
+	/**
+	 * 输出服务端响应头
+	 * 
+	 * @throws Throwable
+	 *             异常
+	 */
 	private void echoServerHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
 		wter.println("HTTP/1.1 101 WebSocket Protocol Handshake");
@@ -83,7 +95,12 @@ public class WebSocketProtocol extends Protocol {
 		getOut().flush();
 	}
 
-	// 生成客户端请求头
+	/**
+	 * 生成客户端请求头
+	 * 
+	 * @throws Throwable
+	 *             异常
+	 */
 	private void echoClientHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
 		wter.println("GET " + getProtocolInfo().get(INFO_PATH) + " HTTP/1.1");
@@ -99,6 +116,15 @@ public class WebSocketProtocol extends Protocol {
 		getOut().flush();
 	}
 
+	/**
+	 * 握手检查
+	 * 
+	 * @param str
+	 *            报文首行
+	 * @return 握手成功与否
+	 * @throws Throwable
+	 *             异常
+	 */
 	private boolean handshakeCheck(String str) throws Throwable {
 		Matcher m = isServer() ? HANDSHAKE_CHECK_PATTERN_SERVER.matcher(str)
 				: HANDSHAKE_CHECK_PATTERN_CLIENT.matcher(str);

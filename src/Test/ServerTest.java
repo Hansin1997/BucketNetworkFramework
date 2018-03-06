@@ -20,7 +20,7 @@ public class ServerTest {
 		ServerConnection.ProtocolList.add(HttpProtocol.class.getName());
 		ServerConnection.ProtocolList.add(BucketProtocol.class.getName());
 
-		Server s = new Server(TestApplication.class.getName());
+		Server s = new Server(TestApplication.class.getName(),8080);
 		s.start();
 
 	}

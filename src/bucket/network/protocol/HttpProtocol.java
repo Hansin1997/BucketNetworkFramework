@@ -22,15 +22,48 @@ import java.util.regex.Pattern;
  */
 public class HttpProtocol extends Protocol {
 
+	/**
+	 * 默认服务端正则匹配字符串 （http://www.xx.com/）
+	 */
+	private static final String HANDSHAKE_CHECK_REGEX_SERVER_DEFAULT = "^(POST|GET) (/) (HTTP)/([0-9]\\.[0-9])$";
+	/**
+	 * 通用服务端正则匹配字符串
+	 */
 	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(POST|GET) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
+	/**
+	 * 默认服务端正则匹配器
+	 */
+	public static final Pattern HANDSHAKE_CHECK_PATTERN_SERVER_DEFAULT = Pattern
+			.compile(HttpProtocol.HANDSHAKE_CHECK_REGEX_SERVER_DEFAULT);
+	/**
+	 * 通用服务端正则匹配器
+	 */
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_SERVER = Pattern
 			.compile(HttpProtocol.HANDSHAKE_CHECK_REGEX_SERVER);
+	/**
+	 * 通用客户端正则匹配字符串
+	 */
 	private static final String HANDSHAKE_CHECK_REGEX_CLIENT = "^(HTTP)/([0-9]\\.[0-9]) (.+)$";
+	/**
+	 * 通用客户端正则匹配器
+	 */
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_CLIENT = Pattern
 			.compile(HttpProtocol.HANDSHAKE_CHECK_REGEX_CLIENT);
+	/**
+	 * 请求方法
+	 */
 	public static final String INFO_METHOD = "METHOD";
+	/**
+	 * GET参数标志
+	 */
 	public static final String INFO_GET = "GET";
+	/**
+	 * POST参数标志
+	 */
 	public static final String INFO_POST = "POST";
+	/**
+	 * PATH参数
+	 */
 	public static final String INFO_PATH = "PATH";
 
 	public HttpProtocol(Socket socket) throws IOException {
@@ -41,11 +74,25 @@ public class HttpProtocol extends Protocol {
 		super(socket, in, out);
 	}
 
+	/**
+	 * 握手检查
+	 * 
+	 * @param str
+	 *            HTTP报文首行
+	 * @return 握手成功与否
+	 * @throws Throwable
+	 *             异常
+	 */
 	private boolean checkHandshake(String str) throws Throwable {
 		Matcher m = isServer() ? HANDSHAKE_CHECK_PATTERN_SERVER.matcher(str)
 				: HANDSHAKE_CHECK_PATTERN_CLIENT.matcher(str);
 		if (!m.find())
-			return false;
+			if (isServer()) {
+				m = HANDSHAKE_CHECK_PATTERN_SERVER_DEFAULT.matcher(str);
+				if (!m.find())
+					return false;
+			} else
+				return false;
 		HashMap<String, Object> info = new HashMap<String, Object>();
 		HashMap<String, String> get = new HashMap<String, String>();
 		if (isServer()) {

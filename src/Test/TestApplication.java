@@ -85,7 +85,6 @@ public class TestApplication extends Application {
 	@Override
 	public void onException(ServerConnection connection, Throwable e) {
 		e.printStackTrace();
-
 	}
 
 }
