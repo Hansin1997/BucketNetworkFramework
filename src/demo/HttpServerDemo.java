@@ -5,7 +5,7 @@ import bucket.network.connection.ServerConnection;
 import bucket.network.protocol.HttpProtocol;
 
 /**
- * 测试
+ * Http测试Demo
  * 
  * @author Hansin1997
  *
