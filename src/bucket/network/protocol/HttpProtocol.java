@@ -134,7 +134,7 @@ public class HttpProtocol extends Protocol {
 		String str = null, first = null;
 
 		while ((str = reader.readLine()) != null) {
-			System.out.println(str);
+
 			String tmp[] = str.split(":", 2);
 			if (tmp.length == 1) {// 当str只切割出一个子串的时候
 
@@ -213,7 +213,7 @@ public class HttpProtocol extends Protocol {
 				int b = -1;
 				while ((b = read(buff, 0, buff.length)) != -1) {
 					out.write(buff, 0, b);
-					System.out.write(buff, 0, b);
+
 				}
 				return out.toByteArray();
 			}
