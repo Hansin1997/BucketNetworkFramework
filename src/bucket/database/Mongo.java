@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.bson.Document;
+import org.bson.conversions.Bson;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 
 /**
  * mongodb 数据库
@@ -139,24 +141,59 @@ public class Mongo extends Database {
 			throw new DatabaseConnectionException("Database unselected!");
 
 		ArrayList<T> result = new ArrayList<T>();
+		Bson filter = null;
 
-		if (query == null) {
-			
-			MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
-			FindIterable<Document> r = coll.find();
-			
-			for (Document doc : r) {
-				T t = instantiate(clazz);
-				t.setFields(doc);
-				t.setId(doc.getObjectId("_id"));
-				result.add(t);
+		if (query != null && query.getBody() != null) {
+			Query it = query;
 
-			}
+			do {
+				if (filter == null) {
+					filter = QueryBody2Bson(it.getBody());
+				}
+				if (it.getQueryType() == null)
+					break;
+				switch (it.getQueryType()) {
+				case AND:
+					filter = Filters.and(filter, QueryBody2Bson(it.next.getBody()));
+					break;
+				case OR:
+					filter = Filters.or(filter, QueryBody2Bson(it.next.getBody()));
+					break;
+				}
+				it = it.getNext();
+			} while (it.next != null && it.next.getBody() != null);
 
-			
-			
 		}
+
+		MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
+		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
+		for (Document doc : r) {
+			T t = instantiate(clazz);
+			t.setFields(doc);
+			t.setId(doc.getObjectId("_id"));
+			result.add(t);
+		}
+
 		return result;
+	}
+
+	protected Bson QueryBody2Bson(QueryBody body) {
+		Bson filter = null;
+		switch (body.getQueryType()) {
+		case EQU:
+			filter = Filters.eq(body.getKey(), body.getValue());
+			break;
+		case GRE:
+			filter = Filters.gt(body.getKey(), body.getValue());
+			break;
+		case LES:
+			filter = Filters.lt(body.getKey(), body.getValue());
+			break;
+		case LIKE:
+			filter = Filters.in(body.getKey(), body.getValue());
+			break;
+		}
+		return filter;
 	}
 
 }

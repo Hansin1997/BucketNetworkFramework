@@ -43,7 +43,7 @@ public class Query {
 	/**
 	 * 下一个查询条件目标
 	 */
-	protected Query target;
+	protected Query next;
 
 	public Query() {
 		sort(true);
@@ -62,6 +62,19 @@ public class Query {
 	 */
 	public QueryBody getBody() {
 		return body;
+	}
+
+	/**
+	 * 获取下一个查询条件
+	 * 
+	 * @return
+	 */
+	public Query getNext() {
+		return next;
+	}
+
+	public void setNext(Query next) {
+		this.next = next;
 	}
 
 	/**
@@ -96,6 +109,10 @@ public class Query {
 		return this;
 	}
 
+	public QueryType getQueryType() {
+		return queryType;
+	}
+	
 	/**
 	 * 且
 	 * 
@@ -104,9 +121,9 @@ public class Query {
 	public QueryBody and() {
 		Query last = findLast(this);
 		last.queryType = QueryType.AND;
-		last.target = new Query();
-		last.target.body = new QueryBody(this.body.head);
-		return last.target.body;
+		last.next = new Query();
+		last.next.body = new QueryBody(this.body.head);
+		return last.next.body;
 	}
 
 	/**
@@ -117,9 +134,9 @@ public class Query {
 	public QueryBody or() {
 		Query last = findLast(this);
 		last.queryType = QueryType.OR;
-		last.target = new Query();
-		last.target.body = new QueryBody(this.body.head);
-		return last.target.body;
+		last.next = new Query();
+		last.next.body = new QueryBody(this.body.head);
+		return last.next.body;
 	}
 
 	/**
@@ -128,7 +145,7 @@ public class Query {
 	public void print() {
 		System.out.println("sort:\t" + isSort());
 		System.out.print("query:\t");
-		
+
 		Query it = this;
 		while (true) {
 
@@ -152,20 +169,19 @@ public class Query {
 			}
 			System.out.print(it.body.getValue());
 
-			
-			if (it.target != null)
+			if (it.next != null)
 				System.out.print(it.queryType == QueryType.AND ? " AND " : " OR ");
 			else
 				break;
-			it = it.target;
+			it = it.next;
 		}
 		System.out.println();
 	}
 
 	public static Query findLast(Query head) {
 		Query it = head;
-		while (it.target != null)
-			it = it.target;
+		while (it.next != null)
+			it = it.next;
 		return it;
 	}
 }

@@ -1,5 +1,7 @@
 package Test;
 
+import java.util.List;
+
 import bucket.database.BucketObject;
 import bucket.database.Database;
 import bucket.database.Mongo;
@@ -52,17 +54,20 @@ public class TestBean extends BucketObject{
 		db = new Mongo("127.0.0.1", 27017);
 		db.connect();
 
-		db.useDb("db1");
+		db.useDb("asd");
 
-		Query.build()
-				.equ("name", "傻逼")
-				.and()
-				.gre("year", 18)
-				.or()
-				.les("year", 10)
-				.sort(false)
-				.print();
+//		TestBean t = db.instantiate(TestBean.class);
+//		t.setName("马化腾");
+//		t.setOffset(18.123);
+//		t.setYear(44);
+//		t.save();
 		
+		Query q = Query.build()
+					.gre("year", 18);
+		q.print();
+		List<TestBean> ts = db.find(TestBean.class, q);
+		for(TestBean i : ts)
+			i.print();
 		db.close();
 	}
 }
