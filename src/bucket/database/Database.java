@@ -1,5 +1,6 @@
 package bucket.database;
 
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 /**
@@ -141,7 +142,9 @@ public abstract class Database {
 	 *             异常
 	 */
 	public <T extends BucketObject> T instantiate(Class<T> clazz) throws Exception {
-		T result = clazz.getConstructor().newInstance();
+		Constructor<T> c = clazz.getConstructor();
+		c.setAccessible(true);
+		T result = c.newInstance();
 		result.setDatabase(this);
 		return result;
 	}

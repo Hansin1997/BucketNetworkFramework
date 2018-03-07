@@ -115,6 +115,7 @@ public class Mongo extends Database {
 		}
 		Document upd = new Document(fields);
 		coll.updateOne(query, new Document("$set", upd));
+		
 
 	}
 
@@ -141,8 +142,28 @@ public class Mongo extends Database {
 			throw new DatabaseConnectionException("Database unselected!");
 
 		ArrayList<T> result = new ArrayList<T>();
-		Bson filter = null;
+		Bson filter = Query2Bson(query);
 
+		MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
+		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
+		for (Document doc : r) {
+			T t = instantiate(clazz);
+			t.setFields(doc);
+			t.setId(doc.getObjectId("_id"));
+			result.add(t);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Query转换为Bson
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public static Bson Query2Bson(Query query) {
+		Bson filter = null;
 		if (query != null && query.getBody() != null) {
 			Query it = query;
 
@@ -164,20 +185,16 @@ public class Mongo extends Database {
 			} while (it.next != null && it.next.getBody() != null);
 
 		}
-
-		MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
-		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
-		for (Document doc : r) {
-			T t = instantiate(clazz);
-			t.setFields(doc);
-			t.setId(doc.getObjectId("_id"));
-			result.add(t);
-		}
-
-		return result;
+		return filter;
 	}
 
-	protected Bson QueryBody2Bson(QueryBody body) {
+	/**
+	 * QueryBody转换为Bson
+	 * 
+	 * @param body
+	 * @return
+	 */
+	public static Bson QueryBody2Bson(QueryBody body) {
 		Bson filter = null;
 		switch (body.getQueryType()) {
 		case EQU:

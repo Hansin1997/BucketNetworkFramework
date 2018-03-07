@@ -73,6 +73,11 @@ public class Query {
 		return next;
 	}
 
+	/**
+	 * 设置下一个节点
+	 * 
+	 * @param next
+	 */
 	public void setNext(Query next) {
 		this.next = next;
 	}
@@ -109,10 +114,15 @@ public class Query {
 		return this;
 	}
 
+	/**
+	 * 获取查询条件类型
+	 * 
+	 * @return
+	 */
 	public QueryType getQueryType() {
 		return queryType;
 	}
-	
+
 	/**
 	 * 且
 	 * 
@@ -178,6 +188,13 @@ public class Query {
 		System.out.println();
 	}
 
+	/**
+	 * 寻找链表最后一个节点
+	 * 
+	 * @param head
+	 *            头节点
+	 * @return
+	 */
 	public static Query findLast(Query head) {
 		Query it = head;
 		while (it.next != null)
