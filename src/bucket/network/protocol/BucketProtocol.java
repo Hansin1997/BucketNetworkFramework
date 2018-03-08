@@ -8,6 +8,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * Bucket简易协议
@@ -33,9 +37,11 @@ public class BucketProtocol extends Protocol {
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handshake() throws Throwable {
 		getIn().mark(8192);
+		Gson gson = new GsonBuilder().create();
 		if (isServer()) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(getIn()));
 
@@ -46,9 +52,26 @@ public class BucketProtocol extends Protocol {
 				return false;
 			}
 
+			if ((str = reader.readLine()) != null) {
+				Map<String, ?> m = null;
+				try {
+					m = gson.fromJson(str, Map.class);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (m != null) {
+					protocolInfo.putAll(m);
+				}
+			}
+
 		} else {
 			write("BUCKET/1.0\n".getBytes());
+			if (getProtocolInfo() != null)
+				write((gson.toJson(getProtocolInfo()) + "\n").getBytes("utf-8"));
+			else
+				write("\n".getBytes("utf-8"));
 			flush();
+
 		}
 
 		return true;
@@ -66,6 +89,7 @@ public class BucketProtocol extends Protocol {
 	public byte[] load() throws Throwable {
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		String str = new String(read('\n'));
+
 		int length = Integer.valueOf(str);
 
 		byte bf[] = new byte[255];
@@ -80,6 +104,7 @@ public class BucketProtocol extends Protocol {
 		}
 
 		bout.flush();
+
 		return bout.toByteArray();
 	}
 
