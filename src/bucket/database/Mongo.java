@@ -14,7 +14,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 
 /**
- * mongodb 数据库
+ * Mongo 数据库类
  * 
  * @author hansin
  *
@@ -81,7 +81,7 @@ public class Mongo extends Database {
 	@Override
 	public void insert(BucketObject obj) throws Exception {
 		if (db == null)
-			throw new DatabaseConnectionException("Database unselected!");
+			throw new DatabaseConnectionException("Database is unselected!");
 		MongoCollection<Document> coll = db.getCollection(obj.getTableName());
 		Document doc = new Document();
 		doc.putAll(obj.getFields());
@@ -115,7 +115,6 @@ public class Mongo extends Database {
 		}
 		Document upd = new Document(fields);
 		coll.updateOne(query, new Document("$set", upd));
-		
 
 	}
 

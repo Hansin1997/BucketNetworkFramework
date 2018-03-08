@@ -163,24 +163,11 @@ public class Query {
 				break;
 
 			System.out.print(it.body.getKey());
-			switch (it.body.getQueryType()) {
-			case EQU:
-				System.out.print("=");
-				break;
-			case LES:
-				System.out.print("<");
-				break;
-			case GRE:
-				System.out.print(">");
-				break;
-			case LIKE:
-				System.out.print("~");
-				break;
-			}
+			System.out.print(it.body.getSymbol());
 			System.out.print(it.body.getValue());
 
 			if (it.next != null)
-				System.out.print(it.queryType == QueryType.AND ? " AND " : " OR ");
+				System.out.print(" " + it.getSymbol() + " ");
 			else
 				break;
 			it = it.next;
@@ -200,5 +187,20 @@ public class Query {
 		while (it.next != null)
 			it = it.next;
 		return it;
+	}
+
+	/**
+	 * 获取条件符号
+	 * 
+	 * @return
+	 */
+	public String getSymbol() {
+		switch (queryType) {
+		case AND:
+			return "AND";
+		case OR:
+			return "OR";
+		}
+		return "";
 	}
 }

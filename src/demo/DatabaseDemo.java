@@ -54,24 +54,19 @@ public class DatabaseDemo {
 
 		List<PhoneBook> pbs = db.find(PhoneBook.class, null); // 查找PhoneBook中所有记录
 
-		for (PhoneBook pb : pbs)
+		for (PhoneBook pb : pbs) {
 			pb.print(); // 输出信息
+		}
+			
 
 		System.err.println("----------------------------------------------------");
 
 		// 构造查询条件
 		Query query = Query.build()
-				.equ("name", "王思聪") 
-				.or()
-				.equ("nickname", "马老西")
-				.or()
-				.gre("year", 18)
-				.and()
-				.les("year", 20);
-		
+				.like("name", "王思聪");
 
 		pbs = db.find(PhoneBook.class, query); // 通过条件查询
-		
+
 		for (PhoneBook pb : pbs)
 			pb.print(); // 输出信息
 

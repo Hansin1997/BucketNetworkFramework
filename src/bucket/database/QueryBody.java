@@ -138,4 +138,23 @@ public class QueryBody {
 
 		return this.head;
 	}
+
+	/**
+	 * 获取条件符号
+	 * 
+	 * @return
+	 */
+	public String getSymbol() {
+		switch (queryType) {
+		case GRE:
+			return ">";
+		case LES:
+			return "<";
+		case EQU:
+			return "=";
+		case LIKE:
+			return " LIKE ";
+		}
+		return "???";
+	}
 }
