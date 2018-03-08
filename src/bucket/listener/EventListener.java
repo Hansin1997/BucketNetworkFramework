@@ -1,6 +1,6 @@
 package bucket.listener;
 
-import bucket.network.connection.ServerConnection;
+import bucket.network.connection.Connection;
 
 /**
  * 事件监听器
@@ -16,7 +16,7 @@ public interface EventListener {
 	 * @param protocol
 	 *            参数为协议对象
 	 */
-	void onConnect(ServerConnection connection);
+	void onConnect(Connection connection);
 
 	/**
 	 * 数据到达时调用此方法
@@ -24,7 +24,7 @@ public interface EventListener {
 	 * @param data
 	 *            参数为数据
 	 */
-	void onDataCome(ServerConnection connection, byte data[]);
+	void onDataCome(Connection connection, byte data[]);
 
 	/**
 	 * 连接结束时调用此方法
@@ -32,7 +32,7 @@ public interface EventListener {
 	 * @param protocol
 	 *            参数为协议对象
 	 */
-	void onDisconnect(ServerConnection connection);
+	void onDisconnect(Connection connection);
 
 	/**
 	 * 发生异常时调用此方法
@@ -40,5 +40,5 @@ public interface EventListener {
 	 * @param e
 	 *            参数为异常对象
 	 */
-	void onException(ServerConnection connection, Throwable e);
+	void onException(Connection connection, Throwable e);
 }

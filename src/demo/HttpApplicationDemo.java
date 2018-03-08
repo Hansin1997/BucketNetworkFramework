@@ -7,7 +7,7 @@ import java.util.Date;
 
 import bucket.application.Application;
 import bucket.network.Server;
-import bucket.network.connection.ServerConnection;
+import bucket.network.connection.Connection;
 import bucket.network.protocol.HttpProtocol;
 
 /**
@@ -39,9 +39,9 @@ public class HttpApplicationDemo extends Application {
 	}
 
 	@Override
-	public void onConnect(ServerConnection connection) {
+	public void onConnect(Connection connection) {
 		// 新的HTTP连接建立时，触发此方法
-		
+
 		HttpProtocol hp = (HttpProtocol) connection.getProtocol();// 将连接协议对象转换为HTTP协议
 
 		String path = wwwroot + hp.getProtocolInfo().get("PATH"); // 获取请求的本地路径
@@ -76,7 +76,8 @@ public class HttpApplicationDemo extends Application {
 
 				// 发送 Http 404 状态
 				hp.parseServerHeader("404 Not Found", null);
-				hp.send(("<div align='center'><h1>404 Not Found</h1><p>BNF v0.1</p><p>" + new Date() +"<p></div>").getBytes());
+				hp.send(("<div align='center'><h1>404 Not Found</h1><p>BNF v0.1</p><p>" + new Date() + "<p></div>")
+						.getBytes());
 			}
 
 		} catch (Throwable e) {
@@ -93,12 +94,12 @@ public class HttpApplicationDemo extends Application {
 	}
 
 	@Override
-	public void onDataCome(ServerConnection connection, byte[] data) {
+	public void onDataCome(Connection connection, byte[] data) {
 
 	}
 
 	@Override
-	public void onDisconnect(ServerConnection conn) {
+	public void onDisconnect(Connection conn) {
 
 		// 连接断开时从线程池释放资源
 		server.remove(conn);
@@ -106,9 +107,9 @@ public class HttpApplicationDemo extends Application {
 	}
 
 	@Override
-	public void onException(ServerConnection connection, Throwable e) {
+	public void onException(Connection connection, Throwable e) {
 		// 打印异常信息
-		
+
 		e.printStackTrace();
 	}
 

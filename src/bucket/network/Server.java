@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 import bucket.application.Application;
 import bucket.database.Database;
+import bucket.network.connection.Connection;
 import bucket.network.connection.ServerConnection;
 
 /**
@@ -27,35 +28,42 @@ public class Server implements RejectedExecutionHandler {
 	 * ServerConnection列表
 	 */
 	private List<ServerConnection> list;
+	
 	/**
 	 * 线程池
 	 */
 	private ThreadPoolExecutor pool;
+	
 	/**
 	 * 线程池核心大小
 	 */
 	private int corePoolSize;
+	
 	/**
 	 * 线程池最大大小
 	 */
 	private int maximumPoolSize;
+	
 	/**
 	 * 服务端口号
 	 */
 	private int port;
+	
 	/**
 	 * 服务运行标志
 	 */
 	private boolean running;
+	
 	/**
 	 * 数据库管理器
 	 */
 	private Database database;
+	
 	/**
 	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
 	private String appClassName;
-	
+
 	/**
 	 * 协议列表
 	 */
@@ -132,18 +140,13 @@ public class Server implements RejectedExecutionHandler {
 	public void start() throws Exception {
 		setRunning(true);
 		ServerSocket serverSocket = new ServerSocket(this.port);
-		
+
 		@SuppressWarnings("rawtypes")
 		Constructor c = Class.forName(appClassName).getConstructor(Server.class);
-		
+
 		while (isRunning()) {
 			Socket socket = serverSocket.accept();
-
-			
-			
-
-			ServerConnection conn = new ServerConnection(ProtocolList,socket, (Application) c.newInstance(this));
-
+			ServerConnection conn = new ServerConnection(ProtocolList, socket, (Application) c.newInstance(this));
 			add(conn);
 
 		}
@@ -189,13 +192,13 @@ public class Server implements RejectedExecutionHandler {
 	 *            ServerConnection
 	 * @return 是否成功移除
 	 */
-	public synchronized boolean remove(ServerConnection conn) {
+	public synchronized boolean remove(Connection conn) {
 		try {
 			conn.getSocket().close();
 		} catch (IOException e) {
-			//e.printStackTrace();
+			// e.printStackTrace();
 		}
-		boolean q1 = this.pool.remove(conn) ,q2 = list.remove(conn);
+		boolean q1 = this.pool.remove(conn), q2 = list.remove(conn);
 		return q1 && q2;
 	}
 
@@ -314,20 +317,40 @@ public class Server implements RejectedExecutionHandler {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
-	
+
+	/**
+	 * 添加协议支持
+	 * 
+	 * @param protocol
+	 */
 	public void addProtocol(Class<?> protocol) {
 		addProtocol(protocol.getName());
 	}
-	
+
+	/**
+	 * 添加协议支持
+	 * 
+	 * @param protocol
+	 */
 	public void addProtocol(String protocolClassName) {
+		
 		ProtocolList.add(protocolClassName);
 	}
-	
+
+	/**
+	 * 移除协议支持
+	 * 
+	 * @param protocol
+	 */
 	public void removeProtocol(Class<?> protocol) {
 		removeProtocol(protocol.getName());
 	}
-	
+
+	/**
+	 * 移除协议支持
+	 * 
+	 * @param protocol
+	 */
 	public void removeProtocol(String protocolClassName) {
 		ProtocolList.remove(protocolClassName);
 	}

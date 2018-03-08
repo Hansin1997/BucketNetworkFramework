@@ -18,24 +18,15 @@ import bucket.network.protocol.Protocol;
  * @author Hansin1997
  * @version 2017/12/4
  */
-public class ServerConnection implements Runnable {
+public class ServerConnection extends Connection {
 
 	/**
-	 * 协议对象
+	 * 协议列表
 	 */
-	private Protocol protocol;
-	private Socket socket;
-	private InputStream in;
-	private OutputStream out;
-	/**
-	 * 事件监听器
-	 */
-	private EventListener listener;
-	
 	private List<String> ProtocolList;
 
-	public ServerConnection(List<String> ProtocolList,Socket socket, EventListener listener) {
-		setSocket(socket);
+	public ServerConnection(List<String> ProtocolList, Socket s, EventListener listener) {
+		setSocket(s);
 		setListener(listener);
 		this.ProtocolList = ProtocolList;
 		try {
@@ -110,48 +101,6 @@ public class ServerConnection implements Runnable {
 			}
 		}
 		return false;
-	}
-
-	// -----------------------------------------------//
-
-	public void setSocket(Socket socket) {
-		this.socket = socket;
-	}
-
-	public Socket getSocket() {
-		return socket;
-	}
-
-	public InputStream getIn() {
-		return in;
-	}
-
-	public OutputStream getOut() {
-		return out;
-	}
-
-	public void setIn(InputStream in) {
-		this.in = in;
-	}
-
-	public void setOut(OutputStream out) {
-		this.out = out;
-	}
-
-	public void setProtocol(Protocol protocol) {
-		this.protocol = protocol;
-	}
-
-	public Protocol getProtocol() {
-		return protocol;
-	}
-
-	public void setListener(EventListener listener) {
-		this.listener = listener;
-	}
-
-	public EventListener getListener() {
-		return listener;
 	}
 
 }
