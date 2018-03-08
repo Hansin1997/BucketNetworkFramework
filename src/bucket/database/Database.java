@@ -50,7 +50,7 @@ public abstract class Database {
 	/**
 	 * 连接数据库
 	 */
-	public abstract void connect();
+	public abstract void connect() throws Exception;
 
 	/**
 	 * 连接数据库
@@ -59,8 +59,9 @@ public abstract class Database {
 	 *            用户名
 	 * @param password
 	 *            密码
+	 * @throws Exception 
 	 */
-	public abstract void connect(String username, String password);
+	public abstract void connect(String username, String password) throws Exception;
 
 	/**
 	 * 关闭数据库连接

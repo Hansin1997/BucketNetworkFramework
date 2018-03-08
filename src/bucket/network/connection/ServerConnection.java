@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.List;
 
 import bucket.listener.EventListener;
 import bucket.network.protocol.Protocol;
@@ -31,15 +31,13 @@ public class ServerConnection implements Runnable {
 	 * 事件监听器
 	 */
 	private EventListener listener;
+	
+	private List<String> ProtocolList;
 
-	/**
-	 * 协议列表
-	 */
-	public static final ArrayList<String> ProtocolList = new ArrayList<String>();
-
-	public ServerConnection(Socket socket, EventListener listener) {
+	public ServerConnection(List<String> ProtocolList,Socket socket, EventListener listener) {
 		setSocket(socket);
 		setListener(listener);
+		this.ProtocolList = ProtocolList;
 		try {
 			in = new BufferedInputStream(socket.getInputStream());
 			out = new BufferedOutputStream(socket.getOutputStream());

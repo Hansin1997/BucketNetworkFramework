@@ -3,7 +3,7 @@ package demo;
 import java.util.List;
 
 import bucket.database.Database;
-import bucket.database.Mongo;
+import bucket.database.MySQL;
 import bucket.database.Query;
 
 /**
@@ -16,10 +16,10 @@ public class DatabaseDemo {
 
 	public static void main(String[] args) throws Exception {
 
-		Database db = new Mongo("127.0.0.1", 27017); // 创建Mongo数据库实例
-		db.connect(); // 连接数据库
+		Database db = new MySQL("live.xingkong.us", 3306); // 创建Mongo数据库实例
+		db.connect("stream","xingkongstreambest"); // 连接数据库
 
-		db.useDb("myDB"); // 选择数据库，Mongo数据库不需事先创建数据库
+		db.useDb("stream"); // 选择数据库，Mongo数据库不需事先创建数据库
 
 		PhoneBook pb1, pb2, pb3, pb4;
 
@@ -58,13 +58,18 @@ public class DatabaseDemo {
 			pb.print(); // 输出信息
 
 		System.err.println("----------------------------------------------------");
-		
+
 		// 构造查询条件
 		Query query = Query.build()
-				.equ("name", "王思聪")
+				.equ("name", "王思聪") 
 				.or()
-				.equ("nickname", "马老西");
+				.equ("nickname", "马老西")
+				.or()
+				.gre("year", 18)
+				.and()
+				.les("year", 20);
 		
+
 		pbs = db.find(PhoneBook.class, query); // 通过条件查询
 		
 		for (PhoneBook pb : pbs)

@@ -1,5 +1,6 @@
 package bucket.network;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -54,6 +55,11 @@ public class Server implements RejectedExecutionHandler {
 	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
 	private String appClassName;
+	
+	/**
+	 * 协议列表
+	 */
+	protected final ArrayList<String> ProtocolList = new ArrayList<String>();
 
 	/**
 	 * 构造函数
@@ -126,13 +132,17 @@ public class Server implements RejectedExecutionHandler {
 	public void start() throws Exception {
 		setRunning(true);
 		ServerSocket serverSocket = new ServerSocket(this.port);
+		
+		@SuppressWarnings("rawtypes")
+		Constructor c = Class.forName(appClassName).getConstructor(Server.class);
+		
 		while (isRunning()) {
 			Socket socket = serverSocket.accept();
 
-			@SuppressWarnings("rawtypes")
-			Constructor c = Class.forName(appClassName).getConstructor(Server.class);
+			
+			
 
-			ServerConnection conn = new ServerConnection(socket, (Application) c.newInstance(this));
+			ServerConnection conn = new ServerConnection(ProtocolList,socket, (Application) c.newInstance(this));
 
 			add(conn);
 
@@ -180,7 +190,13 @@ public class Server implements RejectedExecutionHandler {
 	 * @return 是否成功移除
 	 */
 	public synchronized boolean remove(ServerConnection conn) {
-		return list.remove(conn);
+		try {
+			conn.getSocket().close();
+		} catch (IOException e) {
+			//e.printStackTrace();
+		}
+		boolean q1 = this.pool.remove(conn) ,q2 = list.remove(conn);
+		return q1 && q2;
 	}
 
 	/**
@@ -297,5 +313,22 @@ public class Server implements RejectedExecutionHandler {
 	 */
 	public void setPort(int port) {
 		this.port = port;
+	}
+	
+	
+	public void addProtocol(Class<?> protocol) {
+		addProtocol(protocol.getName());
+	}
+	
+	public void addProtocol(String protocolClassName) {
+		ProtocolList.add(protocolClassName);
+	}
+	
+	public void removeProtocol(Class<?> protocol) {
+		removeProtocol(protocol.getName());
+	}
+	
+	public void removeProtocol(String protocolClassName) {
+		ProtocolList.remove(protocolClassName);
 	}
 }
