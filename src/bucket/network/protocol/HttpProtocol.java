@@ -1,10 +1,8 @@
 package bucket.network.protocol;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -127,14 +125,13 @@ public class HttpProtocol extends Protocol {
 
 	@Override
 	public boolean handshake() throws Throwable {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(getIn()));
+
 		HashMap<String, String> header = new HashMap<String, String>();
 		super.setProtocolHeader(header);
-
 		String str = null, first = null;
 
-		while ((str = reader.readLine()) != null) {
-
+		while ((str = new String(read('\n'))) != null) {
+			str = str.trim();
 			String tmp[] = str.split(":", 2);
 			if (tmp.length == 1) {// 当str只切割出一个子串的时候
 
@@ -149,7 +146,7 @@ public class HttpProtocol extends Protocol {
 			header.put(tmp[0].trim(), tmp[1].trim());// 存header
 		}
 
-		if (!checkHandshake(first)) {
+		if (first == null || !checkHandshake(first)) {
 			return false;// 握手失败返回假
 		}
 
@@ -161,7 +158,7 @@ public class HttpProtocol extends Protocol {
 				int b;
 				int contentLenth = Integer.parseInt(contLen);
 				for (int i = 0; i < contentLenth; i++) {
-					b = reader.read();
+					b = read();
 					if (b == -1)
 						break;
 					buff.append((char) b);
@@ -192,30 +189,48 @@ public class HttpProtocol extends Protocol {
 
 	@Override
 	public byte[] load() throws Throwable {
+
 		if (!isServer()) {
+
 			String contLen = getProtocolHeader().get("Content-Length");
+
 			if (contLen != null) {
 				int contentLenth = Integer.parseInt(contLen);
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				byte buff[] = new byte[255];
+
 				int b = -1;
 				for (int i = 0; i < contentLenth; i += buff.length) {
+
 					b = read(buff, 0, buff.length);
+
 					if (b != -1) {
 						out.write(buff, 0, b);
 					} else
 						break;
 				}
-				return out.toByteArray();
+				out.flush();
+				byte[] data = out.toByteArray();
+				if (data.length == 0)
+					return null;
+				return data;
 			} else {
+
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
 				byte buff[] = new byte[255];
 				int b = -1;
 				while ((b = read(buff, 0, buff.length)) != -1) {
 					out.write(buff, 0, b);
 
+					if (b < buff.length)
+						break;
+
 				}
-				return out.toByteArray();
+				out.flush();
+				byte[] data = out.toByteArray();
+				if (data.length == 0)
+					return null;
+				return data;
 			}
 
 		}
@@ -254,6 +269,10 @@ public class HttpProtocol extends Protocol {
 	 * @throws Throwable
 	 */
 	public void parseClientHeader(Map<String, Object> header) throws Throwable {
+		if (getProtocolName() == null)
+			setProtocolName("HTTP");
+		if (getProtocolVersion() == null)
+			setProtocolVersion("1.1");
 		PrintWriter wter = new PrintWriter(getOut());
 
 		wter.println(getProtocolInfo().get(INFO_METHOD) + " " + getProtocolInfo().get(INFO_PATH) + " "
@@ -268,6 +287,44 @@ public class HttpProtocol extends Protocol {
 			}
 		wter.println();
 		wter.flush();
+	}
+
+	public HttpProtocol GET() {
+		if (this.getProtocolInfo() == null)
+			this.setProtocolInfo(new HashMap<String, Object>());
+		this.getProtocolInfo().put(INFO_METHOD, INFO_GET);
+		return this;
+	}
+
+	public HttpProtocol POST() {
+		if (this.getProtocolInfo() == null)
+			this.setProtocolInfo(new HashMap<String, Object>());
+		this.getProtocolInfo().put(INFO_METHOD, INFO_POST);
+		return this;
+	}
+
+	public HttpProtocol GET(String path) {
+		this.GET().getProtocolInfo().put(INFO_PATH, path);
+		return this;
+	}
+
+	public HttpProtocol POST(String path) {
+		this.POST().getProtocolInfo().put(INFO_PATH, path);
+		return this;
+	}
+
+	@Override
+	public Map<String, String> getProtocolHeader() {
+		if (protocolHeader == null)
+			protocolHeader = new HashMap<>();
+		return super.getProtocolHeader();
+	}
+
+	@Override
+	public Map<String, Object> getProtocolInfo() {
+		if (protocolInfo == null)
+			protocolInfo = new HashMap<>();
+		return super.getProtocolInfo();
 	}
 
 }
