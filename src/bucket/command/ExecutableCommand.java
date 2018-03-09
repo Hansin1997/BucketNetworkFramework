@@ -1,6 +1,7 @@
 package bucket.command;
 
 import bucket.application.Application;
+import bucket.network.connection.Connection;
 
 /**
  * 执行原子操作的命令
@@ -21,6 +22,11 @@ public abstract class ExecutableCommand extends BucketCommand {
 	protected transient Application application;
 
 	/**
+	 * 上下文Connection对象
+	 */
+	protected transient Connection connection;
+
+	/**
 	 * 隐藏的传输标识，用于回调
 	 */
 	public transient long id;
@@ -31,6 +37,14 @@ public abstract class ExecutableCommand extends BucketCommand {
 
 	public void setApplication(Application application) {
 		this.application = application;
+	}
+
+	public Connection getConnection() {
+		return connection;
+	}
+
+	public void setConnection(Connection connection) {
+		this.connection = connection;
 	}
 
 	public Object getValue() {
