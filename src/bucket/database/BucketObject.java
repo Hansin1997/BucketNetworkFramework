@@ -4,6 +4,10 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.Set;
 
 /**
@@ -17,17 +21,17 @@ public abstract class BucketObject {
 	/**
 	 * 对应数据库的表名
 	 */
-	protected String tableName;
+	protected transient String tableName;
 
 	/**
 	 * 主键
 	 */
-	protected Object id;
+	protected transient Object id;
 
 	/**
 	 * 所属数据库
 	 */
-	protected Database db;
+	protected transient Database db;
 
 	/**
 	 * 默认构造函数
@@ -182,6 +186,11 @@ public abstract class BucketObject {
 		}
 
 		db.remove(this);
+	}
+
+	public String toJSON() {
+		Gson gson = new GsonBuilder().create();
+		return gson.toJson(this);
 	}
 
 }

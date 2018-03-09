@@ -1,5 +1,8 @@
 package bucket.command;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * Bucket命令类 本类都有execute()方法用作命令执行
  * 
@@ -9,33 +12,13 @@ package bucket.command;
 public abstract class BucketCommand {
 
 	/**
-	 * 命令名
-	 */
-	public String command;
-
-	/**
-	 * 命令数据
-	 */
-	public Object value;
-
-	/**
 	 * 执行
 	 */
 	public abstract void execute();
-
-	public String getCommand() {
-		return command;
+	
+	public String toJSON() {
+		Gson gson = new GsonBuilder().create();
+		return gson.toJson(this);
 	}
 
-	public Object getValue() {
-		return value;
-	}
-
-	public void setCommand(String command) {
-		this.command = command;
-	}
-
-	public void setValue(Object value) {
-		this.value = value;
-	}
 }
