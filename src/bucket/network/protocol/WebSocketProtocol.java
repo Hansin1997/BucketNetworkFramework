@@ -81,7 +81,7 @@ public class WebSocketProtocol extends Protocol {
 	 * @throws Throwable
 	 *             异常
 	 */
-	private void echoServerHeader() throws Throwable {
+	protected void echoServerHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
 		wter.println("HTTP/1.1 101 WebSocket Protocol Handshake");
 		for (String[] kv : ckHeader) {
@@ -101,9 +101,14 @@ public class WebSocketProtocol extends Protocol {
 	 * @throws Throwable
 	 *             异常
 	 */
-	private void echoClientHeader() throws Throwable {
+	protected void echoClientHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
-		wter.println("GET " + getProtocolInfo().get(INFO_PATH) + " HTTP/1.1");
+		String path = null;
+		if (getProtocolInfo().get(INFO_PATH) == null)
+			path = "/";
+		else
+			path = (String) getProtocolInfo().get(INFO_PATH);
+		wter.println("GET /" + path + " HTTP/1.1");
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		for (String[] kv : ckHeader) {
 			wter.println(kv[0] + ": " + kv[1]);
@@ -133,7 +138,9 @@ public class WebSocketProtocol extends Protocol {
 			return false;
 
 		for (String[] kv : ckHeader) {
-			if (getProtocolHeader().get(kv[0]) == null || !getProtocolHeader().get(kv[0]).equals(kv[1]))
+
+			if (getProtocolHeader().get(kv[0]) == null
+					|| !getProtocolHeader().get(kv[0]).toLowerCase().equals(kv[1].toLowerCase()))
 
 				return false;
 		}
@@ -208,6 +215,7 @@ public class WebSocketProtocol extends Protocol {
 			getIn().reset();
 			return false;// 握手失败
 		}
+
 		if (isServer())
 			echoServerHeader();
 
@@ -238,6 +246,9 @@ public class WebSocketProtocol extends Protocol {
 		return null;
 	}
 
+	/**
+	 * 初始化内部数据
+	 */
 	private void init() {
 		fin = true;
 		rsv = null;
@@ -248,6 +259,12 @@ public class WebSocketProtocol extends Protocol {
 		mask = false;
 	}
 
+	/**
+	 * 服务端推数据
+	 * 
+	 * @param outputStream
+	 * @throws IOException
+	 */
 	private void serverPush(OutputStream outputStream) throws IOException {
 		DataOutputStream out = new DataOutputStream(outputStream);
 
@@ -267,6 +284,13 @@ public class WebSocketProtocol extends Protocol {
 		out.flush();
 	}
 
+	/**
+	 * 服务端接收数据
+	 * 
+	 * @param inputStream
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean serverLoad(InputStream inputStream) throws IOException {
 		init();
 		int b;
@@ -335,6 +359,13 @@ public class WebSocketProtocol extends Protocol {
 		return true;
 	}
 
+	/**
+	 * 客户端接收数据
+	 * 
+	 * @param inputStream
+	 * @return
+	 * @throws IOException
+	 */
 	private boolean clientLoad(InputStream inputStream) throws IOException {
 		init();
 		int b;
@@ -368,6 +399,11 @@ public class WebSocketProtocol extends Protocol {
 		return true;
 	}
 
+	/**
+	 * 解码数据
+	 * 
+	 * @return
+	 */
 	private byte[] decode() {
 		if (!mask)
 			return payload;
@@ -378,6 +414,11 @@ public class WebSocketProtocol extends Protocol {
 		return result;
 	}
 
+	/**
+	 * 获取信息
+	 * 
+	 * @return
+	 */
 	public String getWebSocketInfo() {
 		StringBuffer buff = new StringBuffer();
 
@@ -399,6 +440,12 @@ public class WebSocketProtocol extends Protocol {
 		return bytes2Long(opc);
 	}
 
+	/**
+	 * 客户端推数据
+	 * 
+	 * @param outputStream
+	 * @throws IOException
+	 */
 	private void clientPush(OutputStream outputStream) throws IOException {
 		DataOutputStream out = new DataOutputStream(outputStream);
 
@@ -438,6 +485,12 @@ public class WebSocketProtocol extends Protocol {
 		out.flush();
 	}
 
+	/**
+	 * 字节数组转换为长整数
+	 * 
+	 * @param bytes
+	 * @return
+	 */
 	private static long bytes2Long(byte bytes[]) {
 		long result = 0;
 		for (int i = 0; i < bytes.length; i++) {
@@ -447,6 +500,12 @@ public class WebSocketProtocol extends Protocol {
 		return result;
 	}
 
+	/**
+	 * 字节数组转换问整型
+	 * 
+	 * @param bytes
+	 * @return
+	 */
 	private static int bytes2Int(byte bytes[]) {
 		int result = 0;
 		for (int i = 0; i < bytes.length; i++) {
@@ -465,6 +524,11 @@ public class WebSocketProtocol extends Protocol {
 		return array;
 	}
 
+	/**
+	 * 构造数据
+	 * 
+	 * @param data
+	 */
 	public void build(byte data[]) {
 
 		this.payload = data;
