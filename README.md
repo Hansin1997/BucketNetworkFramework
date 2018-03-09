@@ -15,10 +15,10 @@
  应用类 服务接受的每一个客户都将创建一个Application对象进行事件处理。
 >* 接口方法:
 >
->** void onConnect(Connection connection); //握手完成后调用此方法
->** void onDataCome(Connection connection, byte data[]); //数据到达时调用此方法
->** void onDisconnect(Connection connection); //连接结束时调用此方法
->** void onException(Connection connection, Throwable e); //发生异常时调用此方法
+>* void onConnect(Connection connection); //握手完成后调用此方法
+>* void onDataCome(Connection connection, byte data[]); //数据到达时调用此方法
+>* void onDisconnect(Connection connection); //连接结束时调用此方法
+>* void onException(Connection connection, Throwable e); //发生异常时调用此方法
 
 示例:
 
