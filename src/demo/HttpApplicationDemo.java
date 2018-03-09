@@ -3,6 +3,7 @@ package demo;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.SocketException;
 import java.util.Date;
 
 import bucket.application.Application;
@@ -109,8 +110,10 @@ public class HttpApplicationDemo extends Application {
 	@Override
 	public void onException(Connection connection, Throwable e) {
 		// 打印异常信息
-
-		e.printStackTrace();
+		if (e.getClass().equals(SocketException.class))
+			onDisconnect(connection);
+		else
+			e.printStackTrace();
 	}
 
 }

@@ -12,7 +12,9 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,11 +105,29 @@ public class WebSocketProtocol extends Protocol {
 	 */
 	protected void echoClientHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
+		
 		String path = null;
 		if (getProtocolInfo().get(INFO_PATH) == null)
 			path = "/";
 		else
 			path = (String) getProtocolInfo().get(INFO_PATH);
+
+		if (getProtocolInfo().get(INFO_GET) != null) {
+			
+			@SuppressWarnings("unchecked")
+			Map<String, String> getMap = (Map<String, String>) getProtocolInfo().get(INFO_GET);
+			Iterator<Entry<String, String>> it = getMap.entrySet().iterator();
+			if(it.hasNext())
+				path += "?";
+			while (it.hasNext()) {
+				Entry<String, String> kv = it.next();
+				path += kv.getKey() + "=" + kv.getValue();
+				if (it.hasNext())
+					path += "&";
+			}
+
+		}
+
 		wter.println("GET /" + path + " HTTP/1.1");
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		for (String[] kv : ckHeader) {
@@ -244,6 +264,38 @@ public class WebSocketProtocol extends Protocol {
 				return decode();
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, String> GET() {
+		if (this.getProtocolInfo() == null)
+			this.setProtocolInfo(new HashMap<String, Object>());
+		this.getProtocolInfo().put(INFO_METHOD, INFO_GET);
+		if (this.getProtocolInfo().get(INFO_GET) == null)
+			this.getProtocolInfo().put(INFO_GET, new HashMap<String, String>());
+		return (Map<String, String>) this.getProtocolInfo().get(INFO_GET);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Map<String, String> POST() {
+		if (this.getProtocolInfo() == null)
+			this.setProtocolInfo(new HashMap<String, Object>());
+		this.getProtocolInfo().put(INFO_METHOD, INFO_POST);
+		if (this.getProtocolInfo().get(INFO_POST) == null)
+			this.getProtocolInfo().put(INFO_POST, new HashMap<String, String>());
+		return (Map<String, String>) this.getProtocolInfo().get(INFO_POST);
+	}
+
+	public Map<String, String> GET(String path) {
+		Map<String, String> map = this.GET();
+		this.getProtocolInfo().put(INFO_PATH, path);
+		return map;
+	}
+
+	public Map<String, String> POST(String path) {
+		Map<String, String> map = this.POST();
+		this.getProtocolInfo().put(INFO_PATH, path);
+		return map;
 	}
 
 	/**
