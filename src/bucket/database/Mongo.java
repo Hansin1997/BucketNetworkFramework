@@ -143,7 +143,9 @@ public class Mongo extends Database {
 		ArrayList<T> result = new ArrayList<T>();
 		Bson filter = Query2Bson(query);
 
-		MongoCollection<Document> coll = db.getCollection(clazz.newInstance().getTableName());
+		String tableName = ((query == null || query.table() == null) ? clazz.newInstance().getTableName()
+				: query.table());
+		MongoCollection<Document> coll = db.getCollection(tableName);
 		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
 		for (Document doc : r) {
 			T t = instantiate(clazz);
@@ -163,8 +165,8 @@ public class Mongo extends Database {
 	 */
 	public static Bson Query2Bson(Query query) {
 		Bson filter = null;
-		if (query != null && query.getBody() != null) {
-			Query it = query;
+		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null) {
+			QueryQueue it = query.getQueue();
 
 			do {
 				if (filter == null) {
@@ -194,8 +196,10 @@ public class Mongo extends Database {
 	 * @return
 	 */
 	public static Bson QueryBody2Bson(QueryBody body) {
+		if (body == null || body.getKey() == null)
+			return null;
 		Bson filter = null;
-		switch (body.getQueryType()) {
+		switch (body.getQueueType()) {
 		case EQU:
 			filter = Filters.eq(body.getKey(), body.getValue());
 			break;

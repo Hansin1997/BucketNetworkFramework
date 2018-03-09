@@ -59,7 +59,7 @@ public abstract class Database {
 	 *            用户名
 	 * @param password
 	 *            密码
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public abstract void connect(String username, String password) throws Exception;
 
@@ -172,12 +172,44 @@ public abstract class Database {
 	 *            BucketObject子类
 	 * @param query
 	 *            查找条件
+	 * @param limit
+	 *            最大数目
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
+	 */
+	public <T extends BucketObject> List<T> find(Class<T> clazz, QueryBody query, long limit) throws Exception {
+		return find(clazz, query.head, limit);
+	}
+
+	/**
+	 * 查找对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
 	 * @return 返回查找结果
 	 * @throws Exception
 	 *             异常
 	 */
 	public <T extends BucketObject> List<T> find(Class<T> clazz, Query query) throws Exception {
 		return find(clazz, query, -1);
+	};
+
+	/**
+	 * 查找对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
+	 */
+	public <T extends BucketObject> List<T> find(Class<T> clazz, QueryBody query) throws Exception {
+		return find(clazz, query.head);
 	};
 
 	/**
@@ -197,6 +229,21 @@ public abstract class Database {
 			return null;
 		else
 			return result.get(0);
+	};
+
+	/**
+	 * 查找一个对象
+	 * 
+	 * @param clazz
+	 *            BucketObject子类
+	 * @param query
+	 *            查找条件
+	 * @return 返回查找结果
+	 * @throws Exception
+	 *             异常
+	 */
+	public <T extends BucketObject> T findOne(Class<T> clazz, QueryBody query) throws Exception {
+		return findOne(clazz, query.head);
 	};
 
 	/**

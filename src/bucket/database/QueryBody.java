@@ -11,7 +11,7 @@ public class QueryBody {
 	/**
 	 * 匹配条件
 	 */
-	protected QueryBodyType queryType;
+	protected QueryQueueBodyType queueType;
 	/**
 	 * 键
 	 */
@@ -46,12 +46,12 @@ public class QueryBody {
 		return value;
 	}
 
-	public void setQueryType(QueryBodyType queryType) {
-		this.queryType = queryType;
+	public QueryQueueBodyType getQueueType() {
+		return queueType;
 	}
 
-	public QueryBodyType getQueryType() {
-		return queryType;
+	public void setQueueType(QueryQueueBodyType queueType) {
+		this.queueType = queueType;
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class QueryBody {
 	 * @author Hansin
 	 *
 	 */
-	public enum QueryBodyType {
+	public enum QueryQueueBodyType {
 		/**
 		 * 等于
 		 */
@@ -89,7 +89,7 @@ public class QueryBody {
 	public Query equ(String key, Object value) {
 		this.setKey(key);
 		this.setValue(value);
-		this.setQueryType(QueryBodyType.EQU);
+		this.setQueueType(QueryQueueBodyType.EQU);
 
 		return this.head;
 	}
@@ -104,7 +104,7 @@ public class QueryBody {
 	public Query les(String key, Object value) {
 		this.setKey(key);
 		this.setValue(value);
-		this.setQueryType(QueryBodyType.LES);
+		this.setQueueType(QueryQueueBodyType.LES);
 
 		return this.head;
 	}
@@ -119,7 +119,7 @@ public class QueryBody {
 	public Query gre(String key, Object value) {
 		this.setKey(key);
 		this.setValue(value);
-		this.setQueryType(QueryBodyType.GRE);
+		this.setQueueType(QueryQueueBodyType.GRE);
 
 		return this.head;
 	}
@@ -134,7 +134,7 @@ public class QueryBody {
 	public Query like(String key, Object value) {
 		this.setKey(key);
 		this.setValue(value);
-		this.setQueryType(QueryBodyType.LIKE);
+		this.setQueueType(QueryQueueBodyType.LIKE);
 
 		return this.head;
 	}
@@ -145,7 +145,7 @@ public class QueryBody {
 	 * @return
 	 */
 	public String getSymbol() {
-		switch (queryType) {
+		switch (queueType) {
 		case GRE:
 			return ">";
 		case LES:
@@ -157,4 +157,36 @@ public class QueryBody {
 		}
 		return "???";
 	}
+
+	/**
+	 * 是否正序
+	 * 
+	 * @return 是否正序
+	 */
+	public boolean isSort() {
+		return head.sort;
+	}
+
+	/**
+	 * 设置正序
+	 * 
+	 * @param sort
+	 *            是否正序
+	 */
+	public Query sort(boolean sort) {
+		head.sort = sort;
+		return head;
+	}
+
+	/**
+	 * 设置表名
+	 * 
+	 * @param tableName
+	 * @return
+	 */
+	public Query table(String tableName) {
+		this.head.tableName = tableName;
+		return head;
+	}
+
 }

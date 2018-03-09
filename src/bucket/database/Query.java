@@ -14,72 +14,23 @@ public class Query {
 	protected boolean sort;
 
 	/**
-	 * 条件体
+	 * 条件队列
 	 */
-	protected QueryBody body;
+	protected QueryQueue queue;
 
 	/**
-	 * 条件类型
-	 * 
-	 * @author Hansin
-	 *
+	 * 要查询的表名
 	 */
-	protected enum QueryType {
-		/**
-		 * 且
-		 */
-		AND,
-		/**
-		 * 或
-		 */
-		OR
-	}
+	protected String tableName;
 
-	/**
-	 * 条件类型
-	 */
-	protected QueryType queryType;
-
-	/**
-	 * 下一个查询条件目标
-	 */
-	protected Query next;
-
-	public Query() {
-		sort(true);
+	public Query(QueryQueue queue) {
+		setQueue(queue);
 	}
 
 	public static QueryBody build() {
-		Query head = new Query();
-		head.body = new QueryBody(head);
+		QueryQueue head = new QueryQueue();
+		head.body = new QueryBody(new Query(head));
 		return head.body;
-	}
-
-	/**
-	 * 获取条件体
-	 * 
-	 * @return
-	 */
-	public QueryBody getBody() {
-		return body;
-	}
-
-	/**
-	 * 获取下一个查询条件
-	 * 
-	 * @return
-	 */
-	public Query getNext() {
-		return next;
-	}
-
-	/**
-	 * 设置下一个节点
-	 * 
-	 * @param next
-	 */
-	public void setNext(Query next) {
-		this.next = next;
 	}
 
 	/**
@@ -103,24 +54,31 @@ public class Query {
 	}
 
 	/**
-	 * 设置条件体(这将重置条件体的头指针)
+	 * 设置表名
 	 * 
-	 * @param body
-	 *            条件体
+	 * @param tableName
+	 * @return
 	 */
-	public Query setBody(QueryBody body) {
-		this.body = body;
-		body.head = this;
+	public Query table(String tableName) {
+		this.tableName = tableName;
 		return this;
 	}
 
 	/**
-	 * 获取查询条件类型
+	 * 获取表名
 	 * 
 	 * @return
 	 */
-	public QueryType getQueryType() {
-		return queryType;
+	public String table() {
+		return tableName;
+	}
+
+	public void setQueue(QueryQueue queue) {
+		this.queue = queue;
+	}
+
+	public QueryQueue getQueue() {
+		return queue;
 	}
 
 	/**
@@ -129,11 +87,7 @@ public class Query {
 	 * @return
 	 */
 	public QueryBody and() {
-		Query last = findLast(this);
-		last.queryType = QueryType.AND;
-		last.next = new Query();
-		last.next.body = new QueryBody(this.body.head);
-		return last.next.body;
+		return this.queue.and();
 	}
 
 	/**
@@ -142,11 +96,7 @@ public class Query {
 	 * @return
 	 */
 	public QueryBody or() {
-		Query last = findLast(this);
-		last.queryType = QueryType.OR;
-		last.next = new Query();
-		last.next.body = new QueryBody(this.body.head);
-		return last.next.body;
+		return this.queue.or();
 	}
 
 	/**
@@ -156,7 +106,7 @@ public class Query {
 		System.out.println("sort:\t" + isSort());
 		System.out.print("query:\t");
 
-		Query it = this;
+		QueryQueue it = this.queue;
 		while (true) {
 
 			if (it.body == null)
@@ -175,32 +125,4 @@ public class Query {
 		System.out.println();
 	}
 
-	/**
-	 * 寻找链表最后一个节点
-	 * 
-	 * @param head
-	 *            头节点
-	 * @return
-	 */
-	public static Query findLast(Query head) {
-		Query it = head;
-		while (it.next != null)
-			it = it.next;
-		return it;
-	}
-
-	/**
-	 * 获取条件符号
-	 * 
-	 * @return
-	 */
-	public String getSymbol() {
-		switch (queryType) {
-		case AND:
-			return "AND";
-		case OR:
-			return "OR";
-		}
-		return "";
-	}
 }

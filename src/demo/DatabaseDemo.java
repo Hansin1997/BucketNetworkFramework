@@ -3,7 +3,7 @@ package demo;
 import java.util.List;
 
 import bucket.database.Database;
-import bucket.database.MySQL;
+import bucket.database.Mongo;
 import bucket.database.Query;
 
 /**
@@ -16,10 +16,10 @@ public class DatabaseDemo {
 
 	public static void main(String[] args) throws Exception {
 
-		Database db = new MySQL("live.xingkong.us", 3306); // 创建Mongo数据库实例
-		db.connect("stream","xingkongstreambest"); // 连接数据库
+		Database db = new Mongo("localhost", 27017); // 创建Mongo数据库实例
+		db.connect(); // 连接数据库
 
-		db.useDb("stream"); // 选择数据库，Mongo数据库不需事先创建数据库
+		db.useDb("myDB"); // 选择数据库，Mongo数据库不需事先创建数据库
 
 		PhoneBook pb1, pb2, pb3, pb4;
 
@@ -33,6 +33,7 @@ public class DatabaseDemo {
 		pb1.nickname = "隔壁老王";
 		pb1.phone = "123456";
 		pb1.address = "隔壁";
+		pb1.setTableName("asd");
 		pb1.save(); // 储存pb1
 
 		pb2.name = "马化腾";
@@ -52,18 +53,16 @@ public class DatabaseDemo {
 		pb4.QQ = "123456789";
 		pb4.save(); // 储存pb4
 
-		List<PhoneBook> pbs = db.find(PhoneBook.class, null); // 查找PhoneBook中所有记录
+		List<PhoneBook> pbs = db.find(PhoneBook.class, Query.build()); // 查找PhoneBook中所有记录
 
 		for (PhoneBook pb : pbs) {
 			pb.print(); // 输出信息
 		}
-			
 
 		System.err.println("----------------------------------------------------");
 
 		// 构造查询条件
-		Query query = Query.build()
-				.like("name", "王思聪");
+		Query query = Query.build().like("name", "王思聪").table("asd");
 
 		pbs = db.find(PhoneBook.class, query); // 通过条件查询
 

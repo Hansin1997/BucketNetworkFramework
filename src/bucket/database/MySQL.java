@@ -90,12 +90,15 @@ public class MySQL extends Database {
 	@Override
 	public <T extends BucketObject> List<T> find(Class<T> clazz, Query query, long limit) throws Exception {
 		ArrayList<T> result = new ArrayList<T>();
-		T obj = clazz.newInstance();
+
+		String tableName = ((query == null || query.table() == null) ? clazz.newInstance().getTableName()
+				: query.table());
+
 		StringBuffer sql = new StringBuffer();
-		sql.append("SELECT * FROM " + obj.getTableName() + " ");
-		if (query != null) {
+		sql.append("SELECT * FROM " + tableName + " ");
+		if (query != null && query.getQueue() != null) {
 			sql.append("WHERE ");
-			Query q = query;
+			QueryQueue q = query.getQueue();
 			while (q != null) {
 				sql.append(q.getBody().getKey());
 				sql.append(q.getBody().getSymbol());
@@ -118,9 +121,9 @@ public class MySQL extends Database {
 
 		PreparedStatement ps = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 
-		if (query != null) {
+		if (query != null && query.getQueue() != null) {
 			int i = 1;
-			Query q = query;
+			QueryQueue q = query.getQueue();
 			while (q != null) {
 				ps.setObject(i, q.getBody().getValue());
 				q = q.getNext();
@@ -222,7 +225,7 @@ public class MySQL extends Database {
 		Iterator<Entry<String, Object>> it = set.iterator();
 		while (it.hasNext()) {
 			Entry<String, Object> kv = it.next();
-			if(it.hasNext())
+			if (it.hasNext())
 				sql.append(kv.getKey() + "=?, ");
 			else
 				sql.append(kv.getKey() + "=? ");

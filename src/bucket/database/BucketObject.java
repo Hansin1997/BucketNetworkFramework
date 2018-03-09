@@ -46,12 +46,12 @@ public abstract class BucketObject {
 	}
 
 	/**
-	 * 设置数据库表名
+	 * 设置数据库表名(默认为本类不含包名的名字)
 	 * 
 	 * @param tableName
 	 *            数据库表名
 	 */
-	protected void setTableName(String tableName) {
+	public void setTableName(String tableName) {
 		this.tableName = tableName;
 	}
 
@@ -183,6 +183,5 @@ public abstract class BucketObject {
 
 		db.remove(this);
 	}
-
 
 }
