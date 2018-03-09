@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Date;
 
 import bucket.application.Application;
@@ -110,7 +111,7 @@ public class HttpApplicationDemo extends Application {
 	@Override
 	public void onException(Connection connection, Throwable e) {
 		// 打印异常信息
-		if (e.getClass().equals(SocketException.class))
+		if (e.getClass().equals(SocketException.class) || e.getClass().equals(SocketTimeoutException.class))
 			onDisconnect(connection);
 		else
 			e.printStackTrace();
