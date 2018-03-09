@@ -21,7 +21,7 @@
 >* void onException(Connection connection, Throwable e); //发生异常时调用此方法
 
 示例:
-
+```java
 package demo;
 
 import java.io.BufferedInputStream;
@@ -142,7 +142,7 @@ public class HttpApplicationDemo extends Application {
 	}
 
 }
-
+```
 #### 创建HTTP服务
 
 Application类只是规划了由客户产生的各种事件的行为蓝图，接下来时如何创建一个服务。
