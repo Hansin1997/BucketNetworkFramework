@@ -40,6 +40,7 @@ public class MainCommand extends ExecutableCommand {
 			ExecutableCommand cmd = (ExecutableCommand) c.newInstance();
 			cmd.value = this.value;
 			cmd.setId(this.getId());
+			cmd.setConnection(this.connection);
 			cmd.setApplication(this.application);
 			cmd.execute();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
