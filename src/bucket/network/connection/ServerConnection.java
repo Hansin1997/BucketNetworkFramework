@@ -45,7 +45,7 @@ public class ServerConnection extends Connection {
 		try {
 
 			if (!autoSelct())
-				throw new Exception("无法识别该协议");
+				throw new UnknowProtocolException("无法识别该协议");
 
 			byte data[];
 			while ((data = protocol.load()) != null) {
