@@ -83,7 +83,7 @@ public abstract class BucketObject {
 	 * 
 	 * @param id
 	 */
-	protected void setId(Object id) {
+	public void setId(Object id) {
 		this.id = id;
 	}
 
