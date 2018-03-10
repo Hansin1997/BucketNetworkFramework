@@ -151,6 +151,7 @@ public class Mongo extends Database {
 			T t = instantiate(clazz);
 			t.setFields(doc);
 			t.setId(doc.getObjectId("_id"));
+			t.setTableName(tableName);
 			result.add(t);
 		}
 

@@ -146,6 +146,7 @@ public class MySQL extends Database {
 			T t = instantiate(clazz);
 			t.setFields(fileds);
 			t.setId(fileds.get("id"));
+			t.setTableName(tableName);
 			result.add(t);
 		}
 
