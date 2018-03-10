@@ -83,6 +83,7 @@ public class HttpProtocol extends Protocol {
 	 *             异常
 	 */
 	private boolean checkHandshake(String str) throws Throwable {
+		
 		Matcher m = isServer() ? HANDSHAKE_CHECK_PATTERN_SERVER.matcher(str)
 				: HANDSHAKE_CHECK_PATTERN_CLIENT.matcher(str);
 		if (!m.find())
@@ -132,6 +133,7 @@ public class HttpProtocol extends Protocol {
 		String str = null, first = null;
 
 		while ((str = new String(read('\n'))) != null) {
+
 			str = str.trim();
 			String tmp[] = str.split(":", 2);
 			if (tmp.length == 1) {// 当str只切割出一个子串的时候

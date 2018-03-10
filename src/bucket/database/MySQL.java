@@ -284,7 +284,7 @@ public class MySQL extends Database {
 	/**
 	 * JAVA与MySQL的类型转换常量表
 	 */
-	protected static final String[][] TYPES = { { "String", "TEXT" } };
+	protected static final String[][] TYPES = { { "String", "TEXT" } , {"Date" , "datetime"}};
 
 	/**
 	 * JAVA与MySQL的类型转换方法
@@ -295,7 +295,7 @@ public class MySQL extends Database {
 	 */
 	protected static String typeTransform(String type) {
 		for (String[] types : TYPES) {
-			if (type.equals(types[0]))
+			if (type.toUpperCase().equals(types[0].toUpperCase()))
 				return types[1];
 		}
 		return type;

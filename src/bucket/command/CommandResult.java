@@ -14,6 +14,11 @@ public class CommandResult {
 	public static final int SUCCESS = 200;
 
 	/**
+	 * 错误
+	 */
+	public static final int ERROR = 100;
+
+	/**
 	 * 禁止
 	 */
 	public static final int FORBIDDEN = 403;
@@ -168,4 +173,28 @@ public class CommandResult {
 		CommandResult r = new CommandResult(UNKNOW, msg, data);
 		return r;
 	}
+
+	public static CommandResult ERROR() {
+		CommandResult r = new CommandResult();
+		r.setStatus(ERROR);
+		return r;
+	}
+
+	public static CommandResult ERROR(String msg) {
+		CommandResult r = ERROR();
+		r.setMsg(msg);
+		return r;
+	}
+
+	public static CommandResult ERROR(Object data) {
+		CommandResult r = ERROR();
+		r.setData(data);
+		return r;
+	}
+
+	public static CommandResult ERROR(String msg, Object data) {
+		CommandResult r = new CommandResult(ERROR, msg, data);
+		return r;
+	}
+
 }

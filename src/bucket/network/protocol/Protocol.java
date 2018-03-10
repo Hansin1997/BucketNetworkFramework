@@ -43,6 +43,11 @@ public abstract class Protocol {
 	private boolean server; // 是否服务端
 
 	/**
+	 * 默认编码
+	 */
+	protected String encode;
+
+	/**
 	 * 默认构造函数
 	 * 
 	 * @param inputStream
@@ -56,6 +61,7 @@ public abstract class Protocol {
 		this.in = new BufferedInputStream(socket.getInputStream());
 		this.out = new BufferedOutputStream(socket.getOutputStream());
 		this.server = false;
+		this.encode = "UTF-8";
 	}
 
 	public Protocol(Socket socket, InputStream in, OutputStream out) throws IOException {
@@ -63,6 +69,7 @@ public abstract class Protocol {
 		this.in = in;
 		this.out = out;
 		this.server = false;
+		this.encode = "UTF-8";
 	}
 
 	/**
@@ -87,6 +94,27 @@ public abstract class Protocol {
 	 * @return 返回读取到的数据
 	 */
 	public abstract byte[] load() throws Throwable;
+
+	/**
+	 * 发送字符串数据
+	 * 
+	 * @param data
+	 *            字符串数据
+	 * @throws Throwable
+	 */
+	public void send(String data) throws Throwable {
+		this.send(data.getBytes(getEncode()));
+	}
+
+	/**
+	 * 读取字符串数据
+	 * 
+	 * @return 字符串数据
+	 * @throws Throwable
+	 */
+	public String loadString() throws Throwable {
+		return new String(this.load(), getEncode());
+	}
 
 	/**
 	 * 读取一个字节
@@ -246,6 +274,24 @@ public abstract class Protocol {
 	}
 
 	/**
+	 * 获取默认编码
+	 * 
+	 * @return
+	 */
+	public String getEncode() {
+		return encode;
+	}
+
+	/**
+	 * 设置默认编码
+	 * 
+	 * @param encode
+	 */
+	public void setEncode(String encode) {
+		this.encode = encode;
+	}
+
+	/**
 	 * 设置服务端
 	 * 
 	 * @param server
@@ -277,4 +323,5 @@ public abstract class Protocol {
 			buff.append(this.protocolInfo);
 		return buff.toString();
 	}
+
 }

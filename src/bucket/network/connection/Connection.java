@@ -140,4 +140,15 @@ public abstract class Connection implements Runnable {
 		getProtocol().send(data);
 	}
 
+	/**
+	 * 发送字符串数据
+	 * 
+	 * @param data
+	 *            字符串数据
+	 * @throws Throwable
+	 */
+	public void send(String data) throws Throwable {
+		getProtocol().send(data);
+	}
+
 }
