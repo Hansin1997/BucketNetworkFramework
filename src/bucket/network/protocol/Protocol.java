@@ -283,11 +283,11 @@ public abstract class Protocol {
 
 	/**
 	 * 设置套接字对象(非必要请勿使用此方法)
-	 * 
-	 * @param socket
 	 */
-	public void setSocket(Socket socket) {
+	public void setSocket(Socket socket, InputStream in, OutputStream out) {
 		this.socket = socket;
+		this.in = in;
+		this.out = out;
 	}
 
 	protected void setOut(OutputStream out) {

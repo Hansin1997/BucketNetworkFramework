@@ -55,6 +55,9 @@ public class WebSocketProtocol extends Protocol {
 	 */
 	public WebSocketProtocol() {
 		super();
+		super.setProtocolInfo(new HashMap<String, Object>());
+		super.setProtocolHeader(new HashMap<String, String>());
+		init();
 	}
 
 	/**
@@ -178,6 +181,8 @@ public class WebSocketProtocol extends Protocol {
 	 *             异常
 	 */
 	private boolean handshakeCheck(String str) throws Throwable {
+		if (str == null)
+			return false;
 		Matcher m = isServer() ? HANDSHAKE_CHECK_PATTERN_SERVER.matcher(str)
 				: HANDSHAKE_CHECK_PATTERN_CLIENT.matcher(str);
 
