@@ -47,13 +47,17 @@ public abstract class Protocol {
 	 */
 	protected String encode;
 
+	public Protocol() {
+		this.server = false;
+		this.encode = "UTF-8";
+	}
+
 	/**
-	 * 默认构造函数
+	 * 构造函数
 	 * 
-	 * @param inputStream
-	 *            传入输入流
-	 * @param outputStream
-	 *            传入输出流
+	 * @param socket
+	 *            套接字对象
+	 * 
 	 * @throws IOException
 	 */
 	public Protocol(Socket socket) throws IOException {
@@ -64,6 +68,18 @@ public abstract class Protocol {
 		this.encode = "UTF-8";
 	}
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @param in
+	 *            传入输入流
+	 * @param out
+	 *            传入输出流
+	 * 
+	 * @throws IOException
+	 */
 	public Protocol(Socket socket, InputStream in, OutputStream out) throws IOException {
 		this.socket = socket;
 		this.in = in;

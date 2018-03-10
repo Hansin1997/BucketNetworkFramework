@@ -65,10 +65,36 @@ public class HttpProtocol extends Protocol {
 	 */
 	public static final String INFO_PATH = "PATH";
 
+	/**
+	 * 默认构造函数
+	 */
+	public HttpProtocol() {
+		super();
+	}
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @throws IOException
+	 */
 	public HttpProtocol(Socket socket) throws IOException {
 		super(socket);
 	}
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @param in
+	 *            传入输入流
+	 * @param out
+	 *            传入输出流
+	 * 
+	 * @throws IOException
+	 */
 	public HttpProtocol(Socket socket, InputStream in, OutputStream out) throws IOException {
 		super(socket, in, out);
 	}
@@ -83,7 +109,7 @@ public class HttpProtocol extends Protocol {
 	 *             异常
 	 */
 	private boolean checkHandshake(String str) throws Throwable {
-		
+
 		Matcher m = isServer() ? HANDSHAKE_CHECK_PATTERN_SERVER.matcher(str)
 				: HANDSHAKE_CHECK_PATTERN_CLIENT.matcher(str);
 		if (!m.find())
@@ -300,8 +326,8 @@ public class HttpProtocol extends Protocol {
 
 		}
 
-		wter.println(getProtocolInfo().get(INFO_METHOD) + " " + path + " "
-				+ getProtocolName() + "/" + getProtocolVersion());
+		wter.println(
+				getProtocolInfo().get(INFO_METHOD) + " " + path + " " + getProtocolName() + "/" + getProtocolVersion());
 
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		if (header != null)

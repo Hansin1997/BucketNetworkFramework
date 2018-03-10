@@ -50,6 +50,21 @@ public class WebSocketProtocol extends Protocol {
 	private byte maskKey[];
 	private byte payload[];
 
+	/**
+	 * 默认构造函数
+	 */
+	public WebSocketProtocol() {
+		super();
+	}
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * 
+	 * @throws IOException
+	 */
 	public WebSocketProtocol(Socket socket) throws IOException {
 		super(socket);
 		super.setProtocolInfo(new HashMap<String, Object>());
@@ -57,6 +72,18 @@ public class WebSocketProtocol extends Protocol {
 		init();
 	}
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @param in
+	 *            传入输入流
+	 * @param out
+	 *            传入输出流
+	 * 
+	 * @throws IOException
+	 */
 	public WebSocketProtocol(Socket socket, InputStream in, OutputStream out) throws IOException {
 		super(socket, in, out);
 		super.setProtocolInfo(new HashMap<String, Object>());
@@ -105,7 +132,7 @@ public class WebSocketProtocol extends Protocol {
 	 */
 	protected void echoClientHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
-		
+
 		String path = null;
 		if (getProtocolInfo().get(INFO_PATH) == null)
 			path = "/";
@@ -113,11 +140,11 @@ public class WebSocketProtocol extends Protocol {
 			path = (String) getProtocolInfo().get(INFO_PATH);
 
 		if (getProtocolInfo().get(INFO_GET) != null) {
-			
+
 			@SuppressWarnings("unchecked")
 			Map<String, String> getMap = (Map<String, String>) getProtocolInfo().get(INFO_GET);
 			Iterator<Entry<String, String>> it = getMap.entrySet().iterator();
-			if(it.hasNext())
+			if (it.hasNext())
 				path += "?";
 			while (it.hasNext()) {
 				Entry<String, String> kv = it.next();

@@ -21,6 +21,20 @@ import com.google.gson.GsonBuilder;
  */
 public class BucketProtocol extends Protocol {
 
+	/**
+	 * 默认构造函数
+	 */
+	public BucketProtocol() {
+		super();
+	}
+
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @throws IOException
+	 */
 	public BucketProtocol(Socket socket) throws IOException {
 		super(socket);
 		setProtocolName("BUCKET");
@@ -29,6 +43,18 @@ public class BucketProtocol extends Protocol {
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
+	/**
+	 * 构造函数
+	 * 
+	 * @param socket
+	 *            套接字对象
+	 * @param in
+	 *            传入输入流
+	 * @param out
+	 *            传入输出流
+	 * 
+	 * @throws IOException
+	 */
 	public BucketProtocol(Socket socket, InputStream in, OutputStream out) throws IOException {
 		super(socket, in, out);
 		setProtocolName("BUCKET");
