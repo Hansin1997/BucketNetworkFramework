@@ -37,7 +37,11 @@ public abstract class Protocol {
 	 */
 	protected Map<String, String> protocolHeader; // 协议头部信息
 
-	private Socket socket; // Socket
+	/**
+	 * 套接字对象
+	 */
+	private Socket socket;
+
 	private InputStream in; // 输入流
 	private OutputStream out; // 输出流
 	private boolean server; // 是否服务端
@@ -275,6 +279,15 @@ public abstract class Protocol {
 
 	public InputStream getIn() {
 		return in;
+	}
+
+	/**
+	 * 设置套接字对象(非必要请勿使用此方法)
+	 * 
+	 * @param socket
+	 */
+	public void setSocket(Socket socket) {
+		this.socket = socket;
 	}
 
 	protected void setOut(OutputStream out) {
