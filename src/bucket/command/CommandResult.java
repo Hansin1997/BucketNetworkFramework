@@ -1,5 +1,8 @@
 package bucket.command;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  * 回调类
  * 
@@ -197,4 +200,13 @@ public class CommandResult {
 		return r;
 	}
 
+	@Override
+	public String toString() {
+		return "Result { status:" + getStatus() + ", msg:\"" + getMsg() + "\", data:" + getData() + " }";
+	}
+
+	public String toJSON() {
+		Gson gson = new GsonBuilder().create();
+		return gson.toJson(this);
+	}
 }
