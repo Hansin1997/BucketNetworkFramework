@@ -50,12 +50,12 @@ public class ClientConnection extends Connection {
 		} finally {
 			if (listener != null)
 				listener.onDisconnect(this);
-			else
-				try {
-					socket.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			try {
+				socket.close();
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+
 		}
 
 	}

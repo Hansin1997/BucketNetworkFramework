@@ -58,14 +58,12 @@ public class ServerConnection extends Connection {
 			else
 				e.printStackTrace();
 		} finally {
-			if (listener != null)
-				listener.onDisconnect(this);
-			else
-				try {
-					socket.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			listener.onDisconnect(this);
+			try {
+				socket.close();
+			} catch (IOException e) {
+				System.out.println(e);
+			}
 		}
 
 	}
