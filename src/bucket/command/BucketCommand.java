@@ -9,13 +9,8 @@ import com.google.gson.GsonBuilder;
  * @author Hansin1997
  * @version 2017/12/4
  */
-public abstract class BucketCommand {
+public abstract class BucketCommand implements Executable {
 
-	/**
-	 * 执行
-	 */
-	public abstract void execute();
-	
 	public String toJSON() {
 		Gson gson = new GsonBuilder().create();
 		return gson.toJson(this);
