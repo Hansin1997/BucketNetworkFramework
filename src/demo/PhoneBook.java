@@ -15,7 +15,8 @@ public class PhoneBook extends BucketObject {
 	public String QQ;
 	public String nickname;
 	public String address;
-	
+	public byte[] bytes;
+
 	public PhoneBook() {
 		super();
 	}

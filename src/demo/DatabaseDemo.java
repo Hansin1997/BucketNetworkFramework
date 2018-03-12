@@ -33,8 +33,10 @@ public class DatabaseDemo {
 		pb1.nickname = "隔壁老王";
 		pb1.phone = "123456";
 		pb1.address = "隔壁";
-		pb1.setTableName("asd");
+		pb1.bytes = "asdasd".getBytes();
 		pb1.save(); // 储存pb1
+		
+		System.out.println(pb1.toJSON());
 
 		pb2.name = "马化腾";
 		pb2.nickname = "马老西";
@@ -62,7 +64,7 @@ public class DatabaseDemo {
 		System.err.println("----------------------------------------------------");
 
 		// 构造查询条件
-		Query query = Query.build().like("name", "王思聪").table("asd");
+		Query query = Query.build().like("name", "王思聪");
 
 		pbs = db.find(PhoneBook.class, query); // 通过条件查询
 
