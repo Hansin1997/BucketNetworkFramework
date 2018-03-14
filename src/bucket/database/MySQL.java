@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+
 /**
  * MySQL数据库类
  * 
@@ -54,13 +56,17 @@ public class MySQL extends Database {
 
 	@Override
 	public void connect() throws Exception {
-		conn = DriverManager.getConnection("jdbc:mysql://" + getDbHost() + ":" + getDbPort(), "root", "");
+		conn = DriverManager.getConnection(
+				"jdbc:mysql://" + getDbHost() + ":" + getDbPort() + "?useUnicode=true&characterEncoding=utf-8", "root",
+				"");
 
 	}
 
 	@Override
 	public void connect(String username, String password) throws Exception {
-		conn = DriverManager.getConnection("jdbc:mysql://" + getDbHost() + ":" + getDbPort(), username, password);
+		conn = DriverManager.getConnection(
+				"jdbc:mysql://" + getDbHost() + ":" + getDbPort() + "?useUnicode=true&characterEncoding=utf-8",
+				username, password);
 	}
 
 	@Override
@@ -76,8 +82,16 @@ public class MySQL extends Database {
 	public void useDb(String databaseName) throws Exception {
 		if (!isConnected())
 			throw new DatabaseConnectionException("MySQL is disconnected");
-		PreparedStatement ps = conn.prepareStatement("use " + databaseName + ";");
-		ps.execute();
+		PreparedStatement ps = conn.prepareStatement("USE " + databaseName + ";");
+		try {
+			ps.execute();
+		} catch (MySQLSyntaxErrorException e) {
+			// 当数据库不存在
+			ps = conn.prepareStatement(
+					"CREATE DATABASE " + databaseName + " DEFAULT CHARACTER SET utf8 COLLATE utf8_bin;");
+			ps.execute();
+			useDb(databaseName);
+		}
 
 	}
 
@@ -96,10 +110,11 @@ public class MySQL extends Database {
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM " + tableName + " ");
-		if (query != null && query.getQueue() != null) {
+		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null
+				&& query.getQueue().getBody().getSymbol() != null) {
 			sql.append("WHERE ");
 			QueryQueue q = query.getQueue();
-			while (q != null) {
+			while (q != null && q.getBody() != null && q.getBody().getSymbol() != null) {
 				sql.append(q.getBody().getKey());
 				sql.append(q.getBody().getSymbol());
 				sql.append("?");
@@ -118,13 +133,14 @@ public class MySQL extends Database {
 		} else {
 			sql.append(";");
 		}
+		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
+				Statement.RETURN_GENERATED_KEYS);
 
-		PreparedStatement ps = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
-
-		if (query != null && query.getQueue() != null) {
+		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null
+				&& query.getQueue().getBody().getSymbol() != null) {
 			int i = 1;
 			QueryQueue q = query.getQueue();
-			while (q != null) {
+			while (q != null && q.getBody() != null && q.getBody().getSymbol() != null) {
 				ps.setObject(i, q.getBody().getValue());
 				q = q.getNext();
 				i++;
@@ -189,7 +205,8 @@ public class MySQL extends Database {
 		sql.append(" VALUES ");
 		sql.append(sqlpart2);
 
-		PreparedStatement ps = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
+				Statement.RETURN_GENERATED_KEYS);
 
 		int i = 1;
 		for (Entry<String, Object> kv : set) {
@@ -212,7 +229,7 @@ public class MySQL extends Database {
 	public void remove(BucketObject obj) throws Exception {
 		PreparedStatement ps = conn.prepareStatement("DELETE FROM " + obj.getTableName() + " WHERE id=" + obj.getId());
 		if (ps.executeUpdate() == 0) {
-			throw new ObjectNotFoundException("MongoDB Object Not Found! _id:" + obj.getId());
+			throw new ObjectNotFoundException("MySQL Object Not Found! id:" + obj.getId());
 		}
 
 	}
@@ -232,7 +249,8 @@ public class MySQL extends Database {
 				sql.append(kv.getKey() + "=? ");
 		}
 		sql.append("WHERE id=" + obj.getId() + ";");
-		PreparedStatement ps = conn.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
+				Statement.RETURN_GENERATED_KEYS);
 		int i = 1;
 		for (Entry<String, Object> kv : set) {
 			ps.setObject(i, kv.getValue());
@@ -276,7 +294,7 @@ public class MySQL extends Database {
 
 		sql.append(" , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_bin;");
 
-		PreparedStatement ps = conn.prepareStatement(sql.toString());
+		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"));
 
 		ps.execute();
 
@@ -285,7 +303,7 @@ public class MySQL extends Database {
 	/**
 	 * JAVA与MySQL的类型转换常量表
 	 */
-	protected static final String[][] TYPES = { { "String", "TEXT" } , {"Date" , "datetime"}};
+	protected static final String[][] TYPES = { { "String", "TEXT" }, { "Date", "datetime" } };
 
 	/**
 	 * JAVA与MySQL的类型转换方法

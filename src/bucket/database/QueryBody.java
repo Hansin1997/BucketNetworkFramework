@@ -145,6 +145,8 @@ public class QueryBody {
 	 * @return
 	 */
 	public String getSymbol() {
+		if(queueType == null)
+			return null;
 		switch (queueType) {
 		case GRE:
 			return ">";

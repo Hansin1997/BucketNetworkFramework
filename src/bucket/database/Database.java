@@ -126,7 +126,7 @@ public abstract class Database {
 	}
 
 	/**
-	 * 选择数据库
+	 * 选择数据库(当数据库不存在时自动创建)
 	 * 
 	 * @param databaseName
 	 *            数据库名
