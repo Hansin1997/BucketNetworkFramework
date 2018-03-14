@@ -17,10 +17,12 @@ public class DatabaseDemo {
 
 	public static void main(String[] args) throws Exception {
 
-		Database db = new MySQL("dustlight.cn", 3306); //new Mongo("localhost", 27017); // 创建Mongo数据库实例
-		db.connect("hansin","845612500"); // 连接数据库
+		Database db = new MySQL("localhost", 3306); // 创建MySQL数据库实例
+		// Database db = new Mongo("localhost", 27017); // 创建Mongo数据库实例
+		
+		db.connect("root", "xxxxxx"); // 连接数据库
 
-		db.useDb("myDB"); // 选择数据库，Mongo数据库不需事先创建数据库
+		db.useDb("myDB"); // 选择数据库，不需事先创建数据库
 
 		PhoneBook pb1, pb2, pb3, pb4;
 
@@ -35,7 +37,7 @@ public class DatabaseDemo {
 		pb1.phone = "123456";
 		pb1.address = "隔壁";
 		pb1.save(); // 储存pb1
-		
+
 		System.out.println(pb1.toJSON());
 
 		pb2.name = "马化腾";
