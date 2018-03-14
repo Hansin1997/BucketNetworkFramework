@@ -4,6 +4,7 @@ import java.util.List;
 
 import bucket.database.Database;
 import bucket.database.Mongo;
+import bucket.database.MySQL;
 import bucket.database.Query;
 
 /**
@@ -16,8 +17,8 @@ public class DatabaseDemo {
 
 	public static void main(String[] args) throws Exception {
 
-		Database db = new Mongo("localhost", 27017); // 创建Mongo数据库实例
-		db.connect(); // 连接数据库
+		Database db = new MySQL("dustlight.cn", 3306); //new Mongo("localhost", 27017); // 创建Mongo数据库实例
+		db.connect("hansin","845612500"); // 连接数据库
 
 		db.useDb("myDB"); // 选择数据库，Mongo数据库不需事先创建数据库
 
@@ -33,7 +34,6 @@ public class DatabaseDemo {
 		pb1.nickname = "隔壁老王";
 		pb1.phone = "123456";
 		pb1.address = "隔壁";
-		pb1.bytes = "asdasd".getBytes();
 		pb1.save(); // 储存pb1
 		
 		System.out.println(pb1.toJSON());
