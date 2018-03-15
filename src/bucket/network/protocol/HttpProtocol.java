@@ -24,11 +24,11 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 默认服务端正则匹配字符串 （http://www.xx.com/）
 	 */
-	private static final String HANDSHAKE_CHECK_REGEX_SERVER_DEFAULT = "^(POST|GET) (/) (HTTP)/([0-9]\\.[0-9])$";
+	private static final String HANDSHAKE_CHECK_REGEX_SERVER_DEFAULT = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (/) (HTTP)/([0-9]\\.[0-9])$";
 	/**
 	 * 通用服务端正则匹配字符串
 	 */
-	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(POST|GET) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
+	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
 	/**
 	 * 默认服务端正则匹配器
 	 */
