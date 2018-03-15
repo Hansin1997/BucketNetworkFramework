@@ -1,4 +1,4 @@
-package demo;
+package demo.http;
 
 import java.io.BufferedInputStream;
 import java.io.File;

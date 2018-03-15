@@ -1,4 +1,4 @@
-package demo;
+package demo.http;
 
 import bucket.network.Server;
 import bucket.network.protocol.HttpProtocol;

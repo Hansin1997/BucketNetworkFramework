@@ -1,4 +1,4 @@
-package demo;
+package demo.database;
 
 import java.util.List;
 
