@@ -23,7 +23,17 @@ public class ServerConnection extends Connection {
 	/**
 	 * 协议列表
 	 */
-	private List<String> ProtocolList;
+	protected List<String> ProtocolList;
+
+	/**
+	 * 握手超时
+	 */
+	protected int handshakeTimeout;
+
+	/**
+	 * 通讯超时
+	 */
+	protected int timeout;
 
 	public ServerConnection(List<String> ProtocolList, Socket s, EventListener listener) {
 		setSocket(s);
@@ -38,6 +48,8 @@ public class ServerConnection extends Connection {
 			else
 				e.printStackTrace();
 		}
+		this.handshakeTimeout = 2000;
+		this.timeout = 0;
 	}
 
 	@Override
@@ -83,9 +95,9 @@ public class ServerConnection extends Connection {
 						OutputStream.class);
 				p = (Protocol) cons.newInstance(socket, in, out);
 				p.setServer(true);
-				socket.setSoTimeout(2000);
+				socket.setSoTimeout(handshakeTimeout);
 				if (p.handshake()) {
-					socket.setSoTimeout(0);
+					socket.setSoTimeout(timeout);
 					setProtocol(p);
 					listener.onConnect(this);
 					return true;
@@ -101,4 +113,39 @@ public class ServerConnection extends Connection {
 		return false;
 	}
 
+	/**
+	 * 设置握手超时
+	 * 
+	 * @param handshakeTimeout
+	 */
+	public void setHandshakeTimeout(int handshakeTimeout) {
+		this.handshakeTimeout = handshakeTimeout;
+	}
+
+	/**
+	 * 获取握手超时
+	 * 
+	 * @return
+	 */
+	public int getHandshakeTimeout() {
+		return handshakeTimeout;
+	}
+
+	/**
+	 * 设置通讯超时
+	 * 
+	 * @param timeout
+	 */
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	/**
+	 * 获取通讯超时
+	 * 
+	 * @return
+	 */
+	public int getTimeout() {
+		return timeout;
+	}
 }
