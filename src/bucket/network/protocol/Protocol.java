@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -226,6 +227,7 @@ public abstract class Protocol {
 	 * @param b
 	 *            分割字节
 	 * @return 返回读取的数据
+	 * @throws Throwable
 	 */
 	public byte[] read(int b) throws Throwable {
 		ByteArrayOutputStream o = new ByteArrayOutputStream();
@@ -233,7 +235,110 @@ public abstract class Protocol {
 		while ((bb = read()) != b) {
 			o.write(bb);
 		}
+		o.flush();
 		return o.toByteArray();
+	}
+
+	/**
+	 * 以某个字符串分割，读取该字符串之前的数据
+	 * 
+	 * @param str
+	 *            分割字符串
+	 * 
+	 * @param encode
+	 *            字符串编码
+	 * 
+	 * @param limit
+	 *            允许读取的最大长度(适用于已知数据长度时使用)
+	 * 
+	 * @return 返回读取的数据
+	 * @throws Throwable
+	 */
+	public byte[] read(String str, String encode, int limit) throws Throwable {
+		ByteArrayOutputStream o = new ByteArrayOutputStream();
+
+		int b, len;
+		final byte[] strbyte = str.getBytes(encode);
+		byte[] data = new byte[strbyte.length];
+
+		// 首先进行第一次读取，将data存满
+		len = 0;// 标记已读长度
+		do {
+			b = read(data, 0, data.length - len);
+
+			// 这里处理数据太短，data不满就结束读取的情况
+			if (b == -1) {
+				if (len == 0)
+					return null;
+				else if (Arrays.equals(strbyte, data))
+					return new byte[0];
+				else
+					return data;
+			} else {
+				len += b;
+			}
+
+		} while (len < data.length);
+
+		while (true) {
+			if (Arrays.equals(strbyte, data)) {
+				break;
+			}
+			if (limit >= 0 && o.size() >= limit) {
+				break;
+			}
+			b = read();
+			// System.err.write(b);
+			if (b == -1) {
+				if (Arrays.equals(strbyte, data)) {
+					break;
+				} else {
+					o.write(data, 0, data.length);
+					break;
+				}
+			} else {
+				o.write(data[0]);
+				for (int i = 0; i < data.length - 1; i++) {
+					data[i] = data[i + 1];
+				}
+				data[data.length - 1] = (byte) b;
+			}
+
+		}
+		o.flush();
+		byte[] d = o.toByteArray();
+		if (b == -1)
+			return null;
+		else
+			return d;
+	}
+
+	/**
+	 * 以某个字符串分割，读取该字符串之前的数据(以协议默认编码分割)
+	 * 
+	 * @param str
+	 *            分割字符串
+	 * 
+	 * @return 返回读取的数据
+	 * @throws Throwable
+	 */
+	public byte[] read(String str) throws Throwable {
+		return read(str, getEncode(), -1);
+	}
+
+	/**
+	 * 以某个字符串分割，读取该字符串之前的数据(以协议默认编码分割)
+	 * 
+	 * @param str
+	 *            分割字符串
+	 * 
+	 * @param limit
+	 *            最大读取长度
+	 * @return 返回读取的数据
+	 * @throws Throwable
+	 */
+	public byte[] read(String str, int limit) throws Throwable {
+		return read(str, getEncode(), limit);
 	}
 
 	/**
