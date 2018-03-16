@@ -1,17 +1,23 @@
 package bucket.network.protocol;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import bucket.util.StreamTool;
 
 /**
  * 简易Http协议
@@ -179,35 +185,123 @@ public class HttpProtocol extends Protocol {
 			return false;// 握手失败返回假
 		}
 
-		HashMap<String, String> post = new HashMap<String, String>();
-		StringBuffer buff = new StringBuffer();
-		if (isServer()) {
-			String contLen = header.get("Content-Length");
-			if (contLen != null) {
-				int b;
-				int contentLenth = Integer.parseInt(contLen);
-				for (int i = 0; i < contentLenth; i++) {
-					b = read();
-					if (b == -1)
-						break;
-					buff.append((char) b);
-				}
-
-				String kvs[] = buff.toString().split("&");
-
-				for (String kv_ : kvs) {
-					String kv[] = kv_.split("=");
-					if (kv.length == 2) {
-						post.put(kv[0], kv[1]);
-					}
-				}
-
-			}
-
-		}
-		super.getProtocolInfo().put(INFO_POST, post);
+		getPOST();
 
 		return true;
+	}
+
+	public static final String CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED = "application/x-www-form-urlencoded";
+	public static final String CONTENT_TYPE_MULTIPART_FROMDATA = "multipart/form-data";
+
+	/**
+	 * 获取POST数据
+	 * 
+	 * @throws Throwable
+	 * 
+	 */
+	protected void getPOST() throws Throwable {
+		Map<String, String> header = this.getProtocolHeader();
+		HashMap<String, Object> post = new HashMap<String, Object>();
+		StringBuffer buff = new StringBuffer();
+		String[] contentType = null;
+		String ct = header.get("Content-Type");
+		if (ct != null) {
+			contentType = ct.split(";");
+		} else {
+			contentType = new String[] { CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED };
+		}
+		if (isServer()) {
+			if (contentType[0].equals(CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED)) {
+				String contLen = header.get("Content-Length");
+				if (contLen != null) {
+					int b;
+					int contentLenth = Integer.parseInt(contLen);
+					for (int i = 0; i < contentLenth; i++) {
+						b = read();
+						if (b == -1)
+							break;
+						buff.append((char) b);
+					}
+					String kvs[] = buff.toString().split("&");
+					for (String kv_ : kvs) {
+						String kv[] = kv_.split("=");
+						if (kv.length == 2) {
+							post.put(kv[0], kv[1]);
+						}
+					}
+				}
+			} else if (contentType[0].equals(CONTENT_TYPE_MULTIPART_FROMDATA)) {
+				HashMap<String, String> map = new HashMap<>();
+				for (int i = 1; i < contentType.length; i++) {
+					String[] kv = contentType[i].trim().split("=");
+					if (kv.length > 1) {
+						map.put(kv[0], kv[1]);
+					}
+				}
+				String boundary = map.get("boundary");
+				if (boundary != null) {
+					boundary = "--" + boundary;
+					String contLen = header.get("Content-Length");
+					int count = 4;
+					int contentLenth = -1;
+					if (contLen != null)
+						contentLenth = Integer.parseInt(contLen);
+					byte[] data;
+					while ((contentLenth == -1 || count < contentLenth) && (data = read(boundary)) != null) {
+						HashMap<String, Object> m1 = new HashMap<>();
+						String name = null;
+						count += boundary.getBytes().length + data.length;
+						ByteArrayInputStream bin = new ByteArrayInputStream(data);
+						byte[] dt;
+						StreamTool.readLine(bin);
+						while ((dt = StreamTool.readLine(bin)) != null && dt.length > 0) {
+							String s = new String(dt, getEncode());
+							String[] kv = s.split(":", 2);
+							HashMap<String, String> m2 = new HashMap<>();
+							if (kv.length > 1) {
+								String[] kv1 = kv[1].split(";");
+								for (String s1 : kv1) {
+									s1 = s1.trim();
+
+									String[] kv2 = s1.split("=", 2);
+									if (kv2.length > 1) {
+										if (kv2[1].length() > 1 && kv2[1].charAt(0) == '\"'
+												&& kv2[1].charAt(kv2[1].length() - 1) == '\"')
+											kv2[1] = kv2[1].substring(1, kv2[1].length() - 1);
+										m2.put(kv2[0], kv2[1]);
+
+									} else
+										m2.put(null, s1);
+								}
+							}
+							m1.put(kv[0], m2.get(null));
+							m2.remove(null);
+							if (m2.get("name") != null) {
+								name = m2.get("name");
+								m2.remove("name");
+							}
+							m1.putAll(m2);
+						}
+						if (name != null) {
+							post.put(name, m1);
+							int b;
+							ByteArrayOutputStream o = new ByteArrayOutputStream();
+							while ((b = bin.read()) != -1) {
+								o.write(b);
+							}
+							o.flush();
+							byte[] olddata = o.toByteArray();
+							byte[] newdata = Arrays.copyOf(olddata, olddata.length - 2);
+							if (m1.get("Content-Type") == null)
+								m1.put("value", new String(newdata, getEncode()));
+							else
+								m1.put("value", newdata);
+						}
+					}
+				}
+			}
+		}
+		super.getProtocolInfo().put(INFO_POST, post);
 	}
 
 	@Override
