@@ -135,6 +135,7 @@ public class HttpProxyApplicationDemo extends Application {
 	/**
 	 * 普通HTTP代理
 	 * 
+	 * 
 	 * @param connection
 	 *            连接对象
 	 * @param method
