@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,7 @@ public abstract class Protocol {
 	/**
 	 * 协议头部信息
 	 */
-	protected Map<String, String> protocolHeader; // 协议头部信息
+	protected Map<String, List<String>> protocolHeader; // 协议头部信息
 
 	/**
 	 * 套接字对象
@@ -358,7 +359,7 @@ public abstract class Protocol {
 		return protocolInfo;
 	}
 
-	public Map<String, String> getProtocolHeader() {
+	public Map<String, List<String>> getProtocolHeader() {
 		return protocolHeader;
 	}
 
@@ -374,7 +375,7 @@ public abstract class Protocol {
 		this.protocolInfo = protocolInfo;
 	}
 
-	public void setProtocolHeader(Map<String, String> protocolHeader) {
+	public void setProtocolHeader(Map<String, List<String>> protocolHeader) {
 		this.protocolHeader = protocolHeader;
 	}
 

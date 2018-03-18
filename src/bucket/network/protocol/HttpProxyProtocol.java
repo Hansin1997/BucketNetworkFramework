@@ -5,7 +5,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -136,7 +138,7 @@ public class HttpProxyProtocol extends Protocol {
 	@Override
 	public boolean handshake() throws Throwable {
 
-		HashMap<String, String> header = new HashMap<String, String>();
+		HashMap<String, List<String>> header = new HashMap<String, List<String>>();
 		super.setProtocolHeader(header);
 		String str = null, first = null;
 
@@ -155,7 +157,12 @@ public class HttpProxyProtocol extends Protocol {
 				}
 			}
 
-			header.put(tmp[0].trim(), tmp[1].trim());// 存header
+			List<String> h = header.get(tmp[0].trim());
+			if (h == null) {
+				h = new ArrayList<String>();
+				header.put(tmp[0].trim(), h);
+			}
+			h.add(tmp[1].trim());
 		}
 
 		if (first == null || !checkHandshake(first)) {
@@ -165,7 +172,9 @@ public class HttpProxyProtocol extends Protocol {
 		HashMap<String, String> post = new HashMap<String, String>();
 		StringBuffer buff = new StringBuffer();
 		if (isServer()) {
-			String contLen = header.get("Content-Length");
+			String contLen = null;
+			if (header.get("Content-Length") != null)
+				contLen = header.get("Content-Length").get(0);
 			if (contLen != null) {
 				int b;
 				int contentLenth = Integer.parseInt(contLen);

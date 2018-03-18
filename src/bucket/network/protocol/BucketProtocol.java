@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -26,7 +27,7 @@ public class BucketProtocol extends Protocol {
 		super();
 		setProtocolName("BUCKET");
 		setProtocolVersion("1.0");
-		setProtocolHeader(new HashMap<String, String>());
+		setProtocolHeader(new HashMap<String, List<String>>());
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
@@ -41,7 +42,7 @@ public class BucketProtocol extends Protocol {
 		super(socket);
 		setProtocolName("BUCKET");
 		setProtocolVersion("1.0");
-		setProtocolHeader(new HashMap<String, String>());
+		setProtocolHeader(new HashMap<String,  List<String>>());
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
@@ -61,7 +62,7 @@ public class BucketProtocol extends Protocol {
 		super(socket, in, out);
 		setProtocolName("BUCKET");
 		setProtocolVersion("1.0");
-		setProtocolHeader(new HashMap<String, String>());
+		setProtocolHeader(new HashMap<String,  List<String>>());
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 

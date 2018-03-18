@@ -1,17 +1,17 @@
 package bucket.network.protocol;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -160,7 +160,7 @@ public class HttpProtocol extends Protocol {
 	@Override
 	public boolean handshake() throws Throwable {
 
-		HashMap<String, String> header = new HashMap<String, String>();
+		HashMap<String, List<String>> header = new HashMap<String, List<String>>();
 		super.setProtocolHeader(header);
 		String str = null, first = null;
 
@@ -178,7 +178,12 @@ public class HttpProtocol extends Protocol {
 				}
 			}
 
-			header.put(tmp[0].trim(), tmp[1].trim());// 存header
+			List<String> h = header.get(tmp[0].trim());
+			if (h == null) {
+				h = new ArrayList<String>();
+				header.put(tmp[0].trim(), h);
+			}
+			h.add(tmp[1].trim());
 		}
 
 		if (first == null || !checkHandshake(first)) {
@@ -200,11 +205,13 @@ public class HttpProtocol extends Protocol {
 	 * 
 	 */
 	protected void getPOST() throws Throwable {
-		Map<String, String> header = this.getProtocolHeader();
+		Map<String, List<String>> header = this.getProtocolHeader();
 		HashMap<String, Object> post = new HashMap<String, Object>();
 		StringBuffer buff = new StringBuffer();
 		String[] contentType = null;
-		String ct = header.get("Content-Type");
+		String ct = null;
+		if (header.get("Content-Type") != null)
+			ct = header.get("Content-Type").get(0);
 		if (ct != null) {
 			contentType = ct.split(";");
 		} else {
@@ -212,7 +219,9 @@ public class HttpProtocol extends Protocol {
 		}
 		if (isServer()) {
 			if (contentType[0].equals(CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED)) {
-				String contLen = header.get("Content-Length");
+				String contLen = null;
+				if (header.get("Content-Length") != null)
+					contLen = header.get("Content-Length").get(0);
 				if (contLen != null) {
 					int b;
 					int contentLenth = Integer.parseInt(contLen);
@@ -241,7 +250,9 @@ public class HttpProtocol extends Protocol {
 				String boundary = map.get("boundary");
 				if (boundary != null) {
 					boundary = "--" + boundary;
-					String contLen = header.get("Content-Length");
+					String contLen = null;
+					if (header.get("Content-Length") != null)
+						contLen = header.get("Content-Length").get(0);
 					int count = 4;
 					int contentLenth = -1;
 					if (contLen != null)
@@ -315,8 +326,10 @@ public class HttpProtocol extends Protocol {
 
 		if (!isServer()) {
 
-			String contLen = getProtocolHeader().get("Content-Length");
-
+			String contLen = null;
+			if (getProtocolHeader().get("Content-Length") != null) {
+				contLen = getProtocolHeader().get("Content-Length").get(0);
+			}
 			if (contLen != null) {
 				int contentLenth = Integer.parseInt(contLen);
 				ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -425,10 +438,14 @@ public class HttpProtocol extends Protocol {
 
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		if (header != null)
-			for (Entry<String, String> kv : getProtocolHeader().entrySet()) {
-				wter.print(kv.getKey());
-				wter.print(": ");
-				wter.println(kv.getValue());
+			for (Entry<String, List<String>> kv : getProtocolHeader().entrySet()) {
+
+				for (String v : kv.getValue()) {
+					wter.print(kv.getKey());
+					wter.print(": ");
+					wter.println(v);
+				}
+
 			}
 		wter.println();
 		wter.flush();
@@ -467,7 +484,7 @@ public class HttpProtocol extends Protocol {
 	}
 
 	@Override
-	public Map<String, String> getProtocolHeader() {
+	public Map<String, List<String>> getProtocolHeader() {
 		if (protocolHeader == null)
 			protocolHeader = new HashMap<>();
 		return super.getProtocolHeader();

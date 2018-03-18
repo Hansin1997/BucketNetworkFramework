@@ -143,7 +143,7 @@ public class HttpProxyApplicationDemo extends Application {
 	protected void GET(Connection connection, String method) {
 		HttpURLConnection conn = null;
 		int b;
-		byte[] data = new byte[1024];
+		byte[] data = new byte[128];
 
 		try {
 
@@ -154,8 +154,11 @@ public class HttpProxyApplicationDemo extends Application {
 			conn.setRequestMethod(method);// 设置请求方法
 
 			// 设置请求头
-			for (Entry<String, String> kv : connection.getProtocol().getProtocolHeader().entrySet()) {
-				conn.addRequestProperty(kv.getKey(), kv.getValue());
+			for (Entry<String, List<String>> kv : connection.getProtocol().getProtocolHeader().entrySet()) {
+				for (String v : kv.getValue()) {
+					conn.addRequestProperty(kv.getKey(), v);
+				}
+
 			}
 
 			conn.setDoInput(true);
@@ -198,6 +201,7 @@ public class HttpProxyApplicationDemo extends Application {
 
 				// 排除一些头
 				if (kv.getKey() == null || kv.getKey().equals("Transfer-Encoding")) {
+
 					continue;
 				}
 

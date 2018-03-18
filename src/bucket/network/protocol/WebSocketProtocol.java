@@ -9,10 +9,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
@@ -56,7 +58,7 @@ public class WebSocketProtocol extends Protocol {
 	public WebSocketProtocol() {
 		super();
 		super.setProtocolInfo(new HashMap<String, Object>());
-		super.setProtocolHeader(new HashMap<String, String>());
+		super.setProtocolHeader(new HashMap<String, List<String>>());
 		init();
 	}
 
@@ -71,7 +73,7 @@ public class WebSocketProtocol extends Protocol {
 	public WebSocketProtocol(Socket socket) throws IOException {
 		super(socket);
 		super.setProtocolInfo(new HashMap<String, Object>());
-		super.setProtocolHeader(new HashMap<String, String>());
+		super.setProtocolHeader(new HashMap<String, List<String>>());
 		init();
 	}
 
@@ -90,7 +92,7 @@ public class WebSocketProtocol extends Protocol {
 	public WebSocketProtocol(Socket socket, InputStream in, OutputStream out) throws IOException {
 		super(socket, in, out);
 		super.setProtocolInfo(new HashMap<String, Object>());
-		super.setProtocolHeader(new HashMap<String, String>());
+		super.setProtocolHeader(new HashMap<String, List<String>>());
 		init();
 	}
 
@@ -100,7 +102,7 @@ public class WebSocketProtocol extends Protocol {
 	 * @return
 	 */
 	private String getWebSocketAccept() {
-		String webSocketKey = getProtocolHeader().get("Sec-WebSocket-Key");
+		String webSocketKey = getProtocolHeader().get("Sec-WebSocket-Key").get(0);
 		if (webSocketKey == null)
 			return "";
 		byte[] result = DigestUtils.sha1(webSocketKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
@@ -120,8 +122,10 @@ public class WebSocketProtocol extends Protocol {
 			wter.println(kv[0] + ": " + kv[1]);
 		}
 		String SWA = getWebSocketAccept();
-		getProtocolHeader().put("Sec-WebSocket-Accept", SWA);
-		wter.println("Sec-WebSocket-Accept: " + SWA);
+		List<String> swa = new ArrayList<>();
+		swa.add(SWA);
+		getProtocolHeader().put("Sec-WebSocket-Accept", swa);
+		wter.println("Sec-WebSocket-Accept: " + swa);
 		wter.println();
 		wter.flush();
 		getOut().flush();
@@ -164,8 +168,10 @@ public class WebSocketProtocol extends Protocol {
 			wter.println(kv[0] + ": " + kv[1]);
 		}
 		String SWK = DigestUtils.md5Hex(String.valueOf(Math.random()));
-		getProtocolHeader().put("Sec-WebSocket-Key", SWK);
-		wter.println("Sec-WebSocket-Key: " + SWK);
+		List<String> swk = new ArrayList<>();
+		swk.add(SWK);
+		getProtocolHeader().put("Sec-WebSocket-Key", swk);
+		wter.println("Sec-WebSocket-Key: " + swk);
 		wter.println();
 		wter.flush();
 		getOut().flush();
@@ -191,8 +197,8 @@ public class WebSocketProtocol extends Protocol {
 
 		for (String[] kv : ckHeader) {
 
-			if (getProtocolHeader().get(kv[0]) == null
-					|| !getProtocolHeader().get(kv[0]).toLowerCase().equals(kv[1].toLowerCase()))
+			if (getProtocolHeader().get(kv[0]) == null || getProtocolHeader().get(kv[0]).size() == 0
+					|| !getProtocolHeader().get(kv[0]).get(0).toLowerCase().equals(kv[1].toLowerCase()))
 
 				return false;
 		}
@@ -220,14 +226,14 @@ public class WebSocketProtocol extends Protocol {
 			super.setProtocolName(m.group(3) + " WebSocket");
 			super.setProtocolVersion(m.group(4));
 
-			String SWK = getProtocolHeader().get("Sec-WebSocket-Key");
+			String SWK = getProtocolHeader().get("Sec-WebSocket-Key").get(0);
 			if (SWK == null)
 				return false;
 
 		} else {
 			super.setProtocolName(m.group(1) + " WebSocket");
 			super.setProtocolVersion(m.group(2));
-			String SWA = getProtocolHeader().get("Sec-WebSocket-Accept");
+			String SWA = getProtocolHeader().get("Sec-WebSocket-Accept").get(0);
 			if (SWA == null || !SWA.equals(getWebSocketAccept()))
 				return false;
 		}
@@ -240,7 +246,7 @@ public class WebSocketProtocol extends Protocol {
 		getIn().mark(8192 * 8);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(getIn()));
 
-		Map<String, String> header = getProtocolHeader();
+		Map<String, List<String>> header = getProtocolHeader();
 
 		if (!isServer())
 			echoClientHeader();
@@ -260,7 +266,12 @@ public class WebSocketProtocol extends Protocol {
 
 			}
 
-			header.put(tmp[0].trim(), tmp[1].trim());
+			List<String> h = header.get(tmp[0].trim());
+			if (h == null) {
+				h = new ArrayList<String>();
+				header.put(tmp[0].trim(), h);
+			}
+			h.add(tmp[1].trim());
 		}
 
 		if (!handshakeCheck(first)) {
