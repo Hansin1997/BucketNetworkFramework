@@ -61,7 +61,8 @@ public class ServerConnection extends Connection {
 
 			byte data[];
 			while ((data = protocol.load()) != null) {
-				listener.onDataCome(this, data);
+				if (listener != null)
+					listener.onDataCome(this, data);
 			}
 
 		} catch (Throwable e) {

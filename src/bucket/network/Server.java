@@ -28,37 +28,37 @@ public class Server implements RejectedExecutionHandler {
 	 * ServerConnection列表
 	 */
 	private List<ServerConnection> list;
-	
+
 	/**
 	 * 线程池
 	 */
 	private ThreadPoolExecutor pool;
-	
+
 	/**
 	 * 线程池核心大小
 	 */
 	private int corePoolSize;
-	
+
 	/**
 	 * 线程池最大大小
 	 */
 	private int maximumPoolSize;
-	
+
 	/**
 	 * 服务端口号
 	 */
 	private int port;
-	
+
 	/**
 	 * 服务运行标志
 	 */
 	private boolean running;
-	
+
 	/**
 	 * 数据库管理器
 	 */
 	private Database database;
-	
+
 	/**
 	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
@@ -161,11 +161,11 @@ public class Server implements RejectedExecutionHandler {
 		for (ServerConnection conn : list) {
 			try {
 				conn.getSocket().close();
-				list.remove(conn);
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 		}
+		list.clear();
 		pool.shutdownNow();
 		setRunning(false);
 
@@ -319,6 +319,15 @@ public class Server implements RejectedExecutionHandler {
 	}
 
 	/**
+	 * 获取端口号
+	 * 
+	 * @return
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
 	 * 添加协议支持
 	 * 
 	 * @param protocol
@@ -333,7 +342,7 @@ public class Server implements RejectedExecutionHandler {
 	 * @param protocol
 	 */
 	public void addProtocol(String protocolClassName) {
-		
+
 		ProtocolList.add(protocolClassName);
 	}
 

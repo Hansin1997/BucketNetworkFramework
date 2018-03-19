@@ -233,10 +233,12 @@ public abstract class Protocol {
 	public byte[] read(int b) throws Throwable {
 		ByteArrayOutputStream o = new ByteArrayOutputStream();
 		int bb;
-		while ((bb = read()) != b) {
+		while ((bb = read()) != b && bb != -1) {
 			o.write(bb);
 		}
 		o.flush();
+		if (bb == -1 && o.size() == 0)
+			return null;
 		return o.toByteArray();
 	}
 

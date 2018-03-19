@@ -118,13 +118,16 @@ public class BucketProtocol extends Protocol {
 	public byte[] load() throws Throwable {
 
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
-		String str = new String(read('\n'), getEncode());
+		byte[] line = read('\n');
+		if(line == null)
+			return null;
+		String str = new String(line, getEncode());
 
 		int length;
 		try {
 			length = Integer.valueOf(str);
 		} catch (NumberFormatException e) {
-			return load();
+			return null;
 		}
 
 		byte bf[] = new byte[255];

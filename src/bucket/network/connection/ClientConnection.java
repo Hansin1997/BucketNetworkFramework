@@ -36,10 +36,12 @@ public class ClientConnection extends Connection {
 			Protocol p = getProtocol();
 			if (!p.handshake())
 				throw new Exception("握手失败");
-
+			if (listener != null)
+				listener.onConnect(this);
 			byte data[];
 			while ((data = protocol.load()) != null) {
-				listener.onDataCome(this, data);
+				if (listener != null)
+					listener.onDataCome(this, data);
 			}
 
 		} catch (Throwable e) {
