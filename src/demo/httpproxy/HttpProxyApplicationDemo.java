@@ -162,6 +162,7 @@ public class HttpProxyApplicationDemo extends Application {
 			strBuff.append(pro.getProtocolInfo().get("METHOD") + " " + pro.getProtocolInfo().get("path") + " "
 					+ pro.getProtocolName() + "/" + pro.getProtocolVersion() + "\r\n");
 
+			// 禁止长连接
 			List<String> C = pro.getProtocolHeader().remove("Proxy-Connection");
 			if (C != null) {
 				C.clear();
