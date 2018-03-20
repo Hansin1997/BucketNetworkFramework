@@ -105,14 +105,33 @@ public class HttpProxyProtocol extends Protocol {
 				return false;
 		HashMap<String, Object> info = new HashMap<String, Object>();
 		HashMap<String, String> get = new HashMap<String, String>();
+
 		if (isServer()) {
 			info.put(INFO_METHOD, m.group(1).trim());
 
 			String path = m.group(2);
+
+			String[] tmp3 = path.split("://", 2);
+			if (tmp3.length > 1) {
+				info.put("PROTOCOL", tmp3[0]);
+				tmp3 = tmp3[1].split("/", 2);
+				if (tmp3.length > 1)
+					path = "/" + tmp3[1];
+				tmp3 = tmp3[0].split(":", 2);
+				info.put("HOST", tmp3[0]);
+				if (tmp3.length > 1) {
+					info.put("PORT", Integer.valueOf(tmp3[1]));
+				} else {
+					info.put("PORT", 80);
+				}
+			}
+
+			info.put("path", path);
 			// ------------------------------------------------------
 			String[] tmp2 = path.split("\\u003F"), tmp;// 分割url中的问号
 			if (tmp2.length == 2) {
 				path = tmp2[0];
+
 				tmp = tmp2[1].split("&");
 				for (String data : tmp) {
 					String[] kv = data.split("=");
@@ -121,7 +140,7 @@ public class HttpProxyProtocol extends Protocol {
 				}
 			}
 			// ------------------------------------------------------
-			info.put(INFO_PATH, m.group(2));
+			info.put(INFO_PATH, path);
 			info.put(INFO_GET, get);
 			super.setProtocolInfo(info);
 			super.setProtocolName(m.group(3));
@@ -170,33 +189,6 @@ public class HttpProxyProtocol extends Protocol {
 		}
 
 		HashMap<String, String> post = new HashMap<String, String>();
-		StringBuffer buff = new StringBuffer();
-		if (isServer()) {
-			String contLen = null;
-			if (header.get("Content-Length") != null)
-				contLen = header.get("Content-Length").get(0);
-			if (contLen != null) {
-				int b;
-				int contentLenth = Integer.parseInt(contLen);
-				for (int i = 0; i < contentLenth; i++) {
-					b = read();
-					if (b == -1)
-						break;
-					buff.append((char) b);
-				}
-
-				String kvs[] = buff.toString().split("&");
-
-				for (String kv_ : kvs) {
-					String kv[] = kv_.split("=");
-					if (kv.length == 2) {
-						post.put(kv[0], kv[1]);
-					}
-				}
-
-			}
-
-		}
 		super.getProtocolInfo().put(INFO_POST, post);
 
 		return true;

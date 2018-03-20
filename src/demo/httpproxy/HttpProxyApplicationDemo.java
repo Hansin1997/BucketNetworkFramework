@@ -2,20 +2,18 @@
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-
-import java.net.HttpURLConnection;
+import java.io.IOException;
 
 import java.net.Socket;
-import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import bucket.application.Application;
 import bucket.network.Server;
 import bucket.network.connection.Connection;
+import bucket.network.protocol.Protocol;
 
 /**
  * Http代理应用Demo
@@ -29,6 +27,10 @@ public class HttpProxyApplicationDemo extends Application {
 	 * 中转等待标志
 	 */
 	protected boolean flag;
+	Socket conn;
+	Protocol pro;
+	BufferedInputStream in;
+	BufferedOutputStream out;
 
 	public HttpProxyApplicationDemo(Server server) {
 		super(server);
@@ -74,12 +76,10 @@ public class HttpProxyApplicationDemo extends Application {
 		int port = (hp.length > 1 ? Integer.parseInt(hp[1]) : 443);
 
 		// 建立中转连接
-		Socket s = new Socket(host, port);
+		conn = new Socket(host, port);
 
-		// 设置中转连接超时
-		s.setSoTimeout(5000);
-		final BufferedInputStream in = new BufferedInputStream(s.getInputStream());
-		final BufferedOutputStream out = new BufferedOutputStream(s.getOutputStream());
+		in = new BufferedInputStream(conn.getInputStream());
+		out = new BufferedOutputStream(conn.getOutputStream());
 
 		// 输出代理成功信息
 		connection.getProtocol().send("HTTP/1.1 200 Connection Established\r\n\r\n");
@@ -95,6 +95,7 @@ public class HttpProxyApplicationDemo extends Application {
 						out.write(data, 0, b);
 						out.flush();
 					}
+					conn.shutdownOutput();
 
 				} catch (Throwable e) {
 
@@ -110,11 +111,10 @@ public class HttpProxyApplicationDemo extends Application {
 				try {
 					byte[] data = new byte[1024];
 					while ((b = in.read(data, 0, data.length)) != -1) {
-
 						connection.getProtocol().write(data, 0, b);
 						connection.getProtocol().flush();
-
 					}
+					connection.getSocket().shutdownOutput();
 
 				} catch (Throwable e) {
 
@@ -128,7 +128,7 @@ public class HttpProxyApplicationDemo extends Application {
 		while (!flag)
 			Thread.sleep(10);
 
-		s.close();// 关闭中转连接
+		conn.close();// 关闭中转连接
 
 	}
 
@@ -140,90 +140,72 @@ public class HttpProxyApplicationDemo extends Application {
 	 *            连接对象
 	 * @param method
 	 *            请求方法：GET、POST等
+	 * @throws IOException
+	 * @throws UnknownHostException
 	 */
-	protected void GET(Connection connection, String method) {
-		HttpURLConnection conn = null;
+	protected void GET(Connection connection, String method) throws UnknownHostException, IOException {
+
 		int b;
-		byte[] data = new byte[128];
+		byte[] data = new byte[1024];
+		pro = connection.getProtocol();
+		String host = connection.getProtocol().getProtocolInfo().get("HOST").toString();
+		int port = (int) connection.getProtocol().getProtocolInfo().get("PORT");
+		// 建立中转Http连接
+		conn = new Socket(host, port);
 
 		try {
 
-			// 建立中转Http连接
-			conn = (HttpURLConnection) new URL(connection.getProtocol().getProtocolInfo().get("PATH").toString())
-					.openConnection();
+			out = new BufferedOutputStream(conn.getOutputStream());
+			in = new BufferedInputStream(conn.getInputStream());
 
-			conn.setRequestMethod(method);// 设置请求方法
+			StringBuffer strBuff = new StringBuffer();
+			strBuff.append(pro.getProtocolInfo().get("METHOD") + " " + pro.getProtocolInfo().get("path") + " "
+					+ pro.getProtocolName() + "/" + pro.getProtocolVersion() + "\r\n");
 
+			List<String> C = pro.getProtocolHeader().remove("Proxy-Connection");
+			if (C != null) {
+				C.clear();
+				C.add("close");
+				pro.getProtocolHeader().put("Connection", C);
+			}
 			// 设置请求头
 			for (Entry<String, List<String>> kv : connection.getProtocol().getProtocolHeader().entrySet()) {
 				for (String v : kv.getValue()) {
-					conn.addRequestProperty(kv.getKey(), v);
+					strBuff.append(kv.getKey() + ": " + v + "\r\n");
 				}
 
 			}
+			strBuff.append("\r\n");
 
-			conn.setDoInput(true);
+			out.write(strBuff.toString().getBytes(pro.getEncode()));
 
-			// 如果方法为POST，为中转连接传入POST参数
-			if (method.equals("POST")) {
-				conn.setDoOutput(true);
-				conn.connect();
-				BufferedOutputStream out = new BufferedOutputStream(conn.getOutputStream());
+			out.flush();
 
-				@SuppressWarnings("unchecked")
-				Map<String, String> post = (Map<String, String>) connection.getProtocol().getProtocolInfo().get("POST");
+			new Thread() {
+				public void run() {
+					int b;
+					byte[] data = new byte[1024];
+					try {
+						while ((b = pro.read(data, 0, data.length)) != -1) {
+							out.write(data, 0, b);
+							out.flush();
+						}
 
-				if (post != null) {
-					Iterator<Entry<String, String>> it = post.entrySet().iterator();
-					while (it.hasNext()) {
-						Entry<String, String> kv = it.next();
-						out.write((kv.getKey() + "=" + kv.getValue()).getBytes("UTF-8"));
-
-						if (it.hasNext())
-							out.write('&');
+						conn.shutdownOutput();
+					} catch (Throwable e) {
 
 					}
-					out.flush();
-					out.close();
-				}
-			} else {
-				conn.connect();
-			}
 
-			BufferedInputStream in = new BufferedInputStream(conn.getInputStream());
+				};
+			}.start();
 
-			// 输出连接状态
-			connection.getProtocol()
-					.write(("HTTP/1.1 " + conn.getResponseCode() + " " + conn.getResponseMessage() + "\r\n")
-							.getBytes("UTF-8"));
-
-			// 输出HTTP报头
-			for (Entry<String, List<String>> kv : conn.getHeaderFields().entrySet()) {
-
-				// 排除一些头
-				if (kv.getKey() == null || kv.getKey().equals("Transfer-Encoding")) {
-
-					continue;
-				}
-
-				for (String vs : kv.getValue()) {
-
-					connection.getProtocol().write((kv.getKey() + ": " + vs + "\r\n").getBytes("UTF-8"));
-
-				}
-
-			}
-
-			connection.getProtocol().send("\r\n");// 输出HTTP头结束标志
-
-			// HTTP 数据部分传输
 			while ((b = in.read(data, 0, data.length)) != -1) {
-				connection.getProtocol().write(data, 0, b);
+				pro.write(data, 0, b);
+				pro.flush();
 			}
 
-			connection.getProtocol().flush();
-			in.close();
-
+			pro.getSocket().shutdownOutput();
+			pro.getSocket().close();
 		} catch (Throwable e) {
 			// 输出错误
 			try {
@@ -235,7 +217,7 @@ public class HttpProxyApplicationDemo extends Application {
 			}
 
 		}
-		conn.disconnect();// 关闭中转连接
+		conn.close();
 
 	}
 
