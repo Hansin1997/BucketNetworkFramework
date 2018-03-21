@@ -125,7 +125,7 @@ public class WebSocketProtocol extends Protocol {
 		List<String> swa = new ArrayList<>();
 		swa.add(SWA);
 		getProtocolHeader().put("Sec-WebSocket-Accept", swa);
-		wter.println("Sec-WebSocket-Accept: " + swa);
+		wter.println("Sec-WebSocket-Accept: " + SWA);
 		wter.println();
 		wter.flush();
 		getOut().flush();
@@ -144,7 +144,7 @@ public class WebSocketProtocol extends Protocol {
 		if (getProtocolInfo().get(INFO_PATH) == null)
 			path = "/";
 		else
-			path = (String) getProtocolInfo().get(INFO_PATH);
+			path = getProtocolInfo().get(INFO_PATH).toString();
 
 		if (getProtocolInfo().get(INFO_GET) != null) {
 
@@ -162,7 +162,7 @@ public class WebSocketProtocol extends Protocol {
 
 		}
 
-		wter.println("GET /" + path + " HTTP/1.1");
+		wter.println("GET " + path + " HTTP/1.1");
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		for (String[] kv : ckHeader) {
 			wter.println(kv[0] + ": " + kv[1]);
@@ -171,7 +171,7 @@ public class WebSocketProtocol extends Protocol {
 		List<String> swk = new ArrayList<>();
 		swk.add(SWK);
 		getProtocolHeader().put("Sec-WebSocket-Key", swk);
-		wter.println("Sec-WebSocket-Key: " + swk);
+		wter.println("Sec-WebSocket-Key: " + SWK);
 		wter.println();
 		wter.flush();
 		getOut().flush();
@@ -255,6 +255,7 @@ public class WebSocketProtocol extends Protocol {
 		while ((str = reader.readLine()) != null) {
 
 			String tmp[] = str.split(":", 2);
+
 			if (tmp.length == 1) {
 				if (first == null) {
 					first = str;

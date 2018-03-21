@@ -70,6 +70,11 @@ public class Server implements RejectedExecutionHandler {
 	protected final ArrayList<String> ProtocolList = new ArrayList<String>();
 
 	/**
+	 * 服务端Socket
+	 */
+	protected ServerSocket serverSocket;
+
+	/**
 	 * 构造函数
 	 * 
 	 * @param appClassName
@@ -139,7 +144,7 @@ public class Server implements RejectedExecutionHandler {
 	 */
 	public void start() throws Exception {
 		setRunning(true);
-		ServerSocket serverSocket = new ServerSocket(this.port);
+		serverSocket = new ServerSocket(this.port);
 
 		@SuppressWarnings("rawtypes")
 		Constructor c = Class.forName(appClassName).getConstructor(Server.class);
@@ -164,6 +169,12 @@ public class Server implements RejectedExecutionHandler {
 			} catch (Throwable e) {
 				e.printStackTrace();
 			}
+		}
+		try {
+			if (serverSocket != null)
+				serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		list.clear();
 		pool.shutdownNow();

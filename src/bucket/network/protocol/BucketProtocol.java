@@ -42,7 +42,7 @@ public class BucketProtocol extends Protocol {
 		super(socket);
 		setProtocolName("BUCKET");
 		setProtocolVersion("1.0");
-		setProtocolHeader(new HashMap<String,  List<String>>());
+		setProtocolHeader(new HashMap<String, List<String>>());
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
@@ -62,7 +62,7 @@ public class BucketProtocol extends Protocol {
 		super(socket, in, out);
 		setProtocolName("BUCKET");
 		setProtocolVersion("1.0");
-		setProtocolHeader(new HashMap<String,  List<String>>());
+		setProtocolHeader(new HashMap<String, List<String>>());
 		setProtocolInfo(new HashMap<String, Object>());
 	}
 
@@ -119,7 +119,7 @@ public class BucketProtocol extends Protocol {
 
 		ByteArrayOutputStream bout = new ByteArrayOutputStream();
 		byte[] line = read('\n');
-		if(line == null)
+		if (line == null)
 			return null;
 		String str = new String(line, getEncode());
 
@@ -127,7 +127,7 @@ public class BucketProtocol extends Protocol {
 		try {
 			length = Integer.valueOf(str);
 		} catch (NumberFormatException e) {
-			return null;
+			return load();
 		}
 
 		byte bf[] = new byte[255];
