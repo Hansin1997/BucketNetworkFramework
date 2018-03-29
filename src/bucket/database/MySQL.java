@@ -236,6 +236,9 @@ public class MySQL extends Database {
 
 	@Override
 	public void update(BucketObject obj) throws Exception {
+		if (!isTableExist(obj.getTableName()))
+			createBucketObjectTable(obj);
+		
 		StringBuffer sql = new StringBuffer();
 		sql.append("UPDATE " + obj.getTableName() + " SET ");
 		Map<String, Object> fileds = obj.getFields();
