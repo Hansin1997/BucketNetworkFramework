@@ -45,11 +45,6 @@ public class Server implements RejectedExecutionHandler {
 	private int maximumPoolSize;
 
 	/**
-	 * 服务端口号
-	 */
-	private int port;
-
-	/**
 	 * 服务运行标志
 	 */
 	private boolean running;
@@ -81,7 +76,7 @@ public class Server implements RejectedExecutionHandler {
 	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
 	public Server(String appClassName) {
-		this(appClassName, 6656, null, 512, 1024);
+		this(appClassName, null, 512, 1024);
 	}
 
 	/**
@@ -89,25 +84,11 @@ public class Server implements RejectedExecutionHandler {
 	 * 
 	 * @param appClassName
 	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
-	 * @param port
-	 *            端口号
-	 */
-	public Server(String appClassName, int port) {
-		this(appClassName, port, null, 512, 1024);
-	}
-
-	/**
-	 * 构造函数
-	 * 
-	 * @param appClassName
-	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
-	 * @param port
-	 *            端口号
 	 * @param databaseManager
 	 *            数据库管理器
 	 */
-	public Server(String appClassName, int port, Database databaseManager) {
-		this(appClassName, port, databaseManager, 512, 1024);
+	public Server(String appClassName, Database databaseManager) {
+		this(appClassName, databaseManager, 512, 1024);
 	}
 
 	/**
@@ -115,8 +96,6 @@ public class Server implements RejectedExecutionHandler {
 	 * 
 	 * @param appClassName
 	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
-	 * @param port
-	 *            端口号
 	 * @param databaseManager
 	 *            数据库管理器
 	 * @param corePoolSize
@@ -124,9 +103,9 @@ public class Server implements RejectedExecutionHandler {
 	 * @param maximumPoolSize
 	 *            线程池最大大小
 	 */
-	public Server(String appClassName, int port, Database databaseManager, int corePoolSize, int maximumPoolSize) {
+	public Server(String appClassName, Database databaseManager, int corePoolSize, int maximumPoolSize) {
 		this.appClassName = appClassName;
-		this.port = port;
+		// this.port = port;
 		this.database = databaseManager;
 		this.corePoolSize = corePoolSize;
 		this.maximumPoolSize = maximumPoolSize;
@@ -142,9 +121,9 @@ public class Server implements RejectedExecutionHandler {
 	 * 
 	 * @throws Exception
 	 */
-	public void start() throws Exception {
+	public void start(ServerSocket serverSocket) throws Exception {
 		setRunning(true);
-		serverSocket = new ServerSocket(this.port);
+		this.serverSocket = serverSocket;
 
 		@SuppressWarnings("rawtypes")
 		Constructor c = Class.forName(appClassName).getConstructor(Server.class);
@@ -319,24 +298,24 @@ public class Server implements RejectedExecutionHandler {
 
 	// ---------------------------------------
 
-	/**
-	 * 设置端口号
-	 * 
-	 * @param port
-	 *            端口号
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
-
-	/**
-	 * 获取端口号
-	 * 
-	 * @return
-	 */
-	public int getPort() {
-		return port;
-	}
+	// /**
+	// * 设置端口号
+	// *
+	// * @param port
+	// * 端口号
+	// */
+	// public void setPort(int port) {
+	// this.port = port;
+	// }
+	//
+	// /**
+	// * 获取端口号
+	// *
+	// * @return
+	// */
+	// public int getPort() {
+	// return port;
+	// }
 
 	/**
 	 * 添加协议支持
