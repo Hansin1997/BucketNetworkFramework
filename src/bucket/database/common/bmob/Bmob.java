@@ -1,8 +1,11 @@
 package bucket.database.common.bmob;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.Gson;
 
 import bucket.database.BucketObject;
 import bucket.database.Database;
@@ -95,9 +98,17 @@ public class Bmob extends Database {
 		String SQL = MySQL.Query2PreSQL(query, tableName, limit);
 		if (SQL.length() > 1)
 			SQL = SQL.substring(0, SQL.length() - 2);
-		List<T> list = db.getObjectsBQL(SQL, MySQL.Query2ValueArray(query).toString(), clazz);
-		for (T obj : list)
-			obj.setDatabase(this);
+		ArrayList<T> list = new ArrayList<>();
+		List<Map<String, Object>> arr = db.getObjectsBQL(SQL, MySQL.Query2ValueArray(query).toString());
+
+		Gson gson = new Gson();
+		for (Map<String, Object> m : arr) {
+			T o = clazz.newInstance();
+			o.setId(gson.fromJson(m.get("objectId").toString(), String.class));
+			o.setFields(m);
+			o.setTableName(tableName);
+			list.add(o);
+		}
 		return list;
 	}
 

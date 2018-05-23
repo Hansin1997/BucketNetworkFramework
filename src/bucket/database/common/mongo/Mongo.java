@@ -157,8 +157,9 @@ public class Mongo extends Database {
 		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
 		for (Document doc : r) {
 			T t = instantiate(clazz);
-			t.setFields(doc);
 			t.setId(doc.getObjectId("_id"));
+			t.setFields(doc);
+			
 			t.setTableName(tableName);
 			result.add(t);
 		}

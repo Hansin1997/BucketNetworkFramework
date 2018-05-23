@@ -15,21 +15,6 @@ public class BmobPointer extends BmobBase {
 	protected String objectId;
 	protected String className;
 
-	@Override
-	public Object getId() {
-		if (objectId != null)
-			return objectId;
-		else
-			return super.getId();
-	}
-
-	@Override
-	public void setId(Object id) {
-		if (id != null)
-			setObjectId(id.toString());
-		super.setId(id);
-	}
-
 	public BmobPointer() {
 		super();
 		setClassName(className);
@@ -44,7 +29,11 @@ public class BmobPointer extends BmobBase {
 	}
 
 	public BmobPointer(BmobObject bmobObject) {
-		setObjectId(bmobObject.getObjectId());
+		setId(bmobObject.getId());
+		if (bmobObject.getObjectId() == null && bmobObject.getId() != null)
+			setObjectId(bmobObject.getId().toString());
+		else
+			setObjectId(bmobObject.getObjectId());
 		setClassName(bmobObject.getClassName());
 		set__type(TYPE);
 	}

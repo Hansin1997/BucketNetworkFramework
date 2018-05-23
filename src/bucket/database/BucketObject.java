@@ -183,10 +183,15 @@ public abstract class BucketObject {
 			Field f = getField(kv.getKey(), getClass());
 			if (f != null) {
 				f.setAccessible(true);
+
 				if (kv.getValue().getClass().equals(String.class) && !f.getType().equals(String.class))
 					f.set(this, gson.fromJson(kv.getValue().toString(), f.getType()));
 				else
-					f.set(this, kv.getValue());
+					try {
+						f.set(this, kv.getValue());
+					} catch (IllegalArgumentException e) {
+						f.set(this, gson.fromJson(kv.getValue().toString(), f.getType()));
+					}
 			}
 		}
 	}
@@ -250,6 +255,11 @@ public abstract class BucketObject {
 	public String toJSON() {
 		Gson gson = new GsonBuilder().create();
 		return gson.toJson(this);
+	}
+
+	@Override
+	public String toString() {
+		return toJSON();
 	}
 
 	public Gson getGson() {

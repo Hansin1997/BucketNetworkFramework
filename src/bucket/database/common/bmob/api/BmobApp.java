@@ -10,13 +10,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import bucket.database.common.bmob.type.BmobACL;
@@ -292,6 +297,44 @@ public class BmobApp {
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < re.size(); i++) {
 					list.add(gson.fromJson(re.get(i), clazz));
+				}
+				return list;
+			}
+		} catch (IOException e) {
+			throw e;
+		}
+		return null;
+
+	}
+
+	public ArrayList<Map<String, Object>> getObjectsBQL(String BQL, String values)
+			throws MalformedURLException, IOException {
+		HttpsURLConnection conn = (HttpsURLConnection) new URL(API_GET_BQL + "?bql=" + URLEncoder.encode(BQL, "utf-8")
+				+ "&values=" + URLEncoder.encode(values, "utf-8")).openConnection();
+		conn.addRequestProperty(HEADER_APPLICATION_ID, applicationId);
+		conn.addRequestProperty(HEADER_APPLICATION_MASTER_KEY, masterKey);
+		conn.connect();
+		try {
+			if (conn.getResponseCode() != 200) {
+				int b;
+				while ((b = conn.getErrorStream().read()) != -1) {
+					System.out.write(b);
+				}
+				System.out.println();
+
+			} else {
+				InputStream in = conn.getInputStream();
+				Gson gson = new GsonBuilder().registerTypeAdapter(BmobACL.class, new BmobACL.BmobAclAdapter()).create();
+				JsonObject jo = gson.fromJson(new BufferedReader(new InputStreamReader(in)), JsonObject.class);
+				JsonArray re = jo.get("results").getAsJsonArray();
+				ArrayList<Map<String, Object>> list = new ArrayList<>();
+				for (JsonElement o : re) {
+					Set<Entry<String, JsonElement>> set = o.getAsJsonObject().entrySet();
+					Map<String, Object> fileds = new HashMap<String, Object>();
+					for (Entry<String, JsonElement> kv : set) {
+						fileds.put(kv.getKey(), kv.getValue());
+					}
+					list.add(fileds);
 				}
 				return list;
 			}

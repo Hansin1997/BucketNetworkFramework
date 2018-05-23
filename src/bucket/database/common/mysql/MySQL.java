@@ -151,8 +151,9 @@ public class MySQL extends Database {
 				fileds.put(key, set.getObject(i));
 			}
 			T t = instantiate(clazz);
-			t.setFields(fileds);
 			t.setId(fileds.get("id"));
+			t.setFields(fileds);
+
 			t.setTableName(tableName);
 			result.add(t);
 		}
@@ -240,7 +241,6 @@ public class MySQL extends Database {
 		sql.append(" VALUES ");
 		sql.append(sqlpart2);
 
-		System.out.println(sql.toString());
 		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
 				Statement.RETURN_GENERATED_KEYS);
 
