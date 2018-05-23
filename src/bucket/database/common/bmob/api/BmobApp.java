@@ -211,7 +211,6 @@ public class BmobApp {
 		json.remove("__type");
 		json.remove("className");
 		json.remove("objectId");
-		System.out.println(API_GET_OBJECT + "/" + tableName + "/" + objectId);
 		writer.write(json.toString());
 		writer.flush();
 		writer.close();

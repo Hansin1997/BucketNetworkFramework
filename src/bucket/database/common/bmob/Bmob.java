@@ -118,7 +118,6 @@ public class Bmob extends Database {
 
 	@Override
 	public void update(BucketObject obj) throws Exception {
-		System.out.println(obj.getTableName() + " " + obj.getId().toString());
 		String ua = db.updateObject(obj.getTableName(), obj, obj.getId().toString());
 		if (ua == null)
 			throw new ObjectNotFoundException("更新失败");
