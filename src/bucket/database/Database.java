@@ -3,6 +3,9 @@ package bucket.database;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
+import bucket.database.query.Query;
+import bucket.database.query.QueryBody;
+
 /**
  * 数据库
  * 
@@ -179,7 +182,7 @@ public abstract class Database {
 	 *             异常
 	 */
 	public <T extends BucketObject> List<T> find(Class<T> clazz, QueryBody query, long limit) throws Exception {
-		return find(clazz, query.head, limit);
+		return find(clazz, query.getHead(), limit);
 	}
 
 	/**
@@ -209,7 +212,7 @@ public abstract class Database {
 	 *             异常
 	 */
 	public <T extends BucketObject> List<T> find(Class<T> clazz, QueryBody query) throws Exception {
-		return find(clazz, query.head);
+		return find(clazz, query.getHead());
 	};
 
 	/**
@@ -243,7 +246,7 @@ public abstract class Database {
 	 *             异常
 	 */
 	public <T extends BucketObject> T findOne(Class<T> clazz, QueryBody query) throws Exception {
-		return findOne(clazz, query.head);
+		return findOne(clazz, query.getHead());
 	};
 
 	/**

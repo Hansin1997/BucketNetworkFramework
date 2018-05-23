@@ -3,8 +3,8 @@ package demo.database;
 import java.util.List;
 
 import bucket.database.Database;
-import bucket.database.MySQL;
-import bucket.database.Query;
+import bucket.database.common.mysql.MySQL;
+import bucket.database.query.Query;
 
 /**
  * 数据库使用示例

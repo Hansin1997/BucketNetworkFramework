@@ -1,12 +1,16 @@
 package bucket.database;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import bucket.database.exception.DatabaseConnectionException;
 
 import java.util.Set;
 
@@ -104,16 +108,60 @@ public abstract class BucketObject {
 	 *             异常
 	 */
 	public Map<String, Object> getFields() throws Exception {
+		return getAllFields(this, getClass());
+	}
+
+	public static Map<String, Object> getAllFields(Object obj, Class<?> clazz)
+			throws IllegalArgumentException, IllegalAccessException {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
-		Class<?> c = this.getClass();
-		Field[] fs = c.getFields();
+		Class<?> c = clazz;
+
+		Field[] fs = c.getDeclaredFields();
 		for (Field f : fs) {
+			if (clazz.equals(BucketObject.class))
+				break;
+			f.setAccessible(true);
 
-			// if (f.isAccessible())
-			fields.put(f.getName(), f.get(this));
+			if (!Modifier.isStatic(f.getModifiers()) && f.get(obj) != null)
+				fields.put(f.getName(), f.get(obj));
 		}
-
+		if (!clazz.equals(BucketObject.class))
+			fields.putAll(getAllFields(obj, clazz.getSuperclass()));
 		return fields;
+	}
+
+	public static ArrayList<Field> getAllFields(Class<?> clazz)
+			throws IllegalArgumentException, IllegalAccessException {
+		ArrayList<Field> ls = new ArrayList<>();
+		Class<?> c = clazz;
+
+		Field[] fs = c.getDeclaredFields();
+		for (Field f : fs) {
+			if (clazz.equals(BucketObject.class))
+				break;
+			f.setAccessible(true);
+
+			if (!Modifier.isStatic(f.getModifiers()))
+				ls.add(f);
+		}
+		if (!clazz.equals(BucketObject.class))
+			ls.addAll(getAllFields(clazz.getSuperclass()));
+		return ls;
+	}
+
+	public static Field getField(String key, Class<?> clazz) {
+		try {
+			return clazz.getField(key);
+		} catch (NoSuchFieldException e) {
+			try {
+				return clazz.getDeclaredField(key);
+			} catch (NoSuchFieldException e1) {
+				if (clazz.equals(BucketObject.class)) {
+					return null;
+				} else
+					return getField(key, clazz.getSuperclass());
+			}
+		}
 	}
 
 	/**
@@ -125,10 +173,21 @@ public abstract class BucketObject {
 	 *             异常
 	 */
 	public void setFields(Map<String, Object> fields) throws Exception {
-		Class<?> c = this.getClass();
-		Field[] fs = c.getFields();
-		for (Field f : fs) {
-			f.set(this, fields.get(f.getName()));
+
+		Gson gson = getGson();
+		Set<Entry<String, Object>> set = fields.entrySet();
+		for (Entry<String, Object> kv : set) {
+
+			if (kv.getValue() == null)
+				continue;
+			Field f = getField(kv.getKey(), getClass());
+			if (f != null) {
+				f.setAccessible(true);
+				if (kv.getValue().getClass().equals(String.class) && !f.getType().equals(String.class))
+					f.set(this, gson.fromJson(kv.getValue().toString(), f.getType()));
+				else
+					f.set(this, kv.getValue());
+			}
 		}
 	}
 
@@ -138,7 +197,7 @@ public abstract class BucketObject {
 	public void print() {
 		System.out.println("-----------------------------------");
 		System.out.println(tableName);
-		System.out.println(" * id:\t" + id);
+		System.out.println(" * id:\t" + getId());
 		System.out.println(" * Fields:");
 
 		try {
@@ -166,7 +225,7 @@ public abstract class BucketObject {
 			throw new DatabaseConnectionException("db is null!");
 		}
 
-		if (this.id == null) {
+		if (this.getId() == null) {
 			db.insert(this);
 		} else {
 			db.update(this);
@@ -191,6 +250,10 @@ public abstract class BucketObject {
 	public String toJSON() {
 		Gson gson = new GsonBuilder().create();
 		return gson.toJson(this);
+	}
+
+	public Gson getGson() {
+		return new Gson();
 	}
 
 }

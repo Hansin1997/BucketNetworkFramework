@@ -1,4 +1,4 @@
-package bucket.database;
+package bucket.database.exception;
 
 /**
  * 对象未找到异常，当操作的BucketObject在数据库不存在时触发

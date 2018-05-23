@@ -1,4 +1,4 @@
-package bucket.database;
+package bucket.database.query;
 
 /**
  * 条件队列类
@@ -19,7 +19,7 @@ public class QueryQueue {
 	 * @author Hansin
 	 *
 	 */
-	protected enum QueryType {
+	public enum QueryType {
 		/**
 		 * 且
 		 */

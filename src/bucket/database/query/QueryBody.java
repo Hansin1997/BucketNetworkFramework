@@ -1,4 +1,4 @@
-package bucket.database;
+package bucket.database.query;
 
 /**
  * 条件类
@@ -188,6 +188,10 @@ public class QueryBody {
 	 */
 	public Query table(String tableName) {
 		this.head.tableName = tableName;
+		return head;
+	}
+	
+	public Query getHead() {
 		return head;
 	}
 

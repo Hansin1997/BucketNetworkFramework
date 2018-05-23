@@ -1,4 +1,4 @@
-package bucket.database;
+package bucket.database.exception;
 
 /**
  * 数据库连接异常

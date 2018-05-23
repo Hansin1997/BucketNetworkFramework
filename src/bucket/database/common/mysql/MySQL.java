@@ -1,5 +1,6 @@
-package bucket.database;
+package bucket.database.common.mysql;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +16,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+
+import bucket.database.BucketObject;
+import bucket.database.Database;
+import bucket.database.exception.DatabaseConnectionException;
+import bucket.database.exception.ObjectNotFoundException;
+import bucket.database.query.Query;
+import bucket.database.query.QueryQueue;
 
 /**
  * MySQL数据库类
@@ -108,6 +119,48 @@ public class MySQL extends Database {
 		String tableName = ((query == null || query.table() == null) ? clazz.newInstance().getTableName()
 				: query.table());
 
+		PreparedStatement ps = conn.prepareStatement(Query2PreSQL(query, tableName, limit),
+				Statement.RETURN_GENERATED_KEYS);
+
+		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null
+				&& query.getQueue().getBody().getSymbol() != null) {
+			int i = 1;
+			QueryQueue q = query.getQueue();
+			while (q != null && q.getBody() != null && q.getBody().getSymbol() != null) {
+				ps.setObject(i, q.getBody().getValue());
+				q = q.getNext();
+				i++;
+
+			}
+
+		}
+
+		try {
+			ps.executeQuery();
+		} catch (MySQLSyntaxErrorException e) {
+			e.printStackTrace();
+			return null;
+		}
+		ResultSet set = ps.getResultSet();
+		ResultSetMetaData meta = set.getMetaData();
+
+		while (set.next()) {
+			Map<String, Object> fileds = new HashMap<String, Object>();
+			for (int i = 1; i <= meta.getColumnCount(); i++) {
+				String key = meta.getColumnName(i);
+				fileds.put(key, set.getObject(i));
+			}
+			T t = instantiate(clazz);
+			t.setFields(fileds);
+			t.setId(fileds.get("id"));
+			t.setTableName(tableName);
+			result.add(t);
+		}
+
+		return result;
+	}
+
+	public static String Query2PreSQL(Query query, String tableName, long limit) throws UnsupportedEncodingException {
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT * FROM " + tableName + " ");
 		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null
@@ -133,40 +186,22 @@ public class MySQL extends Database {
 		} else {
 			sql.append(";");
 		}
-		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
-				Statement.RETURN_GENERATED_KEYS);
+		return new String(sql.toString().getBytes(), "UTF-8");
+	}
 
+	public static JsonArray Query2ValueArray(Query query) throws UnsupportedEncodingException {
+		Gson gson = new Gson();
+		JsonArray arr = new JsonArray();
 		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null
 				&& query.getQueue().getBody().getSymbol() != null) {
-			int i = 1;
 			QueryQueue q = query.getQueue();
 			while (q != null && q.getBody() != null && q.getBody().getSymbol() != null) {
-				ps.setObject(i, q.getBody().getValue());
+				arr.add(gson.fromJson(gson.toJson(q.getBody().getValue()), JsonElement.class));
 				q = q.getNext();
-				i++;
 
 			}
-
 		}
-
-		ps.executeQuery();
-		ResultSet set = ps.getResultSet();
-		ResultSetMetaData meta = set.getMetaData();
-
-		while (set.next()) {
-			Map<String, Object> fileds = new HashMap<String, Object>();
-			for (int i = 1; i <= meta.getColumnCount(); i++) {
-				String key = meta.getColumnName(i);
-				fileds.put(key, set.getObject(i));
-			}
-			T t = instantiate(clazz);
-			t.setFields(fileds);
-			t.setId(fileds.get("id"));
-			t.setTableName(tableName);
-			result.add(t);
-		}
-
-		return result;
+		return arr;
 	}
 
 	@Override
@@ -205,14 +240,20 @@ public class MySQL extends Database {
 		sql.append(" VALUES ");
 		sql.append(sqlpart2);
 
+		System.out.println(sql.toString());
 		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
 				Statement.RETURN_GENERATED_KEYS);
 
 		int i = 1;
 		for (Entry<String, Object> kv : set) {
+
 			if (kv.getValue() == null)
 				continue;
-			ps.setObject(i, kv.getValue());
+			if (kv.getValue().getClass().equals(ArrayList.class)) {
+
+				ps.setString(i, kv.getValue().toString());
+			} else
+				ps.setObject(i, kv.getValue());
 			i++;
 
 		}
@@ -238,7 +279,7 @@ public class MySQL extends Database {
 	public void update(BucketObject obj) throws Exception {
 		if (!isTableExist(obj.getTableName()))
 			createBucketObjectTable(obj);
-		
+
 		StringBuffer sql = new StringBuffer();
 		sql.append("UPDATE " + obj.getTableName() + " SET ");
 		Map<String, Object> fileds = obj.getFields();
@@ -286,7 +327,8 @@ public class MySQL extends Database {
 	 *             异常
 	 */
 	protected void createBucketObjectTable(BucketObject obj) throws Exception {
-		Field[] fileds = obj.getClass().getFields();
+
+		ArrayList<Field> fileds = BucketObject.getAllFields(obj.getClass());
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("CREATE TABLE " + obj.getTableName() + " ( `id` INT NOT NULL AUTO_INCREMENT");
@@ -295,7 +337,7 @@ public class MySQL extends Database {
 			sql.append(" , " + filed.getName() + " " + typeTransform(filed.getType().getSimpleName()));
 		}
 
-		sql.append(" , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_bin;");
+		sql.append(" , PRIMARY KEY (`id`)) ENGINE = InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
 
 		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"));
 
@@ -306,7 +348,8 @@ public class MySQL extends Database {
 	/**
 	 * JAVA与MySQL的类型转换常量表
 	 */
-	protected static final String[][] TYPES = { { "String", "TEXT" }, { "Date", "datetime" } };
+	protected static final String[][] TYPES = { { "String", "TEXT" }, { "Date", "datetime" },
+			{ "Boolean", "boolean" } };
 
 	/**
 	 * JAVA与MySQL的类型转换方法
@@ -320,7 +363,8 @@ public class MySQL extends Database {
 			if (type.toUpperCase().equals(types[0].toUpperCase()))
 				return types[1];
 		}
-		return type;
+		System.out.println("Type Unknow:" + type);
+		return "TEXT";
 	}
 
 }
