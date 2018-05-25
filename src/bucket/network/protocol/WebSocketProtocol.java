@@ -1,11 +1,9 @@
 package bucket.network.protocol;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -243,8 +241,7 @@ public class WebSocketProtocol extends Protocol {
 
 	@Override
 	public boolean handshake() throws Throwable {
-		getIn().mark(8192 * 8);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(getIn()));
+		getIn().mark(8192);
 
 		Map<String, List<String>> header = getProtocolHeader();
 
@@ -252,8 +249,9 @@ public class WebSocketProtocol extends Protocol {
 			echoClientHeader();
 
 		String str = null, first = null;
-		while ((str = reader.readLine()) != null) {
+		while ((str = new String(read('\n'))) != null) {
 
+			str = str.trim();
 			String tmp[] = str.split(":", 2);
 
 			if (tmp.length == 1) {

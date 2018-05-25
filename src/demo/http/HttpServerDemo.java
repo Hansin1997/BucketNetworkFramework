@@ -30,12 +30,12 @@ public class HttpServerDemo {
 
 	}
 
-	private static SSLServerSocket getServerSocket(int thePort) {
+	public static SSLServerSocket getServerSocket(int thePort) {
 		SSLServerSocket s = null;
 		try {
-			String key = "d:/d.jks"; // 要使用的证书名
-			char keyStorePass[] = "lb12345678900".toCharArray(); // 证书密码
-			char keyPassword[] = "lb12345678900".toCharArray(); // 证书别称所使用的主要密码
+			String key = "keystore/SSLKey"; // 要使用的证书名
+			char keyStorePass[] = "123456".toCharArray(); // 证书密码
+			char keyPassword[] = "123456".toCharArray(); // 证书别称所使用的主要密码
 			KeyStore ks = KeyStore.getInstance("JKS"); // 创建JKS密钥库
 			ks.load(new FileInputStream(key), keyStorePass);
 			// 创建管理JKS密钥库的X.509密钥管理器

@@ -160,6 +160,8 @@ public class HttpProtocol extends Protocol {
 	@Override
 	public boolean handshake() throws Throwable {
 
+		getIn().mark(8192);
+
 		HashMap<String, List<String>> header = new HashMap<String, List<String>>();
 		super.setProtocolHeader(header);
 		String str = null, first = null;
@@ -187,6 +189,7 @@ public class HttpProtocol extends Protocol {
 		}
 
 		if (first == null || !checkHandshake(first)) {
+			getIn().reset();
 			return false;// 握手失败返回假
 		}
 
