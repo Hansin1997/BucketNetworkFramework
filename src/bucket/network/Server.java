@@ -69,6 +69,10 @@ public class Server implements RejectedExecutionHandler {
 	 */
 	protected ServerSocket serverSocket;
 
+	public Server() {
+		this(null, null, 512, 1024);
+	}
+
 	/**
 	 * 构造函数
 	 * 
