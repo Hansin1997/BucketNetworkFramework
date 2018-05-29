@@ -24,7 +24,7 @@ public class HttpServerDemo {
 
 		ServerSocket serverSocket = getServerSocket(6677);
 
-		Server s = new Server(HttpApplicationDemo.class.getName());
+		Server s = new Server(HttpApplicationDemo.class);
 		s.addProtocol(HttpProtocol.class);
 		s.start(serverSocket);
 

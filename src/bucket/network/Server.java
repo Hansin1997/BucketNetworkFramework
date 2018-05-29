@@ -55,9 +55,9 @@ public class Server implements RejectedExecutionHandler {
 	private Database database;
 
 	/**
-	 * Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
+	 * Application类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
-	private String appClassName;
+	private Class<?> appClass;
 
 	/**
 	 * 协议列表
@@ -79,8 +79,8 @@ public class Server implements RejectedExecutionHandler {
 	 * @param appClassName
 	 *            Application完整类名，该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理。
 	 */
-	public Server(String appClassName) {
-		this(appClassName, null, 512, 1024);
+	public Server(Class<?> appClass) {
+		this(appClass, null, 512, 1024);
 	}
 
 	/**
@@ -91,8 +91,8 @@ public class Server implements RejectedExecutionHandler {
 	 * @param databaseManager
 	 *            数据库管理器
 	 */
-	public Server(String appClassName, Database databaseManager) {
-		this(appClassName, databaseManager, 512, 1024);
+	public Server(Class<?> appClass, Database databaseManager) {
+		this(appClass, databaseManager, 512, 1024);
 	}
 
 	/**
@@ -107,8 +107,8 @@ public class Server implements RejectedExecutionHandler {
 	 * @param maximumPoolSize
 	 *            线程池最大大小
 	 */
-	public Server(String appClassName, Database databaseManager, int corePoolSize, int maximumPoolSize) {
-		this.appClassName = appClassName;
+	public Server(Class<?> appClass, Database databaseManager, int corePoolSize, int maximumPoolSize) {
+		this.appClass = appClass;
 		// this.port = port;
 		this.database = databaseManager;
 		this.corePoolSize = corePoolSize;
@@ -129,8 +129,7 @@ public class Server implements RejectedExecutionHandler {
 		setRunning(true);
 		this.serverSocket = serverSocket;
 
-		@SuppressWarnings("rawtypes")
-		Constructor c = Class.forName(appClassName).getConstructor(Server.class);
+		Constructor<?> c = appClass.getConstructor(Server.class);
 
 		while (isRunning()) {
 			Socket socket = serverSocket.accept();
@@ -282,22 +281,22 @@ public class Server implements RejectedExecutionHandler {
 	}
 
 	/**
-	 * 获取Application的完整类名 该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理
+	 * 获取Application类
 	 * 
 	 * @return 完整类名
 	 */
-	public String getAppClassName() {
-		return appClassName;
+	public Class<?> getAppClass() {
+		return appClass;
 	}
 
 	/**
-	 * 设置Application完整类名 该类名必须是Application类或其子类，将会为每一个连接实例化一个该类的对象进行事件处理
+	 * 设置Application类
 	 * 
 	 * @param appClassName
 	 *            完整类名
 	 */
-	public void setAppClassName(String appClassName) {
-		this.appClassName = appClassName;
+	public void setAppClass(Class<?> appClass) {
+		this.appClass = appClass;
 	}
 
 	// ---------------------------------------
@@ -357,4 +356,19 @@ public class Server implements RejectedExecutionHandler {
 	public void removeProtocol(String protocolClassName) {
 		ProtocolList.remove(protocolClassName);
 	}
+
+	public void setCorePoolSize(int corePoolSize) {
+		this.corePoolSize = corePoolSize;
+		this.pool.setCorePoolSize(corePoolSize);
+	}
+	
+	public void setMaximumPoolSize(int maximumPoolSize) {
+		this.maximumPoolSize = maximumPoolSize;
+		this.pool.setMaximumPoolSize(maximumPoolSize);
+	}
+	
+	public ServerSocket getServerSocket() {
+		return serverSocket;
+	}
+	
 }

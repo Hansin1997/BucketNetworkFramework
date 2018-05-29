@@ -15,10 +15,10 @@ public class HttpProxyDemo {
 
 	public static void main(String[] args) throws Throwable {
 
-		ServerSocket serverSocket = new ServerSocket(8080);
+		ServerSocket serverSocket = new ServerSocket(6666);
 
 		// 创建服务，绑定HttpProxyApplicationDemo以及6666端口
-		Server s = new Server(HttpProxyApplicationDemo.class.getName());
+		Server s = new Server(HttpProxyApplicationDemo.class);
 
 		// 添加HttpProxyProtocol协议
 		s.addProtocol(HttpProxyProtocol.class);
