@@ -34,7 +34,7 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 通用服务端正则匹配字符串
 	 */
-	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
+	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
 	/**
 	 * 默认服务端正则匹配器
 	 */

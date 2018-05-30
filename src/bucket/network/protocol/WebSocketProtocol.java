@@ -33,7 +33,7 @@ public class WebSocketProtocol extends Protocol {
 	 */
 	public static final String POXY_HEADER_SERVER = "^(HTTP)/([0-9]\\.[0-9]) 101 WebSocket Protocol Handshake$";
 	public static final String POXY_HEADER_CLIENT_DEFAULT = "^(GET) (/) (HTTP)/([0-9]\\.[0-9])$";
-	public static final String POXY_HEADER_CLIENT = "^(GET) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
+	public static final String POXY_HEADER_CLIENT = "^(GET) (/[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_SERVER = Pattern.compile(WebSocketProtocol.POXY_HEADER_CLIENT);
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_CLIENT = Pattern.compile(WebSocketProtocol.POXY_HEADER_SERVER);
 	public static final Pattern HANDSHAKE_CHECK_PATTERN_SERVER_DEFAULT = Pattern

@@ -22,12 +22,12 @@ public class HttpProxyProtocol extends Protocol {
 	/**
 	 * 服务端HTTPS正则匹配字符串
 	 */
-	private static final String HANDSHAKE_CHECK_HTTPS_REGEX_SERVER = "^(CONNECT) ([-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]:[0-9]+) (HTTP)/([0-9]\\.[0-9])$";
+	private static final String HANDSHAKE_CHECK_HTTPS_REGEX_SERVER = "^(CONNECT) ([-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]:[0-9]+) (HTTP)/([0-9]\\.[0-9])$";
 
 	/**
 	 * 服务端普通正则匹配字符串
 	 */
-	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (http://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
+	private static final String HANDSHAKE_CHECK_REGEX_SERVER = "^(GET|POST|HEAD|OPTIONS|PUT|DELETE|TRACE) (http://[-A-Za-z0-9+&@#/%?=~_|!:,.;]*[-A-Za-z0-9+&@#/%=~_|]) (HTTP)/([0-9]\\.[0-9])$";
 
 	/**
 	 * 默认服务端正则匹配器
