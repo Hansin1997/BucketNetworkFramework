@@ -130,9 +130,14 @@ public class Server implements RejectedExecutionHandler {
 		this.serverSocket = serverSocket;
 
 		Constructor<?> c = appClass.getConstructor(Server.class);
-
+		Socket socket;
 		while (isRunning()) {
-			Socket socket = serverSocket.accept();
+
+			try {
+				socket = serverSocket.accept();
+			} catch (java.net.SocketException e) {
+				break;
+			}
 			ServerConnection conn = new ServerConnection(ProtocolList, socket, (Application) c.newInstance(this));
 			add(conn);
 
@@ -361,14 +366,14 @@ public class Server implements RejectedExecutionHandler {
 		this.corePoolSize = corePoolSize;
 		this.pool.setCorePoolSize(corePoolSize);
 	}
-	
+
 	public void setMaximumPoolSize(int maximumPoolSize) {
 		this.maximumPoolSize = maximumPoolSize;
 		this.pool.setMaximumPoolSize(maximumPoolSize);
 	}
-	
+
 	public ServerSocket getServerSocket() {
 		return serverSocket;
 	}
-	
+
 }
