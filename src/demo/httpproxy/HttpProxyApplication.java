@@ -5,6 +5,8 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
@@ -13,7 +15,9 @@ import java.util.Map.Entry;
 import bucket.application.Application;
 import bucket.network.Server;
 import bucket.network.connection.Connection;
+import bucket.network.connection.UnknowProtocolException;
 import bucket.network.protocol.Protocol;
+import bucket.util.Log;
 
 /**
  * Http代理应用Demo
@@ -21,7 +25,7 @@ import bucket.network.protocol.Protocol;
  * @author Hansin
  *
  */
-public class HttpProxyApplicationDemo extends Application {
+public class HttpProxyApplication extends Application {
 
 	/**
 	 * 中转等待标志
@@ -32,13 +36,13 @@ public class HttpProxyApplicationDemo extends Application {
 	BufferedInputStream in;
 	BufferedOutputStream out;
 
-	public HttpProxyApplicationDemo(Server server) {
+	public HttpProxyApplication(Server server) {
 		super(server);
 	}
 
 	@Override
 	public void onConnect(Connection connection) {
-		System.out.println("代理用户连接    " + connection.getProtocol());
+		Log.d("代理用户连接    " + connection.getProtocol());
 		try {
 			String method = connection.getProtocol().getProtocolInfo().get("METHOD").toString();
 			// 分析代理请求方法
@@ -234,7 +238,13 @@ public class HttpProxyApplicationDemo extends Application {
 
 	@Override
 	public void onException(Connection connection, Throwable e) {
-		e.printStackTrace();// 显示报错
-
+		// 打印异常信息
+		if (e.getClass().equals(SocketException.class) || e.getClass().equals(SocketTimeoutException.class)) {
+			onDisconnect(connection);
+		} else if (e.getClass().equals(UnknowProtocolException.class)) {
+			if (Log.isDebugging())
+				Log.e(e);
+		} else
+			Log.e(e);
 	}
 }
