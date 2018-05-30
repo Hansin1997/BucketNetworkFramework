@@ -82,6 +82,16 @@ public class Log {
 		System.err.println(line);
 	}
 
+	@SafeVarargs
+	public static <T extends Object> void echo(String title, T... msg) {
+		System.out.println(line);
+		System.out.println(title);
+		System.out.println();
+		for (Object obj : msg)
+			System.out.println(obj);
+		System.out.println(line);
+	}
+
 	/**
 	 * 是否调试状态
 	 * 
@@ -108,4 +118,5 @@ public class Log {
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		return (df.format(new Date()));
 	}
+
 }
