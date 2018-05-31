@@ -20,6 +20,7 @@ import bucket.database.exception.ObjectNotFoundException;
 import bucket.database.query.Query;
 import bucket.database.query.QueryBody;
 import bucket.database.query.QueryQueue;
+import bucket.util.Log;
 
 /**
  * Mongo 数据库类
@@ -64,7 +65,7 @@ public class Mongo extends Database {
 
 	@Override
 	public void connect(String username, String password) {
-		System.out.println("MongoDB connect without login");
+		Log.d("MongoDB connect without login");
 		connect();
 
 	}
@@ -155,11 +156,12 @@ public class Mongo extends Database {
 				: query.table());
 		MongoCollection<Document> coll = db.getCollection(tableName);
 		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
+
 		for (Document doc : r) {
 			T t = instantiate(clazz);
 			t.setId(doc.getObjectId("_id"));
 			t.setFields(doc);
-			
+
 			t.setTableName(tableName);
 			result.add(t);
 		}
@@ -175,6 +177,7 @@ public class Mongo extends Database {
 	 */
 	public static Bson Query2Bson(Query query) {
 		Bson filter = null;
+
 		if (query != null && query.getQueue() != null && query.getQueue().getBody() != null) {
 			QueryQueue it = query.getQueue();
 
