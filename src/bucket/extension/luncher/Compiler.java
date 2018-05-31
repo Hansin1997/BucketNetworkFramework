@@ -56,6 +56,8 @@ public class Compiler {
 		ops.add(bin);
 		ops.add("-sourcepath");
 		ops.add(this.src);
+		ops.add("-encoding");
+		ops.add("UTF-8");
 
 	}
 
