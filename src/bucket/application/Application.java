@@ -17,4 +17,8 @@ public abstract class Application implements EventListener {
 		this.server = server;
 	}
 
+	public Server getServer() {
+		return server;
+	}
+
 }
