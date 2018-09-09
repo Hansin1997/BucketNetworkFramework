@@ -138,7 +138,7 @@ public class MySQL extends Database {
 		try {
 			ps.executeQuery();
 		} catch (MySQLSyntaxErrorException e) {
-			e.printStackTrace();
+			// e.printStackTrace(); // Table doesn't exist
 			return null;
 		}
 		ResultSet set = ps.getResultSet();
@@ -245,13 +245,13 @@ public class MySQL extends Database {
 				Statement.RETURN_GENERATED_KEYS);
 
 		int i = 1;
+		Gson gson = obj.getGson();
 		for (Entry<String, Object> kv : set) {
 
 			if (kv.getValue() == null)
 				continue;
 			if (kv.getValue().getClass().equals(ArrayList.class)) {
-
-				ps.setString(i, kv.getValue().toString());
+				ps.setString(i, gson.toJson(kv.getValue()));
 			} else
 				ps.setObject(i, kv.getValue());
 			i++;

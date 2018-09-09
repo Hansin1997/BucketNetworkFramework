@@ -1,4 +1,4 @@
-﻿package demo.httpproxy;
+package demo.httpproxy;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

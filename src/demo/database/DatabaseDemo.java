@@ -57,7 +57,7 @@ public class DatabaseDemo {
 		pb4.save(); // 储存pb4
 
 		List<PhoneBook> pbs = db.find(PhoneBook.class, Query.build()); // 查找PhoneBook中所有记录
-
+		
 		for (PhoneBook pb : pbs) {
 			pb.print(); // 输出信息
 		}
