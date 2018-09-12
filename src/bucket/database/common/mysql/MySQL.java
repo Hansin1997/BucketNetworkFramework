@@ -254,6 +254,7 @@ public class MySQL extends Database {
 				ps.setString(i, gson.toJson(kv.getValue()));
 			} else
 				ps.setObject(i, kv.getValue());
+
 			i++;
 
 		}
@@ -296,8 +297,12 @@ public class MySQL extends Database {
 		PreparedStatement ps = conn.prepareStatement(new String(sql.toString().getBytes(), "UTF-8"),
 				Statement.RETURN_GENERATED_KEYS);
 		int i = 1;
+		Gson gson = obj.getGson();
 		for (Entry<String, Object> kv : set) {
-			ps.setObject(i, kv.getValue());
+			if (kv.getValue().getClass().equals(ArrayList.class)) {
+				ps.setString(i, gson.toJson(kv.getValue()));
+			} else
+				ps.setObject(i, kv.getValue());
 			i++;
 		}
 		ps.execute();
