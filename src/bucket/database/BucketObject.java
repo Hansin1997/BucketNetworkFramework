@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -112,7 +113,7 @@ public abstract class BucketObject {
 	}
 
 	public static Map<String, Object> getAllFields(Object obj, Class<?> clazz)
-			throws IllegalArgumentException, IllegalAccessException {
+			throws Exception {
 		HashMap<String, Object> fields = new HashMap<String, Object>();
 		Class<?> c = clazz;
 
@@ -121,9 +122,27 @@ public abstract class BucketObject {
 			if (clazz.equals(BucketObject.class))
 				break;
 			f.setAccessible(true);
-
-			if (!Modifier.isStatic(f.getModifiers()) && f.get(obj) != null)
-				fields.put(f.getName(), f.get(obj));
+			Object value = f.get(obj);
+			if (!Modifier.isStatic(f.getModifiers()) && value != null) {
+				if(value instanceof BucketObject) {
+					fields.put(f.getName(), ((BucketObject) value).getFields());
+				}if(value instanceof List<?>){
+					List<?> list = (List<?>) value;
+					
+					if(list.size() > 0 && list.get(0) instanceof BucketObject) {
+						List<Map<String, Object>> newlist = new ArrayList<>();
+						for(Object o : list) {
+							newlist.add(((BucketObject)o).getFields());
+						}
+						fields.put(f.getName(), newlist);
+					}else {
+						fields.put(f.getName(), value);
+					}
+				}else {
+					fields.put(f.getName(), value);
+				}
+			}
+				
 		}
 		if (!clazz.equals(BucketObject.class))
 			fields.putAll(getAllFields(obj, clazz.getSuperclass()));
