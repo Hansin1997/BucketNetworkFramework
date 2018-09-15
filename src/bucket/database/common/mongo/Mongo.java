@@ -222,16 +222,16 @@ public class Mongo extends Database {
 		}
 		switch (body.getQueueType()) {
 		case EQU:
-			filter = Filters.eq(body.getKey(), body.getValue());
+			filter = Filters.eq(key, value);
 			break;
 		case GRE:
-			filter = Filters.gt(body.getKey(), body.getValue());
+			filter = Filters.gt(key, value);
 			break;
 		case LES:
-			filter = Filters.lt(body.getKey(), body.getValue());
+			filter = Filters.lt(key, value);
 			break;
 		case LIKE:
-			filter = Filters.in(body.getKey(), body.getValue());
+			filter = Filters.in(key, value);
 			break;
 		}
 		return filter;
