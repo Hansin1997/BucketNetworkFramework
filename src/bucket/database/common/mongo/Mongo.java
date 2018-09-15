@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
@@ -212,6 +213,13 @@ public class Mongo extends Database {
 		if (body == null || body.getKey() == null)
 			return null;
 		Bson filter = null;
+
+		String key = body.getKey();
+		Object value = body.getValue();
+		if (key.equals("id")) {
+			key = "_id";
+			value = new ObjectId(value.toString());
+		}
 		switch (body.getQueueType()) {
 		case EQU:
 			filter = Filters.eq(body.getKey(), body.getValue());

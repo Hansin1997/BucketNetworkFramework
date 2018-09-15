@@ -266,4 +266,22 @@ public abstract class BucketObject {
 		return new Gson();
 	}
 
+	/**
+	 * 获取属性表，包括ID
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public Map<String, Object> getMapWithID() throws Exception {
+		Map<String, Object> map = getFields();
+		Object iidd = getId();
+		if (iidd != null) {
+			if (iidd instanceof Integer)
+				map.put("id", iidd);
+			else
+				map.put("id", iidd.toString());
+		}
+		return map;
+	}
+
 }
