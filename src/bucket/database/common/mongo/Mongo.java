@@ -156,8 +156,12 @@ public class Mongo extends Database {
 		String tableName = ((query == null || query.table() == null) ? clazz.newInstance().getTableName()
 				: query.table());
 		MongoCollection<Document> coll = db.getCollection(tableName);
+		
+		
 		FindIterable<Document> r = (filter == null ? coll.find() : coll.find(filter));
-
+		if(limit >= 0)
+			r = r.limit((int) limit);
+		
 		for (Document doc : r) {
 			T t = instantiate(clazz);
 			t.setId(doc.getObjectId("_id"));
