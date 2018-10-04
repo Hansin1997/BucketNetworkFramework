@@ -81,8 +81,7 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 构造函数
 	 * 
-	 * @param socket
-	 *            套接字对象
+	 * @param socket 套接字对象
 	 * @throws IOException
 	 */
 	public HttpProtocol(Socket socket) throws IOException {
@@ -92,12 +91,9 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 构造函数
 	 * 
-	 * @param socket
-	 *            套接字对象
-	 * @param in
-	 *            传入输入流
-	 * @param out
-	 *            传入输出流
+	 * @param socket 套接字对象
+	 * @param in     传入输入流
+	 * @param out    传入输出流
 	 * 
 	 * @throws IOException
 	 */
@@ -108,11 +104,9 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 握手检查
 	 * 
-	 * @param str
-	 *            HTTP报文首行
+	 * @param str HTTP报文首行
 	 * @return 握手成功与否
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
 	private boolean checkHandshake(String str) throws Throwable {
 
@@ -379,10 +373,8 @@ public class HttpProtocol extends Protocol {
 	/**
 	 * 输出服务端响应头
 	 * 
-	 * @param statusCode
-	 *            状态吗，如: "404 Not Found"
-	 * @param header
-	 *            HTTP Header 表
+	 * @param statusCode 状态吗，如: "404 Not Found"
+	 * @param header     HTTP Header 表
 	 */
 	public void parseServerHeader(String statusCode, Map<String, Object> header) throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
@@ -439,18 +431,47 @@ public class HttpProtocol extends Protocol {
 		wter.println(
 				getProtocolInfo().get(INFO_METHOD) + " " + path + " " + getProtocolName() + "/" + getProtocolVersion());
 
+		String post = null;
+		if (getProtocolInfo().get(INFO_POST) != null) {
+			if (header == null)
+				header = new HashMap<>();
+			List<String> list = new ArrayList<>();
+			list.add(CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED);
+			header.put("Content-Type", list);
+			post = "";
+			@SuppressWarnings("unchecked")
+			Map<String, String> getMap = (Map<String, String>) getProtocolInfo().get(INFO_POST);
+			Iterator<Entry<String, String>> it = getMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Entry<String, String> kv = it.next();
+				post += kv.getKey() + "=" + kv.getValue();
+				if (it.hasNext())
+					post += "&";
+			}
+			list = new ArrayList<>();
+			list.add(post.getBytes().length + "");
+			header.put("Content-Length",list);
+
+		}
 		wter.println("Host: " + getSocket().getInetAddress().getHostName() + ":" + getSocket().getPort());
 		if (header != null)
-			for (Entry<String, List<String>> kv : getProtocolHeader().entrySet()) {
-
-				for (String v : kv.getValue()) {
+			for (Entry<String, Object> kv : header.entrySet()) {
+				@SuppressWarnings("unchecked")
+				List<String> ls = (List<String>) kv.getValue();
+				for (String v : ls) {
 					wter.print(kv.getKey());
 					wter.print(": ");
 					wter.println(v);
 				}
 
 			}
+
 		wter.println();
+
+		if (post != null) {
+			wter.write(post);
+		}
+
 		wter.flush();
 	}
 

@@ -35,7 +35,7 @@ public class DatabaseDemo {
 		pb1.nickname = "隔壁老王";
 		pb1.phone = "123456";
 		pb1.address = "隔壁";
-		pb1.save(); // 储存pb1
+		
 
 		System.out.println(pb1.toJSON());
 
