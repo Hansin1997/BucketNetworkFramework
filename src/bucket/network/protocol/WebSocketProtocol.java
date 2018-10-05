@@ -66,8 +66,7 @@ public class WebSocketProtocol extends Protocol {
 	/**
 	 * 构造函数
 	 * 
-	 * @param socket
-	 *            套接字对象
+	 * @param socket 套接字对象
 	 * 
 	 * @throws IOException
 	 */
@@ -81,12 +80,9 @@ public class WebSocketProtocol extends Protocol {
 	/**
 	 * 构造函数
 	 * 
-	 * @param socket
-	 *            套接字对象
-	 * @param in
-	 *            传入输入流
-	 * @param out
-	 *            传入输出流
+	 * @param socket 套接字对象
+	 * @param in     传入输入流
+	 * @param out    传入输出流
 	 * 
 	 * @throws IOException
 	 */
@@ -113,8 +109,7 @@ public class WebSocketProtocol extends Protocol {
 	/**
 	 * 输出服务端响应头
 	 * 
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
 	protected void echoServerHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
@@ -135,8 +130,7 @@ public class WebSocketProtocol extends Protocol {
 	/**
 	 * 生成客户端请求头
 	 * 
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
 	protected void echoClientHeader() throws Throwable {
 		PrintWriter wter = new PrintWriter(getOut());
@@ -181,11 +175,9 @@ public class WebSocketProtocol extends Protocol {
 	/**
 	 * 握手检查
 	 * 
-	 * @param str
-	 *            报文首行
+	 * @param str 报文首行
 	 * @return 握手成功与否
-	 * @throws Throwable
-	 *             异常
+	 * @throws Throwable 异常
 	 */
 	private boolean handshakeCheck(String str) throws Throwable {
 		if (str == null)
@@ -257,7 +249,8 @@ public class WebSocketProtocol extends Protocol {
 			echoClientHeader();
 
 		String str = null, first = null;
-		while ((str = new String(read('\n'))) != null) {
+		byte data[];
+		while ((data = read('\n')) != null && (str = new String(data)) != null) {
 
 			str = str.trim();
 			String tmp[] = str.split(":", 2);

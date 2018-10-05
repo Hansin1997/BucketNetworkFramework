@@ -159,8 +159,8 @@ public class HttpProtocol extends Protocol {
 		HashMap<String, List<String>> header = new HashMap<String, List<String>>();
 		super.setProtocolHeader(header);
 		String str = null, first = null;
-
-		while ((str = new String(read('\n'))) != null) {
+		byte data[];
+		while ((data = read('\n')) != null &&  (str = new String(data)) != null) {
 
 			str = str.trim();
 			String tmp[] = str.split(":", 2);
@@ -194,6 +194,7 @@ public class HttpProtocol extends Protocol {
 
 	public static final String CONTENT_TYPE_APPLICATION_X_WWW_FROM_URLENCODED = "application/x-www-form-urlencoded";
 	public static final String CONTENT_TYPE_MULTIPART_FROMDATA = "multipart/form-data";
+	public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
 
 	/**
 	 * 获取POST数据
