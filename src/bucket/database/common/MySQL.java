@@ -1,4 +1,4 @@
-package bucket.database.common.mysql;
+package bucket.database.common;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;

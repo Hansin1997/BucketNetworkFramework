@@ -3,7 +3,7 @@ package demo.database;
 import java.util.List;
 
 import bucket.database.Database;
-import bucket.database.common.mysql.MySQL;
+import bucket.database.common.MySQL;
 import bucket.database.query.Query;
 
 /**

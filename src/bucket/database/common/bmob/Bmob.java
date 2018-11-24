@@ -9,9 +9,9 @@ import com.google.gson.Gson;
 
 import bucket.database.BucketObject;
 import bucket.database.Database;
+import bucket.database.common.MySQL;
 import bucket.database.common.bmob.api.BmobApp;
 import bucket.database.common.bmob.api.BmobConsole;
-import bucket.database.common.mysql.MySQL;
 import bucket.database.exception.ObjectNotFoundException;
 import bucket.database.query.Query;
 

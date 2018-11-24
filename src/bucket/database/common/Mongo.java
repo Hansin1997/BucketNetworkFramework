@@ -1,4 +1,4 @@
-package bucket.database.common.mongo;
+package bucket.database.common;
 
 import java.util.ArrayList;
 import java.util.List;
